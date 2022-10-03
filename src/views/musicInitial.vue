@@ -5,8 +5,7 @@
     </div>
   </div>
 </template>
-<script setup>
-</script>
+<script setup></script>
 <style scoped lang="less">
 .full_container {
   display: flex;
@@ -28,4 +27,6 @@
 .el-container {
   height: 100%;
 }
+
+
 </style>

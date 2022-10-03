@@ -75,7 +75,7 @@ const loginQrShow = () => {
 //   });
 // };
 const loginBack = () => {
-  router.push("/home");
+  router.go(-1);
 };
 
 let { isLoginQr, isLoginPhoneNumber, isTitleName } =

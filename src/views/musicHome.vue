@@ -1,5 +1,6 @@
 <template>
   <el-container>
+    <!-- 头部行 -->
     <el-header>
       <el-row>
         <el-col :span="4" class="btn-changeTheme">
@@ -39,7 +40,9 @@
             </div>
             <template #dropdown>
               <el-dropdown-menu class="drop-width-container">
-                <el-dropdown-item><router-link to="/login">账号</router-link></el-dropdown-item>
+                <el-dropdown-item
+                  ><router-link to="/login">账号</router-link></el-dropdown-item
+                >
                 <el-dropdown-item>Action 2</el-dropdown-item>
                 <el-dropdown-item>Action 3</el-dropdown-item>
                 <el-dropdown-item disabled>Action 4</el-dropdown-item>
@@ -53,18 +56,25 @@
     <el-container>
       <!-- 菜单栏 -->
       <musicMenus />
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
+  <div class="footer"></div>
 </template>
 <script setup>
-import musicMenus from "@/components/leftBar/musicMenus.vue";
+import musicMenus from "@/views/musicMenus.vue";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+
 const dropdown1 = ref();
 
 function showClick() {
   dropdown1.value.handleOpen();
 }
+
+const router = useRouter();
 </script>
 <style scoped lang="less">
 .el-header {
@@ -86,6 +96,18 @@ function showClick() {
   width: 100%;
   height: 1px;
   z-index: 3;
+}
+.el-menu {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.el-menu-item {
+  height: 40px;
+  line-height: 40px;
+  border-radius: 5px;
+}
+.el-menu-item:hover {
+  background-color: rgba(169, 175, 175, 0.693);
 }
 /deep/ .el-input__wrapper {
   border-radius: 25px;
@@ -117,7 +139,7 @@ function showClick() {
 }
 .drop-width-container {
   padding: 10px;
-  width: 200px;
+  width: 170px;
 }
 // :root{
 //   --el-fill-color-light:white;
@@ -127,17 +149,34 @@ function showClick() {
 //     padding: 10px;
 //   }
 // }
-.el-aside {
-  // height: 100%;
+
+.el-main {
+  overflow: auto;
+  height: 530px;
 }
-.grid-content {
-  border-radius: 4px;
-  min-height: 36px;
-  background-color: aqua;
+.el-main::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 5px; /*高宽分别对应横竖滚动条的尺寸*/
+  height: 5px;
+  scrollbar-arrow-color: red;
 }
-.grid-content1 {
-  border-radius: 4px;
-  min-height: 36px;
-  background-color: rgb(94, 146, 146);
+
+.el-main::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+  scrollbar-arrow-color: red;
+}
+
+.el-main::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  -webkit-box-shadow: inset 0 0 5px rgba(238, 210, 210, 0.3);
+  border-radius: 5px;
+  background: rgba(221, 197, 197, 0);
+}
+.footer {
+  border: solid 1px;
+  height: 70px;
 }
 </style>

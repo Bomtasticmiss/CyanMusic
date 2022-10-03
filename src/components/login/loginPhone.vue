@@ -17,11 +17,13 @@
       </el-form-item>
       <el-button class="test-send-ctr" primary>发送验证码</el-button>
     </div>
-    <el-form-item>
-      <el-button type="primary" @click="submitForm(ruleFormRef)"
-        >Submit</el-button
+    <!-- <el-form-item>
+      <el-button type="primary" size='large' @click="submitForm(ruleFormRef)"
+        >登录</el-button
       >
-    </el-form-item>
+    </el-form-item> -->
+    <el-button class="login_btn">登录</el-button>
+    <!-- <button ></button> -->
   </el-form>
   <!-- </template> -->
 </template>
@@ -31,6 +33,8 @@
 .login-form {
   margin-top: 50px;
   padding: 30px;
+  display: flex;
+  flex-direction: column;
   .el-form-item {
     padding: 10px;
   }
@@ -48,8 +52,18 @@
     border-radius: 50px;
     height: 40px;
     width: 100px;
+    // background-color: blue;
   }
 }
+.login_btn {
+  margin-top: 40px;
+  height: 40px;
+  border-radius: 20px;
+  // border:solid 1px;
+  color: white;
+  background-image: linear-gradient(to right, #abae72, #a6c1ee);
+}
+
 /deep/ .el-input__wrapper {
   border-radius: 7px;
   background-color: #efefefdc;

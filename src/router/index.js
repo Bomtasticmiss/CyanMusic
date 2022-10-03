@@ -4,11 +4,31 @@ const routes = [
   {
     path: '/',
     redirect: '/home',
+    // children: [
+    //   {
+    //     path: 'home',
+    //     component: musicHome,
+    //     children: [
+    //       {
+    //         path: '/musicRmd',
+    //         name: 'musicRmd',
+    //         component: () => import('@/components/home/MusicRmd.vue')
+    //       }
+    //     ]
+    //   }
+    // ]
   },
   {
     path: '/home',
     name: 'musicHome',
-    component: musicHome
+    component: musicHome,
+    children: [
+      {
+        path: '/musicRmd',
+        name: 'musicRmd',
+        component: () => import('@/components/home/musicRmd.vue')
+      }
+    ]
   },
   {
     path: '/login',
