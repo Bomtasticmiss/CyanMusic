@@ -27,6 +27,11 @@ const routes = [
         path: '/musicRmd',
         name: 'musicRmd',
         component: () => import('@/components/home/musicRmd.vue')
+      },
+      {
+        path: '/musicRmdDetail/:id',
+        name: 'musicRmdDetail',
+        component: () => import('@/components/home/musicRmdDetail.vue')
       }
     ]
   },
@@ -35,7 +40,6 @@ const routes = [
     name: 'musicLogin',
     component: () => import('@/views/musicLogin.vue')
   },
-
 ]
 
 const router = createRouter({

@@ -56,15 +56,18 @@
     <el-container>
       <!-- 菜单栏 -->
       <musicMenus />
+      <!-- 内容显示 -->
       <el-main>
         <router-view></router-view>
       </el-main>
     </el-container>
   </el-container>
-  <div class="footer"></div>
+  <!--底部播放器区域  -->
+  <playFooter />
 </template>
 <script setup>
 import musicMenus from "@/views/musicMenus.vue";
+import playFooter from "@/views/playFooter.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -174,9 +177,5 @@ const router = useRouter();
   -webkit-box-shadow: inset 0 0 5px rgba(238, 210, 210, 0.3);
   border-radius: 5px;
   background: rgba(221, 197, 197, 0);
-}
-.footer {
-  border: solid 1px;
-  height: 70px;
 }
 </style>
