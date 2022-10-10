@@ -1,9 +1,9 @@
 <template>
   <el-row>
-    <el-col :span="4" class="btn-changeTheme">
-      <el-button :icon="Search" size="small" circle />
-      <el-button :icon="Search" size="small" circle />
-      <el-button :icon="Search" size="small" circle
+    <el-col :span="4">
+      <el-button size="small" circle />
+      <el-button size="small" circle />
+      <el-button size="small" circle
     /></el-col>
     <el-col :span="3">
       <el-button text circle @click="globalBack">
@@ -13,7 +13,7 @@
         <i class="fa fa-angle-right fa-2x"></i> </el-button
     ></el-col>
     <el-col :span="7">
-      <el-input v-model="input1" size="large" placeholder="search">
+      <el-input  size="large" placeholder="search">
         <template #prefix>
           <i class="fa fa-search" aria-hidden="true"></i>
         </template> </el-input
@@ -21,7 +21,7 @@
     <el-col :span="10" class="user-area-container">
       <el-dropdown ref="dropdown1" trigger="contextmenu" placement="bottom-end">
         <div class="full-user-area-container">
-          <el-avatar :size="30" :src="circleUrl" alt="..." @click="showClick">
+          <el-avatar :size="30" alt="..." @click="showClick">
           </el-avatar>
           <!-- <el-button @click="showClick" text> 姓名 </el-button> -->
           <button @click="showClick">姓名</button>

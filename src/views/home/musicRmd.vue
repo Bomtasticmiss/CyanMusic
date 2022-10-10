@@ -29,10 +29,10 @@ const data = reactive({
 // 获取歌单信息
 const getMusicRmd = async () => {
   const res = await getHomeMusicRmd();
-  console.log(res);
-  store.commit("setPlayList", res.playlists);
-  cardPlaylists.value = store.state.playlists;
-
+  // console.log(res);
+  // store.commit("setPlayList", res.playlists);
+  // cardPlaylists.value = store.state.playlists;
+  cardPlaylists.value=res.playlists
 };
 
 // 传入歌单Id获取详情页

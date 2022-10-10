@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import musicHome from '@/views/musicHome.vue'
+import musicHome from "@/Layout/musicHome.vue"
 const routes = [
   {
     path: '/',
@@ -26,19 +26,19 @@ const routes = [
       {
         path: '/musicRmd',
         name: 'musicRmd',
-        component: () => import('@/components/home/musicRmd.vue')
+        component: () => import('@/views/home/musicRmd.vue')
       },
       {
         path: '/musicRmdDetail/:id',
         name: 'musicRmdDetail',
-        component: () => import('@/components/home/musicRmdDetail.vue')
+        component: () => import('@/views/home/musicRmdDetail.vue')
       }
     ]
   },
   {
     path: '/login',
     name: 'musicLogin',
-    component: () => import('@/views/musicLogin.vue')
+    component: () => import('@/Layout/login/musicLogin.vue')
   },
 ]
 

@@ -21,8 +21,8 @@
   </el-container>
 </template>
 <script setup>
-import loginPhone from "@/components/login/loginPhone.vue";
-import loginQr from "@/components/login/loginQr.vue";
+import loginPhone from "@/views/login/loginPhone.vue";
+import loginQr from "@/views/login/loginQr.vue";
 import { ref, reactive, toRefs } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();

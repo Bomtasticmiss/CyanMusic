@@ -45,5 +45,18 @@
 import { toRefs } from "vue";
 </script>
 <style lang="less" scoped>
+.el-menu {
+  margin-left: 10px;
+  margin-right: 10px;
+}
 
+.el-menu-item {
+  height: 40px;
+  line-height: 40px;
+  border-radius: 5px;
+}
+
+.el-menu-item:hover {
+  background-color: rgba(169, 175, 175, 0.693);
+}
 </style>

@@ -5,6 +5,7 @@ import store from './store'
 
 // 引入全局样式
 import '@/assets/css/global.css'
+//引入第三方图标库
 import '@/assets/font-awesome-4.7.0/css/font-awesome.min.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 

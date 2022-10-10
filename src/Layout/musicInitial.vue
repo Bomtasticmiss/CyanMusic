@@ -24,9 +24,9 @@
     box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
   }
 }
-.el-container {
-  height: 100%;
-}
+// .el-container {
+//   height: 100%;
+// }
 
 
 </style>
