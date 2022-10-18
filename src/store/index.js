@@ -10,7 +10,13 @@ export default createStore({
     playSongUrl: '',
     // SingersFormate: ''
     // 暂停状态(false暂停||true播放)
-    paused: false
+    paused: false,
+    // 评论信息
+    commentInfo: [],
+    //最热评论
+    hotComment: [],
+    // 最新评论
+    lastedComment: [],
   },
   getters: {
     // 格式化音乐演唱歌手
@@ -37,7 +43,7 @@ export default createStore({
       const seconds = Math.floor(time % 60)
       const minute = Math.floor(time / 60)
       return zeroPad(minute) + ':' + zeroPad(seconds)
-    }
+    },
 
   },
   mutations: {
@@ -48,7 +54,12 @@ export default createStore({
     },
     setPaused(state, paused) {
       state.paused = paused
-    }
+    },
+    setCommentInfo(state, CommentInfo) {
+      state.commentInfo = CommentInfo
+      state.hotComment = CommentInfo.comments.slice(0, 8)
+      state.lastedComment = CommentInfo.comments.slice(8, 21)
+    },
   },
   actions: {
   },

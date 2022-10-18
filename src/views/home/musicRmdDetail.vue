@@ -1,129 +1,173 @@
 <template>
-  <div class="detail-wrapper">
-    <div class="header-wrapper">
-      <div class="detail-img">
-        <!-- <img :src="playlistImg" alt="加载中" /> -->
-        <img
-          v-if="playlist.creator"
-          :src="`${playlist.coverImgUrl}?param=200y200`"
-          alt="加载中" />
+  <!-- 骨架 -->
+  <el-skeleton :loading="loading" animated>
+    <template #template>
+      <el-skeleton-item
+        variant="image"
+        style="width: 150px; height: 150px; margin-left: 20px" />
+      <div style="padding: 14px">
+        <el-skeleton-item variant="text" style="width: 40%" />
+        <el-skeleton-item
+          variant="text"
+          style="width: 70%; margin-right: 16px" />
+        <el-skeleton-item variant="text" style="width: 20%" />
       </div>
-      <div class="header-title">
-        <div class="title-name">
-          <div class="tn">歌单</div>
-          <span>{{ playlist.name }}</span>
-        </div>
-        <div class="creator">
-          <div class="creator-avatar pointer">
+    </template>
+    <template #default>
+      <div class="detail-wrapper">
+        <div class="header-wrapper">
+          <div class="detail-img">
+            <!-- <img :src="playlistImg" alt="加载中" /> -->
             <img
               v-if="playlist.creator"
-              :src="playlist.creator.avatarUrl + '?param=200y200'"
-              alt="..." />
+              :src="`${playlist.coverImgUrl}?param=200y200`"
+              alt="加载中" />
           </div>
-          <div>
-            <span
-              class="creator-name mleft-12 font-12 pointer"
-              v-if="playlist.creator"
-              >{{ playlist.creator.nickname }}</span
-            >
-            <span class="mleft-12 font-12">{{ playlistCreateTime }}</span>
+          <div class="header-title">
+            <div class="title-name">
+              <div class="tn">歌单</div>
+              <span>{{ playlist.name }}</span>
+            </div>
+            <div class="creator">
+              <div class="creator-avatar pointer">
+                <img
+                  v-if="playlist.creator"
+                  :src="playlist.creator.avatarUrl + '?param=200y200'"
+                  alt="..." />
+              </div>
+              <div>
+                <span
+                  class="creator-name mleft-12 font-12 pointer"
+                  v-if="playlist.creator"
+                  >{{ playlist.creator.nickname }}</span
+                >
+                <span class="mleft-12 font-12">{{ playlistCreateTime }}</span>
+              </div>
+            </div>
+            <div class="creator-btn-ul">
+              <button class="btn btn-red">
+                <i class="fa fa-play" aria-hidden="true"></i>
+                <span>播放全部</span>
+              </button>
+              <button class="btn mleft-12 btn-white">
+                <i class="fa fa-star-o" aria-hidden="true"></i>
+                <span>收藏({{ subscribedCount }})</span>
+              </button>
+              <button class="btn mleft-12 btn-white">
+                <i class="fa fa-share-square-o" aria-hidden="true"></i>
+                <span>分享({{ shareCount }})</span>
+              </button>
+              <button class="btn mleft-12 btn-red">
+                <i class="fa fa-spinner" aria-hidden="true"></i>
+                <span>加载完整歌单</span>
+              </button>
+            </div>
+            <div class="creator-tags font-14">
+              <span>标签 :</span>
+              <span
+                class="mleft-12"
+                v-for="(tag, index) in playlist.tags"
+                :key="index"
+                >{{ tag }}</span
+              >
+            </div>
+            <div class="font-14">
+              <span v-if="playlist.trackIds"
+                >歌曲 : {{ playlist.trackIds.length }}</span
+              >
+              <span class="mleft-12">播放 : {{ playCount }}</span>
+            </div>
+            <div class="description">
+              <div class="des-contnent" ref="descontnent">
+                <p style="max-width: 600px">简介 :{{ playlist.description }}</p>
+              </div>
+              <i
+                class="fa fa-caret-down pointer caretdown"
+                @click="caretDown"
+                ref="caretdown"
+                aria-hidden="true"></i>
+              <i
+                class="fa fa-caret-up pointer caretup"
+                @click="caretUp"
+                ref="caretup"
+                aria-hidden="true"></i>
+            </div>
           </div>
         </div>
-        <div class="creator-btn-ul">
-          <button class="btn btn-red">
-            <i class="fa fa-play" aria-hidden="true"></i>
-            <span>播放全部</span>
-          </button>
-          <button class="btn mleft-12 btn-white">
-            <i class="fa fa-star-o" aria-hidden="true"></i>
-            <span>收藏({{ subscribedCount }})</span>
-          </button>
-          <button class="btn mleft-12 btn-white">
-            <i class="fa fa-share-square-o" aria-hidden="true"></i>
-            <span>分享({{ shareCount }})</span>
-          </button>
-          <button class="btn mleft-12 btn-red">
-            <i class="fa fa-spinner" aria-hidden="true"></i>
-            <span>加载完整歌单</span>
-          </button>
-        </div>
-        <div class="creator-tags font-14">
-          <span>标签 :</span>
-          <span
-            class="mleft-12"
-            v-for="(tag, index) in playlist.tags"
-            :key="index"
-            >{{ tag }}</span
-          >
-        </div>
-        <div class="font-14">
-          <span v-if="playlist.trackIds"
-            >歌曲 : {{ playlist.trackIds.length }}</span
-          >
-          <span class="mleft-12">播放 : {{ playCount }}</span>
-        </div>
-        <div class="description">
-          <div class="des-contnent" ref="descontnent">
-            <p style="max-width: 600px">简介 :{{ playlist.description }}</p>
+        <div class="content-header">
+          <ul class="header-tab">
+            <li
+              class="pointer"
+              v-for="(Tabs, index) in headerTabs"
+              :key="index"
+              :class="{ isActive: index === tabCurrent }"
+              @click="tabActive(index)">
+              <span>{{ Tabs.text }}</span>
+            </li>
+          </ul>
+          <div class="song-search" v-show="tabCurrent === 0">
+            <el-input placeholder="搜索音乐">
+              <template #suffix>
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </template>
+            </el-input>
           </div>
-          <i
-            class="fa fa-caret-down pointer caretdown"
-            @click="caretDown"
-            ref="caretdown"
-            aria-hidden="true"></i>
-          <i
-            class="fa fa-caret-up pointer caretup"
-            @click="caretUp"
-            ref="caretup"
-            aria-hidden="true"></i>
+        </div>
+        <!-- 音乐 -->
+        <div class="content-wrapper" v-if="tabCurrent === 0">
+          <el-table
+            :data="tracks"
+            stripe
+            style="width: 100%"
+            size="small"
+            @row-dblclick="GetSong">
+            <el-table-column type="index" width="50px" class-name="default" />
+            <el-table-column prop="date" width="35px" class-name="pointer">
+              <template #default>
+                <i class="fa fa-heart-o" aria-hidden="true"></i>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="音乐" class-name="default" />
+            <el-table-column
+              label="歌手"
+              :formatter="SingersFormate"
+              show-overflow-tooltip
+              class-name="pointer" />
+            <el-table-column
+              prop="al.name"
+              label="专辑名"
+              class-name="pointer"
+              show-overflow-tooltip />
+            <el-table-column
+              label="时长"
+              width="100px"
+              :formatter="timeFormate"
+              class-name="default" />
+          </el-table>
+        </div>
+        <!-- 评论区 -->
+        <div class="comment-wrapper" v-if="tabCurrent === 1">
+        <commentWrapper :id='playlist.id'/>
         </div>
       </div>
-    </div>
-    <div class="content-header">
-      <ul class="header-tab">
-        <li
-          class="pointer"
-          v-for="(Tabs, index) in headerTabs"
-          :key="index"
-          :class="{ isActive: index === tabCurrent }"
-          @click="tabActive(index)">
-          <span>{{ Tabs.text }}</span>
-        </li>
-      </ul>
-      <div class="song-search">
-        <el-input placeholder="搜索音乐">
-          <template #suffix>
-            <i class="fa fa-search" aria-hidden="true"></i>
-          </template>
-        </el-input>
-      </div>
-    </div>
-    <div class="content-wrapper">
-      <el-table
-        :data="tracks"
-        stripe
-        style="width: 100%"
-        size="small"
-        @row-dblclick="GetSong">
-        <el-table-column type="index" width="50px" />
-        <el-table-column prop="date" width="35px" />
-        <el-table-column prop="name" label="音乐" />
-        <el-table-column label="歌手" :formatter="SingersFormate" />
-        <el-table-column prop="al.name" label="专辑名" />
-        <el-table-column label="时长" width="100px" :formatter="timeFormate" />
-      </el-table>
-    </div>
-  </div>
+    </template>
+  </el-skeleton>
 </template>
 
 <script setup>
+import commentWrapper from '@/Layout/comment/commentWrapper.vue'
   import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
-  import { getRmdDetail, getSong } from '@/Api/musicHomeList'
+  import { getRmdDetail, getSong, getPlayListCmd } from '@/Api/musicHomeList'
   import { useStore } from 'vuex'
   import { useRouter, useRoute } from 'vue-router'
 
+  const loading = ref(true)
+
   onMounted(() => {
     GetRmdDetail()
+    setTimeout(() => {
+      loading.value = false
+    }, 500)
   })
 
   const store = useStore()
@@ -139,6 +183,7 @@
     tabCurrent: 0,
     // 按钮文本
     headerTabs: [{ text: '歌曲列表' }, { text: '评论' }, { text: '收藏者' }],
+   
   })
   // 歌单创建时时间
   const playlistCreateTime = computed(() => {
@@ -171,8 +216,9 @@
       return ElMessage({ message: '歌单详情获取失败', type: 'error' })
     playlist.value = res.playlist
     tracks.value = res.playlist.tracks
+    headerTabs.value[1].text = '评论' + '(' + playlist.value.commentCount + ')'
     // console.log(playlist.value)
-    console.log(tracks.value)
+    // console.log(tracks.value)
   }
   // 获取音乐数据
   const GetSong = async (row) => {
@@ -205,6 +251,16 @@
   // 活动添加样式按钮
   const tabActive = (index) => {
     tabCurrent.value = index
+    if (index == 1) GetPlayListCmd()
+    // if(index==2)
+  }
+  //
+  const GetPlayListCmd = async () => {
+    // const res = await getPlayListCmd(playlist.value.id,2)
+    // console.log(res)
+    // store.commit('setCommentInfo',res.data) 
+    // store.commit('setHotComment',res.data.comments.slice(0, 8))
+    // store.commit('setLastedComment',res.data.comments.slice(8, 29))
   }
   // 格式化音乐演唱歌手
   const SingersFormate = (row) => {
@@ -215,7 +271,8 @@
   const timeFormate = (row) => {
     return store.getters.timeFormate(row.dt / 1000)
   }
-  let { playlist, tracks, headerTabs, tabCurrent } = toRefs(data)
+  let { playlist, tracks, headerTabs, tabCurrent} =
+    toRefs(data)
 </script>
 <style lang="less" scoped>
   .header-wrapper {
@@ -346,4 +403,14 @@
       --el-input-focus-border-color: #3534344a;
     }
   }
+  // .el-table {
+  //   /deep/tbody tr:hover > td {
+  //     cursor: pointer;
+  //     background-color: red;
+  //   }
+  // }
+  .comment-wrapper {
+    padding: 10px;
+  }
+ 
 </style>

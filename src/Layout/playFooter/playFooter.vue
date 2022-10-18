@@ -34,15 +34,24 @@
       </ul>
       <div class="play-time">
         <span class="font-14">{{ currentTime }}</span>
-        <div class="time-process pointer" style="width: 460px" ref="fullTime">
+        <div
+          class="time-process pointer"
+          style="width: 460px"
+          ref="fullTime"
+          @click="clickProgress">
           <div
             class="time-through"
             style="width: 0%; left: 0%"
             ref="progress"></div>
+          <!-- <div
+            class="time-through-btn-border"
+            -->
           <div
             class="time-through-btn"
             @mousedown="handleMousedown"
             @mouseup="handleMouseup"></div>
+
+          <!-- </div> -->
         </div>
         <span class="font-14">{{ duration }}</span>
       </div>
@@ -131,18 +140,29 @@
   // 播放开始时时暂停获取总时间
   const getDuration = () => {
     duration.value = store.getters.timeFormate(audio.value.duration)
-    console.log(audio.value.duration)
   }
 
   // 更新时间
   const updateProgress = (per) => {
     audio.value.currentTime = per * audio.value.duration
   }
-
+  //点击更新时间
+  const clickProgress = (e) => {
+    // 点击时禁止鼠标在滑块时的默认行为
+    e.preventDefault && e.preventDefault()
+    const moveMin = progress.value.offsetParent.offsetLeft
+    let moved = Math.floor(
+      (100 * (e.pageX - moveMin)) / fullTime.value.offsetWidth
+    )
+    updateProgress(moved / 100)
+  }
   // 鼠标按下圆标按钮
-  const handleMousedown = () => {
+  const handleMousedown = (e) => {
+    // 拖拽时禁止鼠标在滑块时的默认行为
+    e.preventDefault && e.preventDefault()
+    if (!songUrl.value) return
     isMove.value = true
-    let moved
+    let moved = null
     // const moveMax =progress.value.offsetParent.offsetLeft + fullTime.value.offsetWidth
     // 进度条拖拽
     let move = (e) => {
@@ -160,13 +180,13 @@
     // 鼠标弹起
     const Mouseup = (moved) => {
       isMove.value = false
-      updateProgress(moved)
       document.removeEventListener('mousemove', move)
-      document.onselectstart = function () {
-        return true
-      }
+      // 按钮只按下没有移动
+      if (!moved) return
+      updateProgress(moved)
     }
     document.addEventListener('mousemove', move)
+
     // 拖拽完鼠标弹起事件
     document.addEventListener(
       'mouseup',
@@ -175,10 +195,6 @@
       },
       { once: true }
     )
-    // 拖拽禁用选择文本
-    document.onselectstart = function () {
-      return false
-    }
   }
 
   const debounce = (fun, delay = 500) => {
@@ -232,6 +248,9 @@
     justify-content: space-around;
     align-items: center;
   }
+  .is-disabled {
+    cursor: not-allowed;
+  }
   .play-time {
     display: flex;
     justify-content: center;
@@ -251,6 +270,10 @@
         border-bottom-left-radius: 3px;
         // position: absolute;
       }
+      // .time-through-btn-border{
+      //   width: 36px;
+      //   height: 36px;
+      // }
       .time-through-btn {
         border-radius: 50%;
         background-color: #ec4141;
@@ -263,7 +286,13 @@
       }
       .time-through-btn:hover {
         transform: scale(1.2);
+        cursor: grab;
       }
+      // -moz-user-select: none; /*火狐*/
+      //   -webkit-user-select: none;  /*webkit浏览器*/
+      //   -ms-user-select: none;   /*IE10*/
+      //   -khtml-user-select: none; /*早期浏览器*/
+      //   user-select: none;
     }
   }
 

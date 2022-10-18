@@ -1,6 +1,6 @@
 <template>
     <el-aside width="200px">
-        <el-menu default-active="2" router>
+        <el-menu default-active="/musicRmd" router>
           <el-menu-item-group title="logo"> </el-menu-item-group>
           <el-menu-item index="/musicRmd">
             <el-icon>

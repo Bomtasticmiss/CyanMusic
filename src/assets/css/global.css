@@ -7,7 +7,10 @@ body,
     /* background-color: rgb(219, 219, 219); */
 }
 
-p, ul, li {
+p,
+ul,
+li,
+textarea {
     margin: 0;
     padding: 0;
 }
@@ -20,6 +23,10 @@ p, ul, li {
     width: 100px;
 }
 
+.mleft-10 {
+    margin-left: 10px;
+}
+
 .mleft-12 {
     margin-left: 12px;
 }
@@ -28,12 +35,35 @@ p, ul, li {
     cursor: pointer;
 }
 
+.default {
+    cursor: default
+}
+
 .font-12 {
     font-size: 12px;
 }
 
 .font-14 {
     font-size: 14px;
+}
+
+.font-16 {
+    font-size: 16px;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.no-btn {
+    border: 0;
+    color: #676767;
+    background-color: white;
+    cursor: pointer;
+}
+
+.no-btn:hover {
+    color: black;
 }
 
 .btn {
@@ -50,10 +80,18 @@ p, ul, li {
     color: #fff;
 }
 
+.btn-red:hover {
+    background-color: rgb(193, 56, 56);
+}
+
 .btn-white {
     border: 1px solid #d8d8d8;
     background-color: #fff;
     color: #373737;
+}
+
+.btn-white:hover {
+    background-color: rgba(207, 207, 207, 0.3);
 }
 
 .text-hidden {
