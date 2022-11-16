@@ -1,37 +1,55 @@
 <template>
   <div class="footer">
+    <!-- footerPlayer左侧 -->
     <div class="left-util">
-      <img
-        v-if="songRowInfo.al"
-        class="song-img pointer"
-        :src="songRowInfo.al.picUrl"
-        alt="" />
-      <div class="song-info">
-        <div class="text-hidden font-14 w-150">{{ songRowInfo.name }}</div>
-        <div class="text-hidden font-12 w-100" v-if="SingersFormate">
-          {{ SingersFormate }}
+      <div v-if="playingSongInfo" class="left-util">
+        <div
+          class="songWrapper"
+          @mouseover="showTopIcon"
+          @mouseout="hiddeTopIcon"
+          @click="enterlyricPage">
+          <i
+            ref="topIcon"
+            class="fa fa-chevron-circle-up fa-lg topIcon pointer"
+            aria-hidden="true"
+            style="opacity: 0"></i>
+          <img
+            v-if="playingSongInfo.al"
+            class="song-img pointer"
+            :src="playingSongInfo.al.picUrl"
+            alt="" />
+        </div>
+        <div class="song-info">
+          <div class="text-hidden font-14 w-150">
+            <p class="pointer songInfo">{{ playingSongInfo.name }}</p>
+          </div>
+          <div class="text-hidden font-12 w-100" v-if="SingersFormate">
+            <p class="pointer songInfo">{{ SingersFormate }}</p>
+          </div>
         </div>
       </div>
     </div>
+    <!-- playfooter中间 -->
     <div class="center-util">
       <ul class="play-btn">
-        <li>
+        <li class="pointer">
           <i class="fa fa-random" aria-hidden="true"></i>
         </li>
-        <li>
+        <li @click="handlePlayPre" class="pointer">
           <i class="fa fa-step-backward" aria-hidden="true"></i>
         </li>
-        <li @click="handlePauseOrPlay">
+        <li @click="handlePauseOrPlay" class="pointer">
           <i class="fa fa-play" aria-hidden="true" v-show="!paused"></i>
           <i class="fa fa-pause" aria-hidden="true" v-show="paused"></i>
         </li>
-        <li>
+        <li @click="handlePlayNext" class="pointer">
           <i class="fa fa-step-forward" aria-hidden="true"></i>
         </li>
-        <li>
+        <li class="pointer">
           <i class="fa fa-heart-o" aria-hidden="true"></i>
         </li>
       </ul>
+      <!-- 进度条 -->
       <div class="play-time">
         <span class="font-14">{{ currentTime }}</span>
         <div
@@ -76,8 +94,14 @@
     computed,
     watch,
     nextTick,
+    createVNode,
+    render,
   } from 'vue'
   import { useStore } from 'vuex'
+
+  import lyricPage from '@/Layout/customeVue/lyricPage/main'
+  import useGetSong from '@/hooks/useGetSong'
+  import { getSong } from '@/Api/musicHomeList'
   const store = useStore()
   const audio = ref()
   const fullTime = ref()
@@ -85,21 +109,29 @@
   const data = reactive({
     // 进度条是否移动
     isMove: false,
-    SingersFormate: '',
     currentTime: '00:00',
     duration: '00:00',
   })
 
-  onMounted(() => {})
+  const { getSongUrl } = useGetSong()
 
+  const changeSongUrl=async()=>{
+    const url=await getSongUrl(playingSongInfo.value.id)
+    store.commit('setSongUrl',url)
+  }
+  // 歌曲链接
   const songUrl = computed(() => {
     return store.state.playSongUrl
   })
   // 一首歌曲信息
-  const songRowInfo = computed(() => {
-    return store.state.songRowInfo
+  const playingSongInfo = computed(() => {
+    return store.getters.playingSongInfo
   })
-
+  // 格式化歌手信息
+  const SingersFormate = computed(() => {
+    return store.getters.SingersFormate(playingSongInfo.value)
+  })
+  // const GetSong
   // 暂停，播放
   const paused = computed({
     get() {
@@ -110,11 +142,21 @@
     },
   })
 
+  // 播放上一首
+  const handlePlayPre = () => {
+    store.commit('HandlePlayPre')
+    changeSongUrl()
+  }
+  // 播放下一首
+  const handlePlayNext = () => {
+    store.commit('HandlePlayNext')
+    changeSongUrl()
+  }
+  //监听音乐连接变化
   watch(songUrl, () => {
     // console.log(newAudio)
-    // songRowInfo.value = store.state.songRowInfo
-    SingersFormate.value = store.getters.SingersFormate(songRowInfo.value)
-    console.log(songRowInfo.value)
+    // if (playingSongInfo.value) {
+    // }
     audio.value.load()
     audio.value.play()
   })
@@ -126,6 +168,10 @@
   }
   // 更新进度条
   const updatetime = () => {
+    // 播放完自动下一首
+    if(audio.value.currentTime===audio.value.duration){
+      handlePlayNext()
+    }
     // console.log(audio.value.currentTime)
     // console.log(audio.value.duration)
     currentTime.value = store.getters.timeFormate(audio.value.currentTime)
@@ -136,12 +182,12 @@
     nextTick(() => {
       progress.value.style.width = moveX + '%'
     })
+    
   }
   // 播放开始时时暂停获取总时间
   const getDuration = () => {
     duration.value = store.getters.timeFormate(audio.value.duration)
   }
-
   // 更新时间
   const updateProgress = (per) => {
     audio.value.currentTime = per * audio.value.duration
@@ -209,8 +255,31 @@
     }
   }
 
+  const topIcon = ref()
+
+  const showTopIcon = () => {
+    nextTick(() => {
+      topIcon.value.style.opacity = 1
+    })
+    // console.log(topIcon.value.style.opacity)
+  }
+
+  const hiddeTopIcon = () => {
+    nextTick(() => {
+      topIcon.value.style.opacity = 0
+    })
+  }
+
+  const enterlyricPage = () => {
+    // const div = document.createElement('div')
+    // // 添加类名
+    // div.setAttribute('class', 'lyricWrapper')
+    // // 添加到body上
+    // document.body.appendChild(div)
+    lyricPage()
+  }
   // const moveDebounce = debounce(move)
-  let { isMove, SingersFormate, currentTime, duration } = toRefs(data)
+  let { isMove, currentTime, duration } = toRefs(data)
 </script>
 
 <style lang="less" scoped>
@@ -224,13 +293,40 @@
     display: flex;
     align-items: center;
     width: 225px;
+    .songWrapper {
+      // width: fit-content;
+      margin: 0 10px;
+      z-index: 1000;
+      position: relative;
+      .topIcon {
+        color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        // opacity: 0;
+        transition: all 0.5s;
+      }
+      .topIcon:hover {
+        // opacity: 1;
+      }
+    }
+    .song-img {
+      // margin: 0 10px;
+      width: 50px;
+      height: 50px;
+      border-radius: 5px;
+      //background-color: #ec4141;
+    }
   }
-  .song-img {
-    margin: 0 10px;
-    width: 50px;
-    height: 50px;
-    border-radius: 5px;
-    //background-color: #ec4141;
+
+  .song-info {
+    .songInfo {
+      width: fit-content;
+    }
+    .songInfo:hover {
+      color: #ec4141;
+    }
   }
   .center-util {
     display: flex;

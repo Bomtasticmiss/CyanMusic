@@ -120,7 +120,8 @@
             stripe
             style="width: 100%"
             size="small"
-            @row-dblclick="GetSong">
+            @row-dblclick="GetSong"
+            :row-class-name="RowClassName">
             <el-table-column type="index" width="50px" class-name="default" />
             <el-table-column prop="date" width="35px" class-name="pointer">
               <template #default>
@@ -147,7 +148,11 @@
         </div>
         <!-- 评论区 -->
         <div class="comment-wrapper" v-if="tabCurrent === 1">
-        <commentWrapper :id='playlist.id'/>
+          <commentWrapper :id="playlist.id" />
+        </div>
+        <!-- 收藏者 -->
+        <div class="pd-10" v-if="tabCurrent === 2">
+          <subscribersWrappper :subscribers="playlist.subscribers" />
         </div>
       </div>
     </template>
@@ -155,12 +160,13 @@
 </template>
 
 <script setup>
-import commentWrapper from '@/Layout/comment/commentWrapper.vue'
+  import subscribersWrappper from '@/Layout/star/subscribersWrapper.vue'
+  import commentWrapper from '@/Layout/comment/commentWrapper.vue'
   import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
-  import { getRmdDetail, getSong, getPlayListCmd } from '@/Api/musicHomeList'
+  import { getRmdDetail, getPlayListCmd } from '@/Api/musicHomeList'
   import { useStore } from 'vuex'
   import { useRouter, useRoute } from 'vue-router'
-
+  import  useGetSong  from '@/hooks/useGetSong'
   const loading = ref(true)
 
   onMounted(() => {
@@ -183,7 +189,6 @@ import commentWrapper from '@/Layout/comment/commentWrapper.vue'
     tabCurrent: 0,
     // 按钮文本
     headerTabs: [{ text: '歌曲列表' }, { text: '评论' }, { text: '收藏者' }],
-   
   })
   // 歌单创建时时间
   const playlistCreateTime = computed(() => {
@@ -218,15 +223,27 @@ import commentWrapper from '@/Layout/comment/commentWrapper.vue'
     tracks.value = res.playlist.tracks
     headerTabs.value[1].text = '评论' + '(' + playlist.value.commentCount + ')'
     // console.log(playlist.value)
-    // console.log(tracks.value)
+    console.log(tracks.value)
+    store.commit('setPlaylists', res.playlist.tracks)
   }
-  // 获取音乐数据
-  const GetSong = async (row) => {
-    const res = await getSong(row.id)
-    console.log(res)
+  // 添加索引
+  const RowClassName = ({ row, rowIndex }) => {
+    row.index = rowIndex
+  }
 
-    store.commit('setSongRowUrl', [row, res.data[0].url])
+  const {getSongUrl} = useGetSong()
+  // 获取音乐数据
+  const GetSong = async(row) => {
+    const songUrl= await getSongUrl(row.id)
+    // console.log(songUrl)
+    store.commit('setPlayingSongIndex', row.index)
+    store.commit('setSongUrl',songUrl)
   }
+  // const GetSong = async (row) => {
+  //   const res = await getSong(row.id)
+  //   console.log(res)
+  //   store.commit('setSongRowUrl', [row, res.data[0].url])
+  // }
 
   /*歌单详情内容DOM*/
   const descontnent = ref()
@@ -258,7 +275,7 @@ import commentWrapper from '@/Layout/comment/commentWrapper.vue'
   const GetPlayListCmd = async () => {
     // const res = await getPlayListCmd(playlist.value.id,2)
     // console.log(res)
-    // store.commit('setCommentInfo',res.data) 
+    // store.commit('setCommentInfo',res.data)
     // store.commit('setHotComment',res.data.comments.slice(0, 8))
     // store.commit('setLastedComment',res.data.comments.slice(8, 29))
   }
@@ -271,8 +288,7 @@ import commentWrapper from '@/Layout/comment/commentWrapper.vue'
   const timeFormate = (row) => {
     return store.getters.timeFormate(row.dt / 1000)
   }
-  let { playlist, tracks, headerTabs, tabCurrent} =
-    toRefs(data)
+  let { playlist, tracks, headerTabs, tabCurrent } = toRefs(data)
 </script>
 <style lang="less" scoped>
   .header-wrapper {
@@ -412,5 +428,4 @@ import commentWrapper from '@/Layout/comment/commentWrapper.vue'
   .comment-wrapper {
     padding: 10px;
   }
- 
 </style>

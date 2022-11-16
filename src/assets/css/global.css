@@ -55,6 +55,9 @@ textarea {
     font-weight: 700;
 }
 
+.pd-10{
+    padding: 10px;
+}
 .no-btn {
     border: 0;
     color: #676767;

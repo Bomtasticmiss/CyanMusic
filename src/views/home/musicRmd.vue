@@ -33,6 +33,7 @@ const getMusicRmd = async () => {
   // store.commit("setPlayList", res.playlists);
   // cardPlaylists.value = store.state.playlists;
   cardPlaylists.value=res.playlists
+  console.log(res)
 };
 
 // 传入歌单Id获取详情页
