@@ -10,7 +10,7 @@ export default () => {
 
     const div = document.createElement('div')
 
-    div.setAttribute('class', 'lyricWrapper')
+    // div.setAttribute('class', 'lyricWrapper')
 
     document.body.appendChild(div)
 

@@ -1,5 +1,6 @@
 <template>
   <div class="footer">
+    <lyricPage  :currentTime="audioCurrentTime.toFixed(3)"/>
     <!-- footerPlayer左侧 -->
     <div class="left-util">
       <div v-if="playingSongInfo" class="left-util">
@@ -99,7 +100,7 @@
   } from 'vue'
   import { useStore } from 'vuex'
 
-  import lyricPage from '@/Layout/customeVue/lyricPage/main'
+  import lyricPage from './lyricPage.vue'
   import useGetSong from '@/hooks/useGetSong'
   import { getSong } from '@/Api/musicHomeList'
   const store = useStore()
@@ -109,12 +110,17 @@
   const data = reactive({
     // 进度条是否移动
     isMove: false,
+    audioCurrentTime:0,
+    // 当前时间
     currentTime: '00:00',
+    // 总时间
     duration: '00:00',
   })
 
   const { getSongUrl } = useGetSong()
-
+  // const audioCurrentTime=computed(()=>{
+  //   return audio.value.currentTime
+  // })
   const changeSongUrl=async()=>{
     const url=await getSongUrl(playingSongInfo.value.id)
     store.commit('setSongUrl',url)
@@ -174,6 +180,7 @@
     }
     // console.log(audio.value.currentTime)
     // console.log(audio.value.duration)
+    audioCurrentTime.value=audio.value.currentTime
     currentTime.value = store.getters.timeFormate(audio.value.currentTime)
     if (isMove.value || audio.value.paused) return
     const moveX = Math.trunc(
@@ -276,10 +283,12 @@
     // div.setAttribute('class', 'lyricWrapper')
     // // 添加到body上
     // document.body.appendChild(div)
-    lyricPage()
+    // lyricPage()
+    store.commit('changeLyricShow')
   }
+
   // const moveDebounce = debounce(move)
-  let { isMove, currentTime, duration } = toRefs(data)
+  let { isMove, currentTime, duration,audioCurrentTime } = toRefs(data)
 </script>
 
 <style lang="less" scoped>

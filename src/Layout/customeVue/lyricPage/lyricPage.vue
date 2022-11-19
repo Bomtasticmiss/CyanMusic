@@ -1,20 +1,42 @@
 <template>
-  <div class="lyric">歌词
-    <div class="lyricBack" @click="cnacel"><i class="fa fa-times" aria-hidden="true"></i></div>
+  <div class="lyricWrapper" v-if="lyricShow">
+  <div class="lyric" >
+    <div class="lyricBack pointer" @click="cnacel"><i class="fa fa-times" aria-hidden="true"></i></div>
+    <div>歌词</div>
   </div>
+</div>
 </template>
 
 <script setup>
-import {reactive,toRefs,createVNode,render} from 'vue'
+import {reactive,toRefs,ref,createVNode,render,onMounted,computed} from 'vue'
+import {getlyric} from '@/Api/musicHomeList'
+
+import { useStore } from 'vuex'
+const store=useStore()
+
+const lyricShow=ref(true)
 
 const cnacel=()=>{
-    // render(null,div)
-    // unMounted()
+    lyricShow.value=false
 }
+
+const playingSongInfo = computed(() => {
+    return store.getters.playingSongInfo
+  })
+
+const Getlyric=async()=>{
+  const res=await getlyric(playingSongInfo.value.id)
+  console.log(res)
+}
+onMounted(() => {
+  Getlyric()
+})
 </script>
-<style lang="less">
+<style lang="less" scoped>
 .lyricWrapper {
     position: fixed;
+    // position: absolute;
+    // right:0px;
     width: 100%;
     top: 0;
     height: 100%;
@@ -24,6 +46,10 @@ const cnacel=()=>{
         position: absolute;
         right: 110px;
         top: 20px;
+        transition: all .5s;
+    }
+    .lyricBack:hover{
+      transform:rotate(-90deg)
     }
     .lyric{
         margin: 160px auto;

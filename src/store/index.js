@@ -13,6 +13,8 @@ export default createStore({
     // SingersFormate: ''
     // 暂停状态(false暂停||true播放)
     paused: false,
+    // 歌词页面
+    lyricPage:false,
     // 评论信息
     commentInfo: [],
     //最热评论
@@ -53,8 +55,6 @@ export default createStore({
     playingSongInfo(state) {
       // if (state.playingSongIndex !== null) {
         return state.playlists[state.playingSongIndex]
-
-
       // }
     }
   },
@@ -93,7 +93,9 @@ export default createStore({
         state.playingSongIndex+=1;
       }
     },
-
+    changeLyricShow(state){
+      state.lyricPage=!state.lyricPage
+    }
   },
   actions: {
   },
