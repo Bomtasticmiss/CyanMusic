@@ -1,9 +1,10 @@
 <template>
+      <router-view></router-view>
+<!-- 
   <div class="full_container">
     <div class="border-container">
-      <router-view></router-view>
     </div>
-  </div>
+  </div> -->
 </template>
 <script setup></script>
 <style scoped lang="less">

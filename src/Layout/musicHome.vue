@@ -26,6 +26,10 @@ import {useRouter} from 'vue-router'
 const router = useRouter()
 </script>
 <style scoped lang="less">
+/deep/ .el-container {
+		// margin-bottom: 40px;
+		height: 100%;
+	}
 .el-header {
   // border-bottom: solid 1px;
   position: relative;

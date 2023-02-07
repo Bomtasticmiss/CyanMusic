@@ -1,7 +1,7 @@
 <template>
   <div class="footer">
-    <lyricPage  :currentTime="audioCurrentTime.toFixed(3)"/>
-    <!-- footerPlayer左侧 -->
+    <lyricPage v-if="playingSongInfo" :currentTime="audioCurrentTime.toFixed(3)" :songName="playingSongInfo.name"/>
+    <!-- playfooter左侧 -->
     <div class="left-util">
       <div v-if="playingSongInfo" class="left-util">
         <div
@@ -219,13 +219,14 @@
     // const moveMax =progress.value.offsetParent.offsetLeft + fullTime.value.offsetWidth
     // 进度条拖拽
     let move = (e) => {
+    // console.log(11)
+
       const moveMin = progress.value.offsetParent.offsetLeft
       moved = Math.floor(
         (100 * (e.pageX - moveMin)) / fullTime.value.offsetWidth
       )
       if (moved > 100) return
       if (moved < 0) return
-      console.log(1)
       nextTick(() => {
         progress.value.style.width = moved + '%'
       })
@@ -293,7 +294,7 @@
 
 <style lang="less" scoped>
   .footer {
-    height: 70px;
+    height: 100px;
     display: flex;
     justify-content: space-between;
     border-top: 1px solid #d8d8d8;
@@ -305,7 +306,7 @@
     .songWrapper {
       // width: fit-content;
       margin: 0 10px;
-      z-index: 1000;
+      // z-index: 1000;
       position: relative;
       .topIcon {
         color: white;
