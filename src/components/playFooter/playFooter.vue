@@ -1,6 +1,5 @@
 <template>
-  <div class="footer">
-    <lyricPage v-if="playingSongInfo" :currentTime="audioCurrentTime.toFixed(3)" :songName="playingSongInfo.name"/>
+  <div class="footer" >
     <!-- playfooter左侧 -->
     <div class="left-util">
       <div v-if="playingSongInfo" class="left-util">
@@ -40,8 +39,14 @@
           <i class="fa fa-step-backward" aria-hidden="true"></i>
         </li>
         <li @click="handlePauseOrPlay" class="pointer">
-          <i class="fa fa-play" aria-hidden="true" v-show="!paused"></i>
-          <i class="fa fa-pause" aria-hidden="true" v-show="paused"></i>
+          <i
+            class="fa fa-play-circle-o fa-lg"
+            aria-hidden="true"
+            v-show="!paused"></i>
+          <i
+            class="fa fa-pause-circle-o fa-lg"
+            aria-hidden="true"
+            v-show="paused"></i>
         </li>
         <li @click="handlePlayNext" class="pointer">
           <i class="fa fa-step-forward" aria-hidden="true"></i>
@@ -83,6 +88,36 @@
       </audio>
     </div>
     <div class="right-util"></div>
+
+
+    <el-drawer v-model="isShowlyricPage" direction="btt" size="100%" :before-close="handleClose">
+      <div class="lyricWrapper">
+        <div class="lyric-container">
+          <!-- <div class="lyricBack pointer" @click="cnacel">
+            <i class="fa fa-times fa-lg" aria-hidden="true"></i>
+          </div> -->
+          <div class="lyriCoverPage">
+            <div style="position: relative">
+              <div class="cover_bg"></div>
+              <div class="cover_bg_1"></div>
+              <div class="cover_bg_2"></div>
+              <div class="cover">
+                <img
+                  v-if="playingSongInfo"
+                  :src="playingSongInfo.al.picUrl"
+                  alt="" />
+                <div class="cover_center"></div>
+              </div>
+            </div>
+          </div>
+          <lyricPage
+            v-if="playingSongInfo"
+            :currentTime="audioCurrentTime.toFixed(3)"
+            :durationTime="audioDurationTime.toFixed(3)"
+            :songName="playingSongInfo.name" />
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -102,7 +137,7 @@
 
   import lyricPage from './lyricPage.vue'
   import useGetSong from '@/hooks/useGetSong'
-  import { getSong } from '@/Api/musicHomeList'
+  import { getSong } from '@/Api/api_musicHomeList'
   const store = useStore()
   const audio = ref()
   const fullTime = ref()
@@ -110,7 +145,8 @@
   const data = reactive({
     // 进度条是否移动
     isMove: false,
-    audioCurrentTime:0,
+    audioCurrentTime: 0,
+    audioDurationTime: 0,
     // 当前时间
     currentTime: '00:00',
     // 总时间
@@ -121,9 +157,9 @@
   // const audioCurrentTime=computed(()=>{
   //   return audio.value.currentTime
   // })
-  const changeSongUrl=async()=>{
-    const url=await getSongUrl(playingSongInfo.value.id)
-    store.commit('setSongUrl',url)
+  const changeSongUrl = async () => {
+    const url = await getSongUrl(playingSongInfo.value.id)
+    store.commit('setSongUrl', url)
   }
   // 歌曲链接
   const songUrl = computed(() => {
@@ -137,6 +173,11 @@
   const SingersFormate = computed(() => {
     return store.getters.SingersFormate(playingSongInfo.value)
   })
+
+  const isShowLyricPage = computed(() => {
+    return store.state.isShowLyricPage
+  })
+
   // const GetSong
   // 暂停，播放
   const paused = computed({
@@ -160,9 +201,6 @@
   }
   //监听音乐连接变化
   watch(songUrl, () => {
-    // console.log(newAudio)
-    // if (playingSongInfo.value) {
-    // }
     audio.value.load()
     audio.value.play()
   })
@@ -175,12 +213,12 @@
   // 更新进度条
   const updatetime = () => {
     // 播放完自动下一首
-    if(audio.value.currentTime===audio.value.duration){
+    if (audio.value.currentTime === audio.value.duration) {
       handlePlayNext()
     }
     // console.log(audio.value.currentTime)
     // console.log(audio.value.duration)
-    audioCurrentTime.value=audio.value.currentTime
+    audioCurrentTime.value = audio.value.currentTime
     currentTime.value = store.getters.timeFormate(audio.value.currentTime)
     if (isMove.value || audio.value.paused) return
     const moveX = Math.trunc(
@@ -189,10 +227,14 @@
     nextTick(() => {
       progress.value.style.width = moveX + '%'
     })
-    
   }
   // 播放开始时时暂停获取总时间
   const getDuration = () => {
+    // if(audio.value.duration){
+    //   console.log(audio.value.duration)
+    // audioDurationTime.value=audio.value.duration;
+    // }
+    // store.commit('setPlayDurationTime',audio.value.duration)
     duration.value = store.getters.timeFormate(audio.value.duration)
   }
   // 更新时间
@@ -208,8 +250,11 @@
       (100 * (e.pageX - moveMin)) / fullTime.value.offsetWidth
     )
     updateProgress(moved / 100)
+    if (!paused.value) {
+      handlePauseOrPlay()
+    }
   }
-  // 鼠标按下圆标按钮
+  // 鼠标按下圆标按钮.滑动进度条
   const handleMousedown = (e) => {
     // 拖拽时禁止鼠标在滑块时的默认行为
     e.preventDefault && e.preventDefault()
@@ -219,7 +264,7 @@
     // const moveMax =progress.value.offsetParent.offsetLeft + fullTime.value.offsetWidth
     // 进度条拖拽
     let move = (e) => {
-    // console.log(11)
+      // console.log(11)
 
       const moveMin = progress.value.offsetParent.offsetLeft
       moved = Math.floor(
@@ -231,6 +276,7 @@
         progress.value.style.width = moved + '%'
       })
     }
+    requestAnimationFrame(move)
     // 鼠标弹起
     const Mouseup = (moved) => {
       isMove.value = false
@@ -238,6 +284,9 @@
       // 按钮只按下没有移动
       if (!moved) return
       updateProgress(moved)
+      if (!paused.value) {
+        handlePauseOrPlay()
+      }
     }
     document.addEventListener('mousemove', move)
 
@@ -278,6 +327,7 @@
     })
   }
 
+  const isShowlyricPage = ref(false)
   const enterlyricPage = () => {
     // const div = document.createElement('div')
     // // 添加类名
@@ -285,11 +335,18 @@
     // // 添加到body上
     // document.body.appendChild(div)
     // lyricPage()
+    isShowlyricPage.value = !isShowlyricPage.value
     store.commit('changeLyricShow')
   }
 
+  const handleClose=()=>{
+    isShowlyricPage.value=false;
+  }
+
+
   // const moveDebounce = debounce(move)
-  let { isMove, currentTime, duration,audioCurrentTime } = toRefs(data)
+  let { isMove, currentTime, duration, audioCurrentTime, audioDurationTime } =
+    toRefs(data)
 </script>
 
 <style lang="less" scoped>
@@ -401,9 +458,133 @@
       //   user-select: none;
     }
   }
-
   .right-util {
     width: 200px;
     border: solid 1px;
+  }
+
+  .lyricWrapper {
+    // position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 86%;
+    // z-index: 1000;
+    // background-color: #e1e1e1;
+    .lyric-container {
+      position: relative;
+      display: flex;
+      height: 100%;
+      .lyricBack {
+        position: absolute;
+        right: 110px;
+        top: 20px;
+        transition: all 0.5s;
+        z-index: 1000;
+      }
+    }
+    .lyriCoverPage {
+      display: flex;
+      position: relative;
+      // border: 1px solid black;
+      // width: 200px;
+      // height: 700px;
+      flex-basis: 35%;
+      justify-content: end;
+      align-items: center;
+      .cover_bg {
+        width: 310px;
+        height: 310px;
+        position: absolute;
+        background-color: #d7d7d7ad;
+        // border: 1px solid black;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 42%;
+        animation: cover_rotate 10s linear infinite;
+      }
+      .cover_bg_1 {
+        width: 310px;
+        height: 310px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        position: absolute;
+        background-color: #c8c8c8ad;
+        // border: 1px solid black;
+        border-radius: 46%;
+        animation: cover_rotate 8s linear infinite;
+      }
+      .cover_bg_2 {
+        width: 310px;
+        height: 310px;
+        position: absolute;
+        background-color: #bdbdbdad;
+        // border: 1px solid black;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 49%;
+        animation: cover_rotate 6s linear infinite;
+      }
+      .cover {
+        position: relative;
+        border-radius: 50%;
+        overflow: hidden;
+        width: 300px;
+        height: 300px;
+        // margin: 50px;
+        // border: 2px black solid;
+        animation: cover_rotate1 20s linear infinite;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+        // .cover_center {
+        //   position: absolute;
+        //   transform: translate(-50%, -50%);
+        //   background-color: #e1e1e1;
+        //   top: 50%;
+        //   left: 50%;
+        //   width: 100px;
+        //   height: 100px;
+        //   border-radius: 50%;
+        //   border: 2px black solid;
+        // }
+      }
+      // .cover::after {
+      //   content: '';
+      //   position: absolute;
+      //   left: 9px;
+      //   top: 0;
+      //   width: 201px;
+      //   height: 180px;
+      //   background: url(../../assets/pic/album_cover_player.png)
+      //     0 0 no-repeat;
+      // }
+      @keyframes cover_rotate {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        50% {
+          transform: translate(-50%, -50%) rotate(180deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+      @keyframes cover_rotate1 {
+        0% {
+          transform: rotate(0deg);
+        }
+        50% {
+          transform: rotate(180deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    }
   }
 </style>

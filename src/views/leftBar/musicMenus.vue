@@ -1,8 +1,8 @@
 <template>
     <el-aside width="200px">
-        <el-menu default-active="/musicRmd" router>
+        <el-menu default-active="/homeRmd" router>
           <el-menu-item-group title="logo"> </el-menu-item-group>
-          <el-menu-item index="/musicRmd">
+          <el-menu-item index="/homeRmd">
             <el-icon>
               <i class="fa fa-th-large" aria-hidden="true"></i>
             </el-icon>
@@ -23,16 +23,16 @@
             <el-icon><setting /></el-icon>
             <span>电台</span>
           </el-menu-item>
-          <el-menu-item index="5">
+          <el-menu-item index="/dailyRmd">
             <el-icon
               ><i class="fa fa-align-left" aria-hidden="true"></i
             ></el-icon>
-            <span>歌单</span>
+            <span>每日推荐</span>
           </el-menu-item>
           <el-menu-item-group title="美化"> </el-menu-item-group>
-          <el-menu-item index="6">
+          <el-menu-item index="/recentPlay">
             <el-icon><i class="fa fa-magic" aria-hidden="true"></i></el-icon>
-            <span>歌单</span>
+            <span>最近播放</span>
           </el-menu-item>
           <el-menu-item-group title="收藏"> </el-menu-item-group>
         </el-menu>

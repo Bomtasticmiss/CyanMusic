@@ -10,11 +10,15 @@ export default createStore({
     // playingSongInfo: {},
     // 播放音乐的URL
     playSongUrl: '',
+    // 正在播放的音乐总时长
+    // playDurationTime: 0,
     // SingersFormate: ''
     // 暂停状态(false暂停||true播放)
     paused: false,
     // 歌词页面
-    lyricPage:false,
+    isShowLyricPage: false,
+    // 登录态
+    isLogin:window.sessionStorage.getItem('isLogin')==true?true:false,
     // 评论信息
     commentInfo: [],
     //最热评论
@@ -54,7 +58,7 @@ export default createStore({
     // 正在播放歌曲的信息
     playingSongInfo(state) {
       // if (state.playingSongIndex !== null) {
-        return state.playlists[state.playingSongIndex]
+      return state.playlists[state.playingSongIndex]
       // }
     }
   },
@@ -66,35 +70,38 @@ export default createStore({
       state.playingSongIndex = index
       state.paused = true
     },
-    setSongUrl(state,songUrl){
+    setSongUrl(state, songUrl) {
       state.playSongUrl = songUrl
     },
     setPaused(state, paused) {
       state.paused = paused
     },
+    // setPlayDurationTime(state, DurationTime) {
+    //   state.playDurationTime = DurationTime
+    // },
     setCommentInfo(state, CommentInfo) {
       state.commentInfo = CommentInfo
       state.hotComment = CommentInfo.comments.slice(0, 8)
       state.lastedComment = CommentInfo.comments.slice(8, 21)
     },
     // 播放上一首
-    HandlePlayPre(state){
-      if(state.playingSongIndex<0){
-        state.playingSongIndex=state.playlists.length-1;
-      }else{
-        state.playingSongIndex-=1;
+    HandlePlayPre(state) {
+      if (state.playingSongIndex < 0) {
+        state.playingSongIndex = state.playlists.length - 1;
+      } else {
+        state.playingSongIndex -= 1;
       }
     },
     // 播放下一首
-    HandlePlayNext(state){
-      if(state.playingSongIndex>state.playlists.length-1){
-        state.playingSongIndex=0;
-      }else{
-        state.playingSongIndex+=1;
+    HandlePlayNext(state) {
+      if (state.playingSongIndex > state.playlists.length - 1) {
+        state.playingSongIndex = 0;
+      } else {
+        state.playingSongIndex += 1;
       }
     },
-    changeLyricShow(state){
-      state.lyricPage=!state.lyricPage
+    changeLyricShow(state) {
+      state.isShowLyricPage = !state.isShowLyricPage
     }
   },
   actions: {

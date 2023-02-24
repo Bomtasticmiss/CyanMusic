@@ -1,7 +1,8 @@
 <template>
+  <div>
   <h3>热门推荐</h3>
   <div class="hot-songs">
-    <musicCardVue
+    <playlistCard
       v-for="list in cardPlaylists"
       :key="list.id"
       :imgsrc="list.coverImgUrl+'?param=200y200'"
@@ -11,11 +12,12 @@
       @click="transferPlayList(list.id)"
     />
   </div>
+</div>
 </template>
 
 <script setup>
-import musicCardVue from "./musicCard.vue";
-import { getHomeMusicRmd } from "@/Api/musicHomeList";
+import playlistCard from "./playlistCard.vue";
+import { getHomeMusicRmd } from "@/Api/api_musicHomeList";
 import { toRefs, reactive, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -38,7 +40,7 @@ const getMusicRmd = async () => {
 
 // 传入歌单Id获取详情页
 const transferPlayList = (id) => {
-  router.push({name:'musicRmdDetail',params:{id}});
+  router.push({name:'playlistcardDetail',params:{id}});
 };
 // 初始化推荐歌单页面
 onMounted(() => {

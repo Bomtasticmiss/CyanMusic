@@ -105,7 +105,7 @@
 <script setup>
   import { reactive, toRefs, computed, onMounted } from 'vue'
   import { useStore } from 'vuex'
-  import { getPlayListCmd } from '@/Api/musicHomeList'
+  import { getPlayListCmd } from '@/Api/api_musicHomeList'
   const store = useStore()
   const data = reactive({
     // totalCount:0,

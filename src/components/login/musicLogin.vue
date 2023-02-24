@@ -93,7 +93,7 @@ let { isLoginQr, isLoginPhoneNumber, isTitleName } =
   width: 400px;
   height: 500px;
   border-radius: 15px;
-  box-shadow: -5px 5px 12px 5px rgba(125, 194, 186, 0.66);
+  box-shadow: -5px 5px 12px 5px rgb(190 190 190 / 66%);
 }
 
 .el-main {
