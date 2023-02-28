@@ -1,9 +1,9 @@
 // 格式化数字
-const  useCountFormate = (count) => {
+const useCountFormate = (count) => {
     return count > 10000
-      ? Math.floor(count / 10000) + '万'
-      : count
-  }
+        ? count > 100000000 ? Math.floor(count / 100000000) + '亿' : Math.floor(count / 10000) + '万'
+        : count
+}
 // 格式化音乐演唱歌手
 const useSingersFormate =
     (row) => {
@@ -30,4 +30,4 @@ const useTimeFormate = (time) => {
     return zeroPad(minute) + ':' + zeroPad(seconds)
 }
 
-export {useCountFormate, useSingersFormate, useTimeFormate }
+export { useCountFormate, useSingersFormate, useTimeFormate }

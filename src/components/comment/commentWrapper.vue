@@ -60,8 +60,8 @@
       <div class="comment-avator pointer">
         <img
           v-if="comment.user.avatarUrl"
-          :src="comment.user.avatarUrl + '?param=200y200'"
-          alt=""
+          v-lazy="comment.user.avatarUrl + '?param=200y200'"
+          alt="头像"
           class="avator" />
       </div>
       <div class="content mleft-10">
@@ -105,7 +105,7 @@
 <script setup>
   import { reactive, toRefs, computed, onMounted } from 'vue'
   import { useStore } from 'vuex'
-  import { getPlayListCmd } from '@/Api/api_musicHomeList'
+  import { getPlayListCmd } from '@/Api/api_song'
   const store = useStore()
   const data = reactive({
     // totalCount:0,

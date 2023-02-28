@@ -1,5 +1,5 @@
 <template>
-  <div style="position: relative">
+  <div class="card-wrapper">
     <div
       class="card-border"
       ref="card"
@@ -11,7 +11,7 @@
         <i class="fa fa-play card-play" aria-hidden="true"></i>
         {{ props.playCount }}
       </div>
-      <div class="card-paly-btn" ref="btn">
+      <div class="card-paly-btn" :style="{ opacity: isShowBtn ? 1 : 0 }">
         <i class="fa fa-play-circle fa-2x" aria-hidden="true"></i>
       </div>
       <div class="card-title">{{ props.title }}</div>
@@ -21,35 +21,37 @@
 </template>
 
 <script setup>
-  import { ref, reactive, toRefs, nextTick } from 'vue'
-  const btn = ref()
+  import { ref, toRefs, computed } from 'vue'
   const props = defineProps(['imgsrc', 'title', 'playCount'])
 
+  const isShowBtn = ref(false)
+
   const showBtn = () => {
-    nextTick(() => {
-      btn.value.style.opacity = 1
-    })
+    isShowBtn.value = 1
   }
 
   const hiddenBtn = () => {
-    nextTick(() => {
-      btn.value.style.opacity = 0
-    })
+    isShowBtn.value = 0
   }
 </script>
 <style scoped>
+  .card-wrapper {
+    margin-bottom: 30px;
+    margin-right: 2%;
+    position: relative;
+  }
   .card-border {
     display: flex;
     flex-direction: column;
-    width: 150px;
+    width: 168px;
     overflow: hidden;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.5s;
   }
-  .card-border:hover {
-    transform: scale(1.05);
-  }
+  /* .card-border:hover {
+    transform: scale(1.01);
+  } */
   .card-img {
     width: 150px;
   }
@@ -72,10 +74,10 @@
   .card-paly-btn {
     position: absolute;
     color: white;
-    transition: all 0.5s;
+    transition: all 0.8s;
     opacity: 0;
     right: 10px;
-    bottom: 20px;
+    bottom: 30px;
   }
   .card-paly-btn:hover {
     transform: scale(1.2);

@@ -1,5 +1,5 @@
 <template>
-  <div class="footer" >
+  <div class="footer">
     <!-- playfooter左侧 -->
     <div class="left-util">
       <div v-if="playingSongInfo" class="left-util">
@@ -89,8 +89,11 @@
     </div>
     <div class="right-util"></div>
 
-
-    <el-drawer v-model="isShowlyricPage" direction="btt" size="100%" :before-close="handleClose">
+    <el-drawer
+      v-model="isShowlyricPage"
+      direction="btt"
+      size="100%"
+      :before-close="handleClose">
       <div class="lyricWrapper">
         <div class="lyric-container">
           <!-- <div class="lyricBack pointer" @click="cnacel">
@@ -134,10 +137,10 @@
     render,
   } from 'vue'
   import { useStore } from 'vuex'
-
   import lyricPage from './lyricPage.vue'
   import useGetSong from '@/hooks/useGetSong'
-  import { getSong } from '@/Api/api_musicHomeList'
+  import { useTimeFormate, useSingersFormate } from '@/hooks/useFormate'
+  import { getSong } from '@/Api/api_song'
   const store = useStore()
   const audio = ref()
   const fullTime = ref()
@@ -151,33 +154,51 @@
     currentTime: '00:00',
     // 总时间
     duration: '00:00',
+    // 歌曲链接
+    songUrl:null
   })
 
-  const { getSongUrl } = useGetSong()
-  // const audioCurrentTime=computed(()=>{
-  //   return audio.value.currentTime
-  // })
+  // const { getSongUrl } = useGetSong()
+
   const changeSongUrl = async () => {
     const url = await getSongUrl(playingSongInfo.value.id)
-    store.commit('setSongUrl', url)
+    // const url = await getSongUrl(currentSongId)
+    // console.log(store.state.currentSongId)
+    console.log(url)
+    // store.commit('setSongUrl', url)
+    songUrl.value = url
+  }
+// 获取音乐链接
+  const getSongUrl = async () => {
+    const res = await getSong(playingSongInfo.value.id)
+    if(res.code!==200)return 
+    if(!res.data[0].url)return ElMessage({ message: '资源获取失败', type: 'error' })
+    console.log(res)
+    songUrl.value = res.data[0].url
+    audio.value.load()
+    audio.value.play()
   }
   // 歌曲链接
-  const songUrl = computed(() => {
-    return store.state.playSongUrl
-  })
+  // const songUrl = computed(() => {
+  //   return store.state.playSongUrl
+  // })
   // 一首歌曲信息
   const playingSongInfo = computed(() => {
     return store.getters.playingSongInfo
   })
   // 格式化歌手信息
   const SingersFormate = computed(() => {
-    return store.getters.SingersFormate(playingSongInfo.value)
+    return useSingersFormate(playingSongInfo.value)
+    // return useSingersFormate(playingSongInfo.value)
   })
 
   const isShowLyricPage = computed(() => {
     return store.state.isShowLyricPage
   })
 
+  const currentSongId = computed(() => {
+    return store.state.currentSongId
+  })
   // const GetSong
   // 暂停，播放
   const paused = computed({
@@ -189,21 +210,41 @@
     },
   })
 
+  //监听音乐连接变化
+  // watch(
+  //   () => songUrl,
+  //   () => {
+  //     // if(data.songUrl==='')return
+  //     console.log(1111111111111)
+  //     audio.value.load()
+  //     audio.value.play()
+  //     console.log(11111)
+  //   }
+  // )
+
+  watch(currentSongId, () => {
+    if (currentSongId.value == 0) return
+    // changeSongUrl()
+    getSongUrl()
+    // audio.value.load()
+    // audio.value.play()
+  })
+
   // 播放上一首
   const handlePlayPre = () => {
     store.commit('HandlePlayPre')
-    changeSongUrl()
+    // changeSongUrl()
+    getSongUrl()
+
   }
   // 播放下一首
   const handlePlayNext = () => {
     store.commit('HandlePlayNext')
-    changeSongUrl()
+    // changeSongUrl()
+    getSongUrl()
+
   }
-  //监听音乐连接变化
-  watch(songUrl, () => {
-    audio.value.load()
-    audio.value.play()
-  })
+
   // 暂停，播放
   const handlePauseOrPlay = () => {
     if (!songUrl.value) return
@@ -219,7 +260,7 @@
     // console.log(audio.value.currentTime)
     // console.log(audio.value.duration)
     audioCurrentTime.value = audio.value.currentTime
-    currentTime.value = store.getters.timeFormate(audio.value.currentTime)
+    currentTime.value = useTimeFormate(audio.value.currentTime)
     if (isMove.value || audio.value.paused) return
     const moveX = Math.trunc(
       (100 * audio.value.currentTime) / audio.value.duration
@@ -235,7 +276,7 @@
     // audioDurationTime.value=audio.value.duration;
     // }
     // store.commit('setPlayDurationTime',audio.value.duration)
-    duration.value = store.getters.timeFormate(audio.value.duration)
+    duration.value = useTimeFormate(audio.value.duration)
   }
   // 更新时间
   const updateProgress = (per) => {
@@ -339,13 +380,12 @@
     store.commit('changeLyricShow')
   }
 
-  const handleClose=()=>{
-    isShowlyricPage.value=false;
+  const handleClose = () => {
+    isShowlyricPage.value = false
   }
 
-
   // const moveDebounce = debounce(move)
-  let { isMove, currentTime, duration, audioCurrentTime, audioDurationTime } =
+  let { isMove, currentTime, duration, audioCurrentTime, audioDurationTime,songUrl } =
     toRefs(data)
 </script>
 
@@ -410,6 +450,9 @@
     margin: 0 auto;
     justify-content: space-around;
     align-items: center;
+    li:hover {
+      color: #ec4141;
+    }
   }
   .is-disabled {
     cursor: not-allowed;
@@ -490,7 +533,7 @@
       // width: 200px;
       // height: 700px;
       flex-basis: 35%;
-      justify-content: end;
+      justify-content: flex-end;
       align-items: center;
       .cover_bg {
         width: 310px;

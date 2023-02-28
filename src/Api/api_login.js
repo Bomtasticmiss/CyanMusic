@@ -1,6 +1,16 @@
 import { get } from '@/request'
 
 
+
+export const phoneLogin = (phone,captcha) => get('/login/cellphone', { phone, captcha,timestamp: Date.now() })
+
+/* 发送验证码 */
+export const getCode = (phone) => get('/captcha/sent', { phone, timestamp: Date.now() })
+
+export const checkCode = (phone,captcha) => get('/captcha/verify', { phone,captcha, timestamp: Date.now() })
+
+
+
 // 获取二维码key 
 export const getQrKey = () => get('/login/qr/key', { timerstamp: Date.now() })
 

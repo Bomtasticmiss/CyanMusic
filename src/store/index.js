@@ -6,8 +6,8 @@ export default createStore({
     playlists: [],
     // 正在播放的音乐的索引
     playingSongIndex: null,
-    // 播放的歌曲信息
-    // playingSongInfo: {},
+    // 正在播放的音乐的Id
+    currentSongId:0,
     // 播放音乐的URL
     playSongUrl: '',
     // 正在播放的音乐总时长
@@ -27,34 +27,34 @@ export default createStore({
     lastedComment: [],
   },
   getters: {
-    // 格式化音乐演唱歌手
-    SingersFormate: () =>
-      (row) => {
-        // console.log(row);
-        return row.ar.length > 1
-          ? row.ar.reduce(
-            (total, item, index, self) =>
-              index === self.length - 1
-                ? total + item.name
-                : total + item.name + '/',
-            ''
-          )
-          : row.ar[0].name
-      },
-    // 格式化时间
-    timeFormate: () => (time) => {
-      // 补零
-      const zeroPad = (num) => {
-        if (num.toString().length < 2) num = `0${num}`
-        return num
-      }
-      const seconds = Math.floor(time % 60)
-      const minute = Math.floor(time / 60)
-      return zeroPad(minute) + ':' + zeroPad(seconds)
-    },
-    // currentSongInfo: () => () => {
-
+    // // 格式化音乐演唱歌手
+    // SingersFormate: () =>
+    //   (row) => {
+    //     // console.log(row);
+    //     return row.ar.length > 1
+    //       ? row.ar.reduce(
+    //         (total, item, index, self) =>
+    //           index === self.length - 1
+    //             ? total + item.name
+    //             : total + item.name + '/',
+    //         ''
+    //       )
+    //       : row.ar[0].name
+    //   },
+    // // 格式化时间
+    // timeFormate: () => (time) => {
+    //   // 补零
+    //   const zeroPad = (num) => {
+    //     if (num.toString().length < 2) num = `0${num}`
+    //     return num
+    //   }
+    //   const seconds = Math.floor(time % 60)
+    //   const minute = Math.floor(time / 60)
+    //   return zeroPad(minute) + ':' + zeroPad(seconds)
     // },
+    // // currentSongInfo: () => () => {
+
+    // // },
     // 正在播放歌曲的信息
     playingSongInfo(state) {
       // if (state.playingSongIndex !== null) {
@@ -70,8 +70,11 @@ export default createStore({
       state.playingSongIndex = index
       state.paused = true
     },
-    setSongUrl(state, songUrl) {
-      state.playSongUrl = songUrl
+    // setSongUrl(state, songUrl) {
+    //   state.playSongUrl = songUrl
+    // },
+    setCurrentSongId(state, songId) {
+      state.currentSongId = songId
     },
     setPaused(state, paused) {
       state.paused = paused

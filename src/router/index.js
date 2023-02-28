@@ -1,5 +1,27 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import layout from "@/views/layout.vue"
+
+
+/*首页及其他页*/
+const homePage = () => import('@/views/home/homePage.vue')
+
+const homeRmd = () => import('@/views/home/homePage/homeRmd.vue')
+const playList = () => import('@/views/home/homePage/playList.vue')
+const songRank = () => import('@/views/home/homePage/songRank.vue')
+const singers = () => import('@/views/home/homePage/singers.vue')
+const newSongRmd = () => import('@/views/home/homePage/newSongRmd.vue')
+
+/*左侧菜单页*/
+const playlistcardDetail = () => import('@/components/playList/playlistcardDetail.vue')
+const dailyRmd = () => import('@/views/dailyRmd/dailyRmd.vue')
+const recentPlay = () => import('@/views/recentPlay/recentPlay.vue')
+const songList = () => import('@/views/songList/songList.vue')
+
+
+/*登录*/
+const musicLogin = () => import('@/components/login/musicLogin.vue')
+
+
 const routes = [
   {
     path: '/',
@@ -8,39 +30,63 @@ const routes = [
     component: layout,
     children: [
       {
-        path: '/homeRmd',
-        name: 'homeRmd',
-        component: () => import('@/views/home/homeRmd.vue'),
-        children:[{
-          path:''
+        path: '/homePage',
+        name: 'homePage',
+        redirect: '/homeRmd',
+        component: homePage,
+        meta: { title: '首页' },
+        children: [{
+          path: '/homeRmd',
+          component: homeRmd,
+          meta: { title: '个性推荐' }
+        },
+        {
+          path: '/playList',
+          component: playList,
+          meta: { title: '分类歌单' }
+        },
+        {
+          path: '/songRank',
+          component: songRank,
+          meta: { title: '排行榜' }
+        },
+        {
+          path: '/singers',
+          component: singers,
+          meta: { title: '歌手' }
+        },
+        {
+          path: '/newSongRmd',
+          component: newSongRmd,
+          meta: { title: '新歌速递' }
         }]
       },
       {
         path: '/playlistcardDetail/:id',
         name: 'playlistcardDetail',
-        component: () => import('@/views/home/playlistcardDetail.vue')
+        component: playlistcardDetail
       },
       {
         path: '/dailyRmd',
         name: 'dailyRmd',
-        component: () => import('@/views/dailyRmd/dailyRmd.vue')
+        component: dailyRmd
       },
       {
         path: '/recentPlay',
         name: 'recentPlay',
-        component: () => import('@/views/recentPlay/recentPlay.vue')
+        component: recentPlay
       },
       {
         path: '/songList',
         name: 'songList',
-        component: () => import('@/views/songList/songList.vue')
+        component: songList
       }
     ]
   },
   {
     path: '/login',
     name: 'musicLogin',
-    component: () => import('@/components/login/musicLogin.vue')
+    component: musicLogin
   },
 
 ]

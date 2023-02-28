@@ -112,7 +112,8 @@
     const songUrl = await getSongUrl(row.id)
     // console.log(songUrl)
     store.commit('setPlayingSongIndex', row.index)
-    store.commit('setSongUrl', songUrl)
+    // store.commit('setSongUrl', songUrl)
+    store.commit('setCurrentSongId', row.id)
   }
 
   // 添加索引

@@ -33,7 +33,7 @@
     watch,
     nextTick,
   } from 'vue'
-  import { getlyric } from '@/Api/api_musicHomeList'
+  import { getlyric } from '@/Api/api_song'
 
   import { useStore } from 'vuex'
   const props = defineProps(['currentTime', 'songName', 'durationTime'])

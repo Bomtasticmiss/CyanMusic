@@ -7,7 +7,7 @@ body,
     /* background-color: rgb(219, 219, 219); */
 }
 
-#app{
+#app {
     display: flex;
     flex-direction: column;
 }
@@ -28,12 +28,26 @@ textarea {
     width: 100px;
 }
 
+
+
+.mtop-10 {
+    margin-top: 10px;
+}
+
+.mleft-5 {
+    margin-left: 5px;
+}
+
 .mleft-10 {
     margin-left: 10px;
 }
 
 .mleft-12 {
     margin-left: 12px;
+}
+
+.mleft-30 {
+    margin-left: 30px;
 }
 
 .pointer {
@@ -55,10 +69,12 @@ textarea {
 .font-16 {
     font-size: 16px;
 }
-.font-24{
+
+.font-24 {
     font-size: 24px;
 
 }
+
 .font-bold {
     font-weight: 700;
 }
@@ -66,7 +82,8 @@ textarea {
 .font-bold {
     font-weight: bold;
 }
-.pd-10{
+
+.pd-10 {
     padding: 10px;
 }
 
@@ -113,4 +130,8 @@ textarea {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.line {
+    border-bottom: 1px solid #e0e0e0;
 }

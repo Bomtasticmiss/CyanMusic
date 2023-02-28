@@ -1,45 +1,31 @@
 <template>
   <div>
-    <div>
-      <tabMenu :menuList="topMenus" pattern='router' />
-    </div>
-    <div>
+    <div class="top pointer" @click="handleGoto">
       <h3>热门推荐</h3>
-      <div class="hot-songs">
-        <playlistCard
-          v-for="list in cardPlaylists"
-          :key="list.id"
-          :imgsrc="list.coverImgUrl + '?param=200y200'"
-          :title="list.name"
-          :playCount="
-            list.playCount > 10000
-              ? Math.floor(list.playCount / 10000) + '万'
-              : list.playCount
-          "
-          class="card-song"
-          @click="transferPlayList(list.id)" />
-      </div>
+      <i class="fa fa-angle-right fa-2x mleft-5" aria-hidden="true"></i>
+    </div>
+    <div class="hot-songs">
+      <playlistCard
+        v-for="list in cardPlaylists"
+        :key="list.id"
+        :imgsrc="list.coverImgUrl + '?param=200y200'"
+        :title="list.name"
+        :playCount="useCountFormate(list.playCount)"
+        class="card-song"
+        @click="transferPlayList(list.id)" />
     </div>
   </div>
 </template>
 
 <script setup>
-  import playlistCard from './playlistCard.vue'
-  import tabMenu from '@/components/menus/tabMenu.vue'
-  import { getHomeMusicRmd } from '@/Api/api_musicHomeList'
+  import playlistCard from '@/components/card/playlistCard.vue'
+  import { getHomeMusicRmd } from '@/Api/api_playList'
+  import { useCountFormate } from '@/hooks/useFormate'
   import { toRefs, reactive, onMounted, ref } from 'vue'
   import { useStore } from 'vuex'
   import { useRouter } from 'vue-router'
   const store = useStore()
   const router = useRouter()
-
-  const topMenus = ref([
-    { title: '个性推荐', router: '/homeRmd' },
-    { title: '歌单', router: '/songMenus' },
-    { title: '排行榜', router: '/songRank' },
-    { title: '歌手', router: '/singers' },
-    { title: '新歌速递', router: '/newSongRmd' },
-  ])
 
   const data = reactive({
     cardPlaylists: [],
@@ -59,6 +45,10 @@
   const transferPlayList = (id) => {
     router.push({ name: 'playlistcardDetail', params: { id } })
   }
+
+  const handleGoto = () => {
+    router.push('/playList')
+  }
   // 初始化推荐歌单页面
   onMounted(() => {
     getMusicRmd()
@@ -67,6 +57,11 @@
   let { cardPlaylists } = toRefs(data)
 </script>
 <style scoped>
+  .top {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+  }
   .hot-songs {
     display: flex;
     flex-wrap: wrap;

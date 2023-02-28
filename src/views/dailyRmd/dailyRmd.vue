@@ -7,11 +7,17 @@
 
 <script setup>
   import { reactive, toRefs, onMounted } from 'vue'
-  import { getLoginStatus, getsubcount,getAcount ,getUserDetail} from '@/Api/api_user'
+  import {
+    getLoginStatus,
+    getsubcount,
+    getAcount,
+    getUserDetail,
+  } from '@/Api/api_user'
 
   onMounted(() => {
     GetLoginStatus()
-    Getsubcount()
+    // Getsubcount()
+    GetAcount()
   })
 
   const GetLoginStatus = async () => {
@@ -19,8 +25,13 @@
     console.log(res)
   }
 
-  const Getsubcount = async () => {
-    const res = await getsubcount()
+  // const Getsubcount = async () => {
+  //   const res = await getsubcount()
+  //   console.log(res)
+  // }
+
+  const GetAcount = async () => {
+    const res = await getAcount()
     console.log(res)
   }
 </script>

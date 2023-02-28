@@ -28,6 +28,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 //   attempt: 3
 // })
 
+
+
 app.use(store).use(router).use(lazyPlugin, {
     loading: require('./assets/img/loading.gif'), // 图片加载时默认图片
     error: require('./assets/img/error.jpg')// 图片加载失败时默认图片

@@ -9,7 +9,7 @@
 
 <script setup>
 import {reactive,toRefs,ref,createVNode,render,onMounted,computed} from 'vue'
-import {getlyric} from '@/Api/api_musicHomeList'
+import {getlyric} from '@/Api/api_song
 
 import { useStore } from 'vuex'
 const store=useStore()

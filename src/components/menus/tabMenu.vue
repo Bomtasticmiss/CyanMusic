@@ -26,8 +26,8 @@
 </template>
 
 <script setup>
-  import { reactive, toRefs, ref, computed } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { ref, computed, watch } from 'vue'
+  import { useRouter,useRoute } from 'vue-router'
   const props = defineProps({
     menuList: {
       type: Array,
@@ -39,19 +39,27 @@
     },
   })
 
-  const emits=defineEmits(['getMenuIndex'])
   const router = useRouter()
+  const route =useRoute()
+  const emits = defineEmits(['getMenuIndex'])
 
   const tabIndexMenu = ref(0)
 
   const handleChangePage_menu = (index) => {
     tabIndexMenu.value = index
-    emits('getMenuIndex',tabIndexMenu.value)
+    emits('getMenuIndex', tabIndexMenu.value)
   }
 
-  const tabIndexRouter = computed(() => {
-    return router.currentRoute._value.fullPath
-  })
+  const tabIndexRouter = ref('')
+  // 监听路由地址变化
+  watch(() => router.currentRoute.value.fullPath,(newPath)=>{
+    tabIndexRouter.value=newPath
+    console.log(newPath)
+  },{ immediate: true})
+  const handleChangePage = (routerPath) => {
+    router.push(routerPath)
+    console.log(router)
+  }
 </script>
 <style scoped lang="less">
   .isActive {
