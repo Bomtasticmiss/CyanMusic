@@ -95,7 +95,7 @@
           </div>
         </div>
         <div class="content-header">
-          <ul class="header-tab">
+          <!-- <ul class="header-tab">
             <li
               class="pointer"
               v-for="(Tabs, index) in headerTabs"
@@ -104,7 +104,8 @@
               @click="tabActive(index)">
               <span>{{ Tabs.text }}</span>
             </li>
-          </ul>
+          </ul> -->
+          <tabMenu :menuList="headerTabs" @getMenuIndex="tabActive" />
           <div class="song-search" v-show="tabCurrent === 0">
             <el-input placeholder="搜索音乐">
               <template #suffix>
@@ -114,7 +115,7 @@
           </div>
         </div>
         <!-- 音乐 -->
-        <div class="content-wrapper" v-if="tabCurrent === 0">
+        <div class="content-wrapper" v-if="tabCurrent == 0">
           <el-table
             :data="tracks"
             stripe
@@ -151,7 +152,7 @@
           <commentWrapper :id="playlist.id" />
         </div>
         <!-- 收藏者 -->
-        <div class="pd-10" v-if="tabCurrent == 2">
+        <div class="pd-10" v-if="tabCurrent== 2">
           <subscribersWrappper :subscribers="playlist.subscribers" />
         </div>
       </div>
@@ -162,6 +163,7 @@
 <script setup>
   import subscribersWrappper from '@/components/star/subscribersWrapper.vue'
   import commentWrapper from '@/components/comment/commentWrapper.vue'
+  import tabMenu from '@/components/menus/tabMenu.vue'
   import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
   import { getRmdDetail, getPlayListCmd } from '@/Api/api_musicHomeList'
   import { useStore } from 'vuex'
@@ -186,10 +188,9 @@
     playlist: {},
     // 音乐tracks
     tracks: [],
-    //按钮活动样式
-    tabCurrent: 0,
+    tabCurrent:0,
     // 按钮文本
-    headerTabs: [{ text: '歌曲列表' }, { text: '评论' }, { text: '收藏者' }],
+    headerTabs: [{ title: '歌曲列表' }, { title: '评论' }, { title: '收藏者' }],
   })
   // 歌单创建时时间
   const playlistCreateTime = computed(() => {
@@ -263,7 +264,7 @@
   // 活动添加样式按钮
   const tabActive = (index) => {
     tabCurrent.value = index
-    if (index == 1) GetPlayListCmd()
+    // if (index == 1) GetPlayListCmd()
     // if(index==2)
   }
 

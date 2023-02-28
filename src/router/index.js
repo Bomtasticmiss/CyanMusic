@@ -10,7 +10,10 @@ const routes = [
       {
         path: '/homeRmd',
         name: 'homeRmd',
-        component: () => import('@/views/home/homeRmd.vue')
+        component: () => import('@/views/home/homeRmd.vue'),
+        children:[{
+          path:''
+        }]
       },
       {
         path: '/playlistcardDetail/:id',
