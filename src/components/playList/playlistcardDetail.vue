@@ -125,8 +125,9 @@
               style="width: 100%"
               size="small"
               @row-dblclick="GetSong"
-              :row-class-name="RowClassName">
-              <el-table-column type="index" width="50px" class-name="default" />
+              :row-class-name="RowClassName"
+              empty-text="当前暂无音乐">
+              <el-table-column type="index"  width="50px" class-name="default" />
               <el-table-column prop="date" width="35px" class-name="pointer">
                 <template #default>
                   <i class="fa fa-heart-o" aria-hidden="true"></i>
@@ -156,7 +157,9 @@
           </div>
           <!-- 收藏者 -->
           <div class="pd-10" v-if="tabCurrent == 2">
-            <subscribersWrappper :subscribers="playlist.subscribers" />
+            <subscribersWrappper
+              :subscribers="playlist.subscribers"
+              @getUserId="enterUserDetail" />
           </div>
         </div>
       </template>
@@ -170,7 +173,7 @@
   import tabMenu from '@/components/menus/tabMenu.vue'
   import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
   import { getPlaylistDetail } from '@/Api/api_playList'
-  import { getPlayListCmd ,getSong} from '@/Api/api_song'
+  import { getPlayListCmd, getSong } from '@/Api/api_song'
   import { useStore } from 'vuex'
   import { useRouter, useRoute } from 'vue-router'
   import useGetSong from '@/hooks/useGetSong'
@@ -194,7 +197,7 @@
 
   const data = reactive({
     // 歌单详情
-    playlist: {}, 
+    playlist: {},
     // 音乐tracks
     tracks: [],
     // 文本活动按钮
@@ -235,7 +238,6 @@
     headerTabs.value[1].title = '评论' + '(' + playlist.value.commentCount + ')'
     // console.log(playlist.value)
     console.log(tracks.value)
-    store.commit('setPlaylists', res.playlist.tracks)
   }
   // 添加索引
   const RowClassName = ({ row, rowIndex }) => {
@@ -246,12 +248,14 @@
   // 获取音乐数据
   const GetSong = async (row) => {
     // const songUrl = await getSongUrl(row.id)
-    const res=await getSong(row.id)
-    if(!res.data[0].url) return ElMessage({ message: '音乐资源不存在', type: 'error' })
+    // const res=await getSong(row.id)
+    // if(res.code!==200)return
+    // if(!res.data[0].url) return ElMessage({ message: '音乐资源不存在', type: 'error' })
     // console.log(songUrl)
+    store.commit('setPlaylists', playlist.value.tracks)
     store.commit('setPlayingSongIndex', row.index)
-    // store.commit('setSongUrl', songUrl)
-    store.commit('setCurrentSongId', row.id)
+    // store.commit('setSongUrl', res.data[0].url)
+    store.commit('setCurrentSongId')
   }
 
   /*歌单详情内容DOM*/
@@ -277,18 +281,7 @@
   // 活动添加样式按钮
   const tabActive = (index) => {
     tabCurrent.value = index
-    // if (index == 1) GetPlayListCmd()
-    // if(index==2)
   }
-
-  const GetPlayListCmd = async () => {
-    // const res = await getPlayListCmd(playlist.value.id,2)
-    // console.log(res)
-    // store.commit('setCommentInfo',res.data)
-    // store.commit('setHotComment',res.data.comments.slice(0, 8))
-    // store.commit('setLastedComment',res.data.comments.slice(8, 29))
-  }
-
   // 格式化音乐演唱歌手
   const SingersFormate = (row) => {
     // console.log(row)
@@ -297,6 +290,10 @@
   // 格式化时间
   const timeFormate = (row) => {
     return useTimeFormate(row.dt / 1000)
+  }
+  // 跳转用户页面
+  const enterUserDetail = (id) => {
+    router.push({ name: 'userDetail', params: { id } })
   }
   let { playlist, tracks, headerTabs, tabCurrent } = toRefs(data)
 </script>

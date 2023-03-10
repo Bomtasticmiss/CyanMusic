@@ -1,5 +1,5 @@
 <template>
-  <div class="footer">
+  <div class="play-wrapper">
     <!-- playfooter左侧 -->
     <div class="left-util">
       <div v-if="playingSongInfo" class="left-util">
@@ -17,6 +17,11 @@
             v-if="playingSongInfo.al"
             class="song-img pointer"
             :src="playingSongInfo.al.picUrl"
+            alt="" />
+          <img
+            v-if="playingSongInfo.album"
+            class="song-img pointer"
+            :src="playingSongInfo.album.picUrl"
             alt="" />
         </div>
         <div class="song-info">
@@ -87,7 +92,66 @@
         <source v-if="songUrl" :src="songUrl" type="audio/mpeg" />
       </audio>
     </div>
-    <div class="right-util"></div>
+    <div class="right-util">
+      <div class="voice pointer">
+        <span class="iconfont icon-shengyin"></span>
+        <div class="voice-control-wrapper">
+          <input
+            ref="volume"
+            style="transform: rotate(270deg); background-size: 100% 100%"
+            id="volume"
+            type="range"
+            min="0"
+            max="100"
+            value="100"
+            @input="changeVolume" />
+          <!-- <div class="voice-control">
+            <div style="width: 3px; height: 50%" class="voice-througth"></div>
+            <div class="voice-btn"></div>
+          </div> -->
+        </div>
+      </div>
+      <div class="playlist pointer" @click="handleShowPlaylist">
+        <span class="iconfont icon-liebiao"></span>
+      </div>
+    </div>
+    <!-- 播放列表 -->
+    <el-drawer
+      v-model="isShowPlaylist"
+      direction="rtl"
+      size="30%"
+      :before-close="handlePlaylistClose">
+      <template #header>
+        <div class="font-14">播放列表总共{{ playlists.length }}首</div>
+        <div class="font-14" v-if="playingSongInfo">
+          当前正在播放{{ playingSongInfo.name }}
+        </div>
+        <div class="font-14" v-if="!playingSongInfo">
+          当前没有正在播放的歌曲
+        </div>
+      </template>
+      <el-table
+        :data="playlists"
+        stripe
+        style="width: 100%"
+        size="small"
+        @row-dblclick="GetSong"
+        :row-class-name="RowClassName"
+        empty-text="当前暂无正在播放的音乐">
+        <el-table-column type="index" width="50px" class-name="default" />
+        <el-table-column prop="name" label="音乐" class-name="default" />
+        <el-table-column
+          label="歌手"
+          :formatter="singersFormate"
+          show-overflow-tooltip
+          class-name="pointer" />
+        <el-table-column
+          label="时长"
+          width="100px"
+          :formatter="timeFormate"
+          class-name="default" />
+      </el-table>
+    </el-drawer>
 
     <el-drawer
       v-model="isShowlyricPage"
@@ -106,8 +170,12 @@
               <div class="cover_bg_2"></div>
               <div class="cover">
                 <img
-                  v-if="playingSongInfo"
+                  v-if="playingSongInfo.al"
                   :src="playingSongInfo.al.picUrl"
+                  alt="" />
+                <img
+                  v-if="playingSongInfo.album"
+                  :src="playingSongInfo.album.picUrl"
                   alt="" />
                 <div class="cover_center"></div>
               </div>
@@ -143,6 +211,7 @@
   import { getSong } from '@/Api/api_song'
   const store = useStore()
   const audio = ref()
+  const volume = ref()
   const fullTime = ref()
   const progress = ref()
   const data = reactive({
@@ -155,26 +224,40 @@
     // 总时间
     duration: '00:00',
     // 歌曲链接
-    songUrl:null
+    songUrl: null,
   })
 
+  const playlists = computed(() => {
+    return store.state.playlists
+  })
+  // const playingSongIndex=computed(()=>{
+  //   return store.state.playingSongIndex
+  // })
   // const { getSongUrl } = useGetSong()
 
   const changeSongUrl = async () => {
-    const url = await getSongUrl(playingSongInfo.value.id)
+    // const url = await getSongUrl(playingSongInfo.value.id)
     // const url = await getSongUrl(currentSongId)
     // console.log(store.state.currentSongId)
-    console.log(url)
+    // console.log(url)
     // store.commit('setSongUrl', url)
-    songUrl.value = url
+    // songUrl.value = songUrl.
   }
-// 获取音乐链接
+  // 获取音乐链接
   const getSongUrl = async () => {
     const res = await getSong(playingSongInfo.value.id)
-    if(res.code!==200)return 
-    if(!res.data[0].url)return ElMessage({ message: '资源获取失败', type: 'error' })
+    if (res.code !== 200) return
+    if (!res.data[0].url) {
+      ElMessage({ message: '资源获取失败', type: 'error' })
+      // songUrl.value = res.data[0].url
+      // audio.value.load()
+      // audio.value.play()
+      // updatetime()
+      return
+    }
     console.log(res)
     songUrl.value = res.data[0].url
+    // store.commit('setSongUrl', res.data[0].url)
     audio.value.load()
     audio.value.play()
   }
@@ -192,10 +275,6 @@
     // return useSingersFormate(playingSongInfo.value)
   })
 
-  const isShowLyricPage = computed(() => {
-    return store.state.isShowLyricPage
-  })
-
   const currentSongId = computed(() => {
     return store.state.currentSongId
   })
@@ -210,22 +289,17 @@
     },
   })
 
-  //监听音乐连接变化
-  // watch(
-  //   () => songUrl,
-  //   () => {
-  //     // if(data.songUrl==='')return
-  //     console.log(1111111111111)
-  //     audio.value.load()
-  //     audio.value.play()
-  //     console.log(11111)
-  //   }
-  // )
+  // 监听音乐连接变化
+  // watch(songUrl, () => {
+  //   audio.value.load()
+  //   audio.value.play()
+  // })
 
   watch(currentSongId, () => {
-    if (currentSongId.value == 0) return
+    // if (currentSongId.value == 0) return
     // changeSongUrl()
     getSongUrl()
+    console.log(1)
     // audio.value.load()
     // audio.value.play()
   })
@@ -234,15 +308,13 @@
   const handlePlayPre = () => {
     store.commit('HandlePlayPre')
     // changeSongUrl()
-    getSongUrl()
-
+    // getSongUrl()
   }
   // 播放下一首
   const handlePlayNext = () => {
     store.commit('HandlePlayNext')
     // changeSongUrl()
-    getSongUrl()
-
+    // getSongUrl()
   }
 
   // 暂停，播放
@@ -286,6 +358,7 @@
   const clickProgress = (e) => {
     // 点击时禁止鼠标在滑块时的默认行为
     e.preventDefault && e.preventDefault()
+    if (!songUrl.value) return
     const moveMin = progress.value.offsetParent.offsetLeft
     let moved = Math.floor(
       (100 * (e.pageX - moveMin)) / fullTime.value.offsetWidth
@@ -384,14 +457,58 @@
     isShowlyricPage.value = false
   }
 
+  const isShowPlaylist = ref(false)
+
+  const handleShowPlaylist = () => {
+    isShowPlaylist.value = !isShowPlaylist.value
+  }
+
+  const handlePlaylistClose = () => {
+    isShowPlaylist.value = false
+  }
+
+  // 格式化音乐演唱歌手
+  const singersFormate = (row) => {
+    // console.log(row)
+    return useSingersFormate(row)
+  }
+  // 格式化时间
+  const timeFormate = (row) => {
+    return useTimeFormate(row.dt / 1000)
+  }
+
+  // 添加索引
+  const RowClassName = ({ row, rowIndex }) => {
+    row.index = rowIndex
+  }
+
+  const changeVolume = () => {
+    if (!audio.value) return
+    // voice.value=volume.value.value
+    console.log(volume.value.value / 100)
+    // console.log(value)
+    audio.value.volume = volume.value.value / 100
+    // console.log(audio.value.volume)
+    console.log(volume.value.style.backgroundSize)
+    nextTick(() => {
+      volume.value.style.backgroundSize = `${volume.value.value}% 100%`
+    })
+  }
+
   // const moveDebounce = debounce(move)
-  let { isMove, currentTime, duration, audioCurrentTime, audioDurationTime,songUrl } =
-    toRefs(data)
+  let {
+    isMove,
+    currentTime,
+    duration,
+    audioCurrentTime,
+    audioDurationTime,
+    songUrl,
+  } = toRefs(data)
 </script>
 
 <style lang="less" scoped>
-  .footer {
-    height: 100px;
+  .play-wrapper {
+    height: 100%;
     display: flex;
     justify-content: space-between;
     border-top: 1px solid #d8d8d8;
@@ -503,7 +620,76 @@
   }
   .right-util {
     width: 200px;
-    border: solid 1px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 20px !important;
+    .voice {
+      position: relative;
+      .voice-control-wrapper {
+        position: absolute;
+        top: -200px;
+        height: 200px;
+        width: 30px;
+        background-color: #fffcfc;
+        border-radius: 3px;
+        left: -50%;
+        box-shadow: 0px 7px 20px 2px #d2d2d2;
+        transition: all 0.3s;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        // visibility: visible;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .voice-control {
+          background-color: #b7b7b7;
+          width: 3px;
+          height: 180px;
+          border-radius: 3px;
+          display: flex;
+          flex-direction: column-reverse;
+          align-items: center;
+          // margin: auto;
+          .voice-througth {
+            background-color: #ec4141;
+          }
+          .voice-btn {
+            background-color: #ec4141;
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            &:hover {
+              transform: scale(1.2);
+            }
+          }
+        }
+        input[type='range'] {
+          margin-top: 8px; /*上部分的填充值*/
+          outline: none;
+          -webkit-appearance: none; /*清除系统默认样式*/
+          // width: 100% !important;
+          background: -webkit-linear-gradient(#ec4141, #b03030) no-repeat, #ddd; /*背景颜色，俩个颜色分别对应上下，自己尝试下就知道了嗯*/
+          // background-size: 33% 100%; /*设置左右宽度比例*/
+          height: 3px; /*横条的高度，细的真的比较好看嗯*/
+        }
+        /*拖动块的样式*/
+        input[type='range']::-webkit-slider-thumb {
+          -webkit-appearance: none; /*清除系统默认样式*/
+          height: 14px; /*拖动块高度*/
+          width: 14px; /*拖动块宽度*/
+          background: #f8f9fa; /*拖动块背景*/
+          border-radius: 50%; /*外观设置为圆形*/
+          border: solid 1px #ddd; /*设置边框*/
+        }
+      }
+      &:hover .voice-control-wrapper {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
   }
 
   .lyricWrapper {

@@ -1,6 +1,5 @@
 <template>
-  <div style="    width: 90%;
-    margin: auto;">
+  <div>
     <div>
       <tabMenu :menuList="topMenus" pattern="router" />
     </div>

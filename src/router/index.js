@@ -8,7 +8,7 @@ const homePage = () => import('@/views/home/homePage.vue')
 const homeRmd = () => import('@/views/home/homePage/homeRmd.vue')
 const playList = () => import('@/views/home/homePage/playList.vue')
 const songRank = () => import('@/views/home/homePage/songRank.vue')
-const singers = () => import('@/views/home/homePage/singers.vue')
+const artistList = () => import('@/views/home/homePage/artistList.vue')
 const newSongRmd = () => import('@/views/home/homePage/newSongRmd.vue')
 
 /*左侧菜单页*/
@@ -19,8 +19,10 @@ const songList = () => import('@/views/songList/songList.vue')
 
 
 /*登录*/
-const musicLogin = () => import('@/components/login/musicLogin.vue')
+const musicLogin = () => import('@/views/login/musicLogin.vue')
 
+// 用户页面
+const userDetail=()=>import ('@/views/user/userDetail.vue')
 
 const routes = [
   {
@@ -52,7 +54,7 @@ const routes = [
         },
         {
           path: '/singers',
-          component: singers,
+          component: artistList,
           meta: { title: '歌手' }
         },
         {
@@ -64,7 +66,8 @@ const routes = [
       {
         path: '/playlistcardDetail/:id',
         name: 'playlistcardDetail',
-        component: playlistcardDetail
+        component: playlistcardDetail,
+        meta: { title: '歌单详情页' }
       },
       {
         path: '/dailyRmd',
@@ -80,6 +83,12 @@ const routes = [
         path: '/songList',
         name: 'songList',
         component: songList
+      },
+      {
+        path: '/userDetail/:id',
+        name: 'userDetail',
+        component: userDetail,
+        meta: { title: '用户详情页' }
       }
     ]
   },

@@ -20,6 +20,16 @@ textarea {
     padding: 0;
 }
 
+
+
+.pointer {
+    cursor: pointer;
+}
+
+.default {
+    cursor: default
+}
+
 .w-150 {
     width: 150px;
 }
@@ -29,9 +39,21 @@ textarea {
 }
 
 
+.mtop-5 {
+    margin-top: 5px;
+}
+
 
 .mtop-10 {
     margin-top: 10px;
+}
+
+.mtop-20 {
+    margin-top: 20px;
+}
+
+.mbtm-10 {
+    margin-bottom: 10px;
 }
 
 .mleft-5 {
@@ -46,17 +68,40 @@ textarea {
     margin-left: 12px;
 }
 
+.mleft-15 {
+    margin-left: 15px;
+}
+
+.mleft-20 {
+    margin-left: 30px;
+}
+
+
 .mleft-30 {
     margin-left: 30px;
 }
 
-.pointer {
-    cursor: pointer;
+
+.mright-5 {
+    margin-right: 5px;
 }
 
-.default {
-    cursor: default
+.mright-10 {
+    margin-right: 10px;
 }
+
+.mright-12 {
+    margin-right: 12px;
+}
+
+.mright-20 {
+    margin-right: 20px;
+}
+
+.mright-30 {
+    margin-right: 30px;
+}
+
 
 .font-12 {
     font-size: 12px;
@@ -70,12 +115,21 @@ textarea {
     font-size: 16px;
 }
 
-.font-24 {
-    font-size: 24px;
-
+.font-18 {
+    font-size: 18px;
 }
 
-.font-bold {
+.font-20 {
+    font-size: 20px;
+}
+
+.font-24 {
+    font-size: 24px;
+}
+
+
+
+.fontbd-700 {
     font-weight: 700;
 }
 
@@ -85,6 +139,10 @@ textarea {
 
 .pd-10 {
     padding: 10px;
+}
+
+.pd-5 {
+    padding: 5px;
 }
 
 .no-btn {
@@ -101,10 +159,11 @@ textarea {
 .btn {
     border: none;
     outline: none;
-    height: 30px;
+    height: 30px; 
     padding: 4px 14px;
     border-radius: 15px;
     cursor: pointer;
+    background-color: white;
 }
 
 .btn-red {
@@ -134,4 +193,8 @@ textarea {
 
 .line {
     border-bottom: 1px solid #e0e0e0;
+}
+
+.border-right{
+    border-right: 1px solid #e0e0e0;
 }

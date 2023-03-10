@@ -1,20 +1,16 @@
 <template>
   <div class="card-wrapper">
-    <div
-      class="card-border"
-      ref="card"
-      @mouseenter="showBtn"
-      @mouseleave="hiddenBtn">
-      <img v-lazy="props.imgsrc" alt="加载中" />
+    <div class="card-border" ref="card">
+      <img v-lazy="`${props.imgsrc}?param=200y200`" alt="加载中" />
       <!-- <img :src="props.imgsrc" alt="加载中" /> -->
       <div class="card-count">
         <i class="fa fa-play card-play" aria-hidden="true"></i>
         {{ props.playCount }}
       </div>
-      <div class="card-paly-btn" :style="{ opacity: isShowBtn ? 1 : 0 }">
+      <div class="card-paly-btn">
         <i class="fa fa-play-circle fa-2x" aria-hidden="true"></i>
       </div>
-      <div class="card-title">{{ props.title }}</div>
+      <div class="card-title text-hidden">{{ props.title }}</div>
     </div>
   </div>
   <!-- <el-Card/> -->
@@ -25,25 +21,19 @@
   const props = defineProps(['imgsrc', 'title', 'playCount'])
 
   const isShowBtn = ref(false)
-
-  const showBtn = () => {
-    isShowBtn.value = 1
-  }
-
-  const hiddenBtn = () => {
-    isShowBtn.value = 0
-  }
 </script>
 <style scoped>
   .card-wrapper {
     margin-bottom: 30px;
     margin-right: 2%;
+    width: 14%;
     position: relative;
+
   }
   .card-border {
     display: flex;
     flex-direction: column;
-    width: 168px;
+    /* width: 168px; */
     overflow: hidden;
     border-radius: 4px;
     cursor: pointer;
@@ -82,9 +72,13 @@
   .card-paly-btn:hover {
     transform: scale(1.2);
   }
+
+  .card-border:hover .card-paly-btn {
+    opacity: 1;
+  }
   .card-title {
     height: 20px;
-    width: 150px;
+    /* width: 150px; */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

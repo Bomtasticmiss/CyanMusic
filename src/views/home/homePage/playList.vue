@@ -21,7 +21,8 @@
       <div>
         <button class="btn cat-btn" @click="handleHiddenSquare">
           {{ CatListQueryInfo.cat }}
-          <i class="fa fa-angle-right" aria-hidden="true"></i>
+          <span class="iconfont icon-you"></span>
+          <!-- <i class="fa fa-angle-right" aria-hidden="true"></i> -->
         </button>
         <div
           class="hidden-square font-14"

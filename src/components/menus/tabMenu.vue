@@ -8,7 +8,7 @@
         class="pointer"
         :class="{ isActive: tabIndexMenu == index }"
         @click="handleChangePage_menu(index)">
-        {{ tab.title }}
+        {{ tab }}
       </li>
     </ul>
     <!-- 路由模式 -->
@@ -65,6 +65,7 @@
   .isActive {
     font-size: 20px;
     color: #ec4141;
+
   }
   .isActive::after {
     display: block;

@@ -21,11 +21,17 @@
     <el-col :span="10" class="user-area-container">
       <!-- <el-dropdown ref="dropdown1" trigger="contextmenu" placement="bottom-end"> -->
       <div class="full-user-area-container">
-        <el-avatar :size="30" alt="..." @click="userLogin">
+        <el-avatar
+          :size="30"
+          alt="..."
+          :src="profile.avatarUrl"
+          @click="userLogin">
           <el-icon><UserFilled /></el-icon
         ></el-avatar>
-        <!-- <el-button @click="showClick" text> 姓名 </el-button> -->
-        <button @click="getUserInfo">未登录</button>
+        <button @click="getUserInfo">
+          <span v-if="!isLogin">未登录</span
+          ><span v-if="isLogin">{{ profile.nickname }}</span>
+        </button>
       </div>
       <!-- <template #dropdown>
           <el-dropdown-menu class="drop-width-container">
@@ -44,7 +50,7 @@
 </template>
 
 <script setup>
-  import { reactive, toRefs } from 'vue'
+  import { reactive, toRefs, computed } from 'vue'
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useStore } from 'vuex'
@@ -71,11 +77,27 @@
     if (!store.state.isLogin) {
       return ElMessage({ message: '请登录账号', type: 'warning' })
     } else {
-      router.push()
+      router.push({
+        name: 'userDetail',
+        params: { id: store.state.account.id },
+      })
     }
   }
+  // 用户信息
+  const profile = computed(() => {
+    return store.state.profile
+  })
+
+  const isLogin = computed(() => {
+    return store.state.isLogin
+  })
 </script>
 <style lang="less" scoped>
+  .el-row {
+    align-items: center;
+    height: 100%;
+    padding: 0 20px;
+  }
   .el-input {
     --el-input-focus-border-color: #3534344a;
   }

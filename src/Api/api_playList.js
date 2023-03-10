@@ -23,6 +23,17 @@ export const getPlayListByCatlist=({order,cat,limit,offset})=>get('/top/playlist
 //获取所有榜单数据
 export const getToplist=()=>get('/toplist')
 
+// 新歌速递
+export const getTopSong = (type) => get('/top/song', { type })
+
+
+// 调用此接口 , 可获取新碟上架列表
+export const getTopAlbum = ({area, type}) => get('/top/album', { area, type })
+
+// 登录后调用此接口 ,可获取全部新碟
+export const getTopAlbumNew = ({area, type}) => get('/album/new',{area,type})
+
+
 
 
 

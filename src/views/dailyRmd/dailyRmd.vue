@@ -9,7 +9,7 @@
   import { reactive, toRefs, onMounted } from 'vue'
   import {
     getLoginStatus,
-    getsubcount,
+    getSubcount,
     getAcount,
     getUserDetail,
   } from '@/Api/api_user'
