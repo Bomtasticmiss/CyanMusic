@@ -1,5 +1,9 @@
 <template>
   <div class="comment-text-wrapper">
+    <div class="font-20 fontbd-700 mbtm-10">
+      评论
+      <span class="font-14">({{ totalCount }})</span>
+    </div>
     <textarea name="" id="" cols="30" rows="10" class="comment-text"></textarea>
   </div>
   <div class="send-wrapper">
@@ -92,7 +96,7 @@
     </div>
     <div class="line-bottom"></div>
   </div>
-  <div class="pagegination">
+  <div class="pagegination mtop-20">
     <el-pagination
       background
       layout="prev, pager, next"
@@ -103,12 +107,12 @@
 </template>
 
 <script setup>
-  import { reactive, toRefs, computed, onMounted } from 'vue'
+  import { reactive, toRefs, watch, onMounted } from 'vue'
   import { useStore } from 'vuex'
-  import { getPlayListCmd } from '@/Api/api_song'
+  import { getComment } from '@/Api/api_comment'
   const store = useStore()
   const data = reactive({
-    // totalCount:0,
+    totalCount: 0,
     // 最新评论时间
     cursor: null,
     // 热度评论信息
@@ -118,45 +122,53 @@
     // 最新评论
     lastedComment: [],
   })
-  const props = defineProps(['id'])
+  const props = defineProps({
+    id: {
+      type: [Number, String],
+      require: true,
+    },
+    //  0: 歌曲 1: mv 2: 歌单 3: 专辑 4: 电台节目 5: 视频 6: 动态 7: 电台
+    type: {
+      type: Number,
+      require: true,
+    },
+  })
 
-  //   const commentInfo = computed(() => {
-  //     return store.state.commentInfo
-  //   })
-  //   const hotComment = computed(() => {
-  //     return store.state.hotComment
-  //   })
-
-  //   const lastedComment = computed(() => {
-  //     return store.state.lastedComment
-  //   })
-  //   const GetPlayListCmd = async () => {
-  //     const res = await getPlayListCmd(playlist.value.id, 2)
-  //     console.log(res)
-  //   }
   onMounted(() => {
-    GetPlayListCmd()
+    GetlastCmd()
     getHotCmt()
   })
-// 获取最热评论
+  // 获取最热评论
   const getHotCmt = async () => {
-    const res = await getPlayListCmd(props.id, 2, commentInfo.value.cursor)
+    const res = await getComment(
+      props.id,
+      props.type,
+      2,
+      commentInfo.value.cursor
+    )
     console.log(res.data.comments)
     commentInfo.value = res.data
     hotComment.value = res.data.comments.slice(0, 8)
   }
-//   获取最新评论
-  const GetPlayListCmd = async (newPage) => {
-    const res = await getPlayListCmd(props.id, 3, cursor.value, newPage)
+  //   获取最新评论
+  const GetlastCmd = async (newPage) => {
+    const res = await getComment(props.id, props.type, 3, cursor.value, newPage)
     cursor.value = res.data.cursor
     lastedComment.value = res.data.comments
+    totalCount.value = res.data.totalCount
     console.log(res)
   }
+
+  watch(()=>props.id, () => {
+    GetlastCmd()
+    getHotCmt()
+  })
   //   换页
   const getNewPage = (newPage) => {
-    GetPlayListCmd(newPage)
+    GetlastCmd(newPage)
   }
-  let { cursor, commentInfo, hotComment, lastedComment } = toRefs(data)
+  let { cursor, commentInfo, hotComment, lastedComment, totalCount } =
+    toRefs(data)
 </script>
 <style lang="less" scoped>
   .comment-text-wrapper {
@@ -168,6 +180,8 @@
       resize: none;
       font-size: 14px;
       border-radius: 4px;
+      outline: none;
+      padding: 3px;
     }
   }
 
@@ -211,7 +225,7 @@
     width: 100%;
     border-top: 1px solid #e0e0e0;
   }
-  .pagegination{
+  .pagegination {
     display: flex;
     justify-content: center;
   }

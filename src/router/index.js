@@ -12,17 +12,22 @@ const artistList = () => import('@/views/home/homePage/artistList.vue')
 const newSongRmd = () => import('@/views/home/homePage/newSongRmd.vue')
 
 /*左侧菜单页*/
-const playlistcardDetail = () => import('@/components/playList/playlistcardDetail.vue')
+const playlistDetail = () => import('@/components/playList/playlistDetail.vue')
 const dailyRmd = () => import('@/views/dailyRmd/dailyRmd.vue')
 const recentPlay = () => import('@/views/recentPlay/recentPlay.vue')
 const songList = () => import('@/views/songList/songList.vue')
 
 
+/*视频页*/
+const videoHomePage = () => import('@/views/video/videoHomePage.vue')
+const videoHome=()=>import('@/views/video/videoPage/videoHome.vue')
+const videoDetial=()=>import ('@/views/video/videoPage/videoDetial.vue')
+
 /*登录*/
 const musicLogin = () => import('@/views/login/musicLogin.vue')
 
 // 用户页面
-const userDetail=()=>import ('@/views/user/userDetail.vue')
+const userDetail = () => import('@/views/user/userDetail.vue')
 
 const routes = [
   {
@@ -64,9 +69,9 @@ const routes = [
         }]
       },
       {
-        path: '/playlistcardDetail/:id',
-        name: 'playlistcardDetail',
-        component: playlistcardDetail,
+        path: '/playlistDetail/:id',
+        name: 'playlistDetail',
+        component: playlistDetail,
         meta: { title: '歌单详情页' }
       },
       {
@@ -89,6 +94,27 @@ const routes = [
         name: 'userDetail',
         component: userDetail,
         meta: { title: '用户详情页' }
+      },
+      {
+        path: '/videoHomePage',
+        name: 'videoHomePage',
+        component:videoHomePage,
+        redirect:'/videoHome',
+        meta: { title: '视频' },
+        children:[
+          {
+            path: '/videoHome',
+            name: 'videoHome',
+            component: videoHome,
+            meta: { title: '视频主页' },
+          }
+        ]
+      },
+      {
+        path: '/videoDetial/:vid',
+        name: 'videoDetial',
+        component:videoDetial,
+        meta: { title: '视频内容页' },
       }
     ]
   },

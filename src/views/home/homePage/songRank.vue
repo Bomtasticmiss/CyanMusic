@@ -122,7 +122,7 @@
 
   // 传入歌单Id获取详情页
   const transferPlayList = (id) => {
-    router.push({ name: 'playlistcardDetail', params: { id } })
+    router.push({ name: 'playlistDetail', params: { id } })
   }
 </script>
 <style scoped lang="less">

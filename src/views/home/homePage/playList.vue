@@ -20,8 +20,8 @@
     <div class="catList-wrapper">
       <div>
         <button class="btn cat-btn" @click="handleHiddenSquare">
-          {{ CatListQueryInfo.cat }}
-          <span class="iconfont icon-you"></span>
+          <span>{{ CatListQueryInfo.cat }}</span>
+          <span class="iconfont icon-right1"></span>
           <!-- <i class="fa fa-angle-right" aria-hidden="true"></i> -->
         </button>
         <div
@@ -163,7 +163,7 @@
 
   // 传入歌单Id获取详情页
   const transferPlayList = (id) => {
-    router.push({ name: 'playlistcardDetail', params: { id } })
+    router.push({ name: 'playlistDetail', params: { id } })
   }
 </script>
 <style scoped lang="less">
@@ -224,6 +224,8 @@
       padding: 0 20px;
       background-color: white;
       border: 1px solid #d8d8d8;
+    //   display: flex;
+    // align-items: center;
     }
     .cat-btn:hover {
       background-color: #e0e0e0;

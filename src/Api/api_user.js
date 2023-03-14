@@ -16,6 +16,9 @@ export const getUserDetail = (uid) => get('/user/detail', { uid, timestamp: Date
 // 获取用户歌单
 export const getUserPlaylist = ({uid,limit,offset}) => get('/user/playlist', { uid, limit,offset,timestamp: Date.now() })
 
+
+// 获取用户粉丝
 export const getUserFolloweds = ({uid,limit,offset}) => get('/user/followeds', { uid, limit,offset,timestamp: Date.now() })
+
 
 

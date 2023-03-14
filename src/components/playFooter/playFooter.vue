@@ -187,6 +187,9 @@
             :durationTime="audioDurationTime.toFixed(3)"
             :songName="playingSongInfo.name" />
         </div>
+        <div style="margin: 20px 300px">
+          <Comment :id="playingSongInfo.id" :type="0" />
+        </div>
       </div>
     </el-drawer>
   </div>
@@ -209,6 +212,7 @@
   import useGetSong from '@/hooks/useGetSong'
   import { useTimeFormate, useSingersFormate } from '@/hooks/useFormate'
   import { getSong } from '@/Api/api_song'
+  import Comment from '../comment/Comment.vue'
   const store = useStore()
   const audio = ref()
   const volume = ref()

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mtop-20">
     <!-- 骨架 -->
     <el-skeleton :loading="loading" animated>
       <template #template>
@@ -16,6 +16,7 @@
       </template>
       <template #default>
         <div class="detail-wrapper">
+          <!-- 头部区域 -->
           <div class="header-wrapper">
             <div class="detail-img">
               <!-- <img :src="playlistImg" alt="加载中" /> -->
@@ -45,12 +46,15 @@
                   <span class="mleft-12 font-12">{{ playlistCreateTime }}</span>
                 </div>
               </div>
+              <!-- 头部按钮 -->
               <div class="creator-btn-ul">
-                <button class="btn btn-red">
+                <button class="btn btn-red" @click="playAllPlayList">
                   <i class="fa fa-play" aria-hidden="true"></i>
                   <span>播放全部</span>
                 </button>
-                <button class="btn mleft-12 btn-white">
+                <button
+                  class="btn mleft-12 btn-white"
+                  @click="handleUserCollect">
                   <i class="fa fa-star-o" aria-hidden="true"></i>
                   <span>收藏({{ subscribedCount }})</span>
                 </button>
@@ -63,6 +67,7 @@
                   <span>加载完整歌单</span>
                 </button>
               </div>
+              <!-- 歌单描述 -->
               <div class="creator-tags font-14">
                 <span>标签 :</span>
                 <span
@@ -97,6 +102,7 @@
               </div>
             </div>
           </div>
+          <!-- 菜单区 -->
           <div class="content-header">
             <ul class="header-tab">
               <li
@@ -117,7 +123,7 @@
               </el-input>
             </div>
           </div>
-          <!-- 音乐 -->
+          <!-- 音乐区 -->
           <div class="content-wrapper" v-if="tabCurrent == 0">
             <el-table
               :data="tracks"
@@ -127,10 +133,20 @@
               @row-dblclick="GetSong"
               :row-class-name="RowClassName"
               empty-text="当前暂无音乐">
-              <el-table-column type="index"  width="50px" class-name="default" />
-              <el-table-column prop="date" width="35px" class-name="pointer">
-                <template #default>
-                  <i class="fa fa-heart-o" aria-hidden="true"></i>
+              <el-table-column type="index" width="50px" class-name="default">
+                <template #default="scope">
+                  <span
+                    v-if="showPlaying(scope.row.index)"
+                    class="iconfont icon-shengyin-kai"
+                    style="color: red"></span>
+                </template>
+              </el-table-column>
+              <el-table-column  width="35px" class-name="pointer">
+                <template #default="scope">
+                  <i
+                    class="fa fa-heart-o"
+                    aria-hidden="true"
+                    @click="SetLike(scope.row)"></i>
                 </template>
               </el-table-column>
               <el-table-column prop="name" label="音乐" class-name="default" />
@@ -153,7 +169,7 @@
           </div>
           <!-- 评论区 -->
           <div class="comment-wrapper" v-if="tabCurrent == 1">
-            <commentWrapper :id="playlist.id" />
+            <Comment :id="playlist.id" :type="2" />
           </div>
           <!-- 收藏者 -->
           <div class="pd-10" v-if="tabCurrent == 2">
@@ -169,11 +185,11 @@
 
 <script setup>
   import subscribersWrappper from '@/components/star/subscribersWrapper.vue'
-  import commentWrapper from '@/components/comment/commentWrapper.vue'
+  import Comment from '@/components/comment/Comment.vue'
   import tabMenu from '@/components/menus/tabMenu.vue'
   import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
   import { getPlaylistDetail } from '@/Api/api_playList'
-  import { getPlayListCmd, getSong } from '@/Api/api_song'
+  import { getPlayListCmd, getSong, setLike } from '@/Api/api_song'
   import { useStore } from 'vuex'
   import { useRouter, useRoute } from 'vue-router'
   import useGetSong from '@/hooks/useGetSong'
@@ -258,6 +274,14 @@
     store.commit('setCurrentSongId')
   }
 
+  // 正在播放图标
+  const showPlaying = (index) => {
+    // console.log(index)
+    return playingIndex.value == index
+  }
+  const playingIndex = computed(() => {
+    return store.state.playingSongIndex
+  })
   /*歌单详情内容DOM*/
   const descontnent = ref()
   const caretdown = ref()
@@ -278,10 +302,27 @@
       caretdown.value.style.display = 'block'
     })
   }
+  // 播放全部
+  const playAllPlayList = () => {
+    store.commit('setPlaylists', playlist.value.tracks)
+    store.commit('setPlayingSongIndex', 0)
+    // store.commit('setSongUrl', res.data[0].url)
+    store.commit('setCurrentSongId')
+  }
+  // 收藏
+  const handleUserCollect = () => {
+    if (!store.state.isLogin)
+      return ElMessage({ message: '请先登录', type: 'wran' })
+  }
+
+  const SetLike = async (row) => {
+    const res = await setLike({ id: row.id })
+    console.log(res)
+  }
   // 活动添加样式按钮
   const tabActive = (index) => {
     tabCurrent.value = index
-  }
+  } 
   // 格式化音乐演唱歌手
   const SingersFormate = (row) => {
     // console.log(row)

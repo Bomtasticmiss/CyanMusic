@@ -131,7 +131,7 @@
   }
 
   const enterSongDetail = (id) => {
-    router.push({ name: 'playlistcardDetail', params: { id } })
+    router.push({ name: 'playlistDetail', params: { id } })
   }
 </script>
 <style scoped lang="less">

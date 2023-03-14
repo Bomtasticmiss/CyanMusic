@@ -8,7 +8,7 @@ const useCountFormate = (count) => {
 const useSingersFormate =
     (row) => {
         // console.log(row);
-        let ar=row.ar||row.artists
+        let ar = row.ar || row.artists
         return ar.length > 1
             ? ar.reduce(
                 (total, item, index, self) =>
@@ -19,7 +19,7 @@ const useSingersFormate =
             )
             : ar[0].name
     }
-// 格式化时间
+// 格式化音乐时间
 const useTimeFormate = (time) => {
     // 补零
     const zeroPad = (num) => {
@@ -31,4 +31,16 @@ const useTimeFormate = (time) => {
     return zeroPad(minute) + ':' + zeroPad(seconds)
 }
 
-export { useCountFormate, useSingersFormate, useTimeFormate }
+
+// 格式化日期
+const useDateFormate = (date) => {
+    const t = new Date(date)
+    let y = t.getFullYear()
+    let m = t.getMonth() + 1
+    let d = t.getDate()
+    m=m < 10 ? '0' + m : m
+    d=d < 10 ? '0' + d : d
+    return y + '-' + m + '-' + d
+}
+
+export { useCountFormate, useSingersFormate, useTimeFormate, useDateFormate }

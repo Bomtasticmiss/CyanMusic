@@ -1,6 +1,6 @@
 <template>
   <div class="card-wrapper">
-    <div class="card-border" ref="card">
+    <div class="card-border">
       <img v-lazy="`${props.imgsrc}?param=200y200`" alt="加载中" />
       <!-- <img :src="props.imgsrc" alt="加载中" /> -->
       <div class="card-count">
@@ -17,10 +17,9 @@
 </template>
 
 <script setup>
-  import { ref, toRefs, computed } from 'vue'
+  import { ref} from 'vue'
   const props = defineProps(['imgsrc', 'title', 'playCount'])
 
-  const isShowBtn = ref(false)
 </script>
 <style scoped>
   .card-wrapper {

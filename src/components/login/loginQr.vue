@@ -4,15 +4,19 @@
       <a>打开网易云手机app扫码登录</a>
       <img :src="scrQr" alt="" class="login_qr_img" />
     </div>
-    <div class="login_status">状态:<span class="font-16" style="color: #a83939;">{{ message }}</span></div>
+    <div class="login_status">
+      状态:<span class="font-16" style="color: #a83939">{{ message }}</span>
+    </div>
   </div>
 </template>
 
 <script setup>
   import { reactive, toRefs, onMounted, onBeforeUnmount } from 'vue'
   import { useRouter } from 'vue-router'
+  import { useStore } from 'vuex'
   import { getQrKey, crateQr, reQrStatus } from '@/Api/api_login'
 
+  const store = useStore()
   const router = useRouter()
 
   const data = reactive({
@@ -51,6 +55,7 @@
     if (res.code === 803) {
       // localStorage.setItem('cookie', res.cookie)
       router.push('/')
+      store.dispatch('GetAcount')
       return ElMessage({ message: '登录成功', type: 'success' })
     }
     window.timer = setTimeout(() => {

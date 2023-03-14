@@ -24,37 +24,11 @@ const state = {
   account: {},
   // 用户信息
   profile: {},
+  //  喜欢的音乐列表 
+  likeIdList: [],
 }
 
 const getters = {
-  // // 格式化音乐演唱歌手
-  // SingersFormate: () =>
-  //   (row) => {
-  //     // console.log(row);
-  //     return row.ar.length > 1
-  //       ? row.ar.reduce(
-  //         (total, item, index, self) =>
-  //           index === self.length - 1
-  //             ? total + item.name
-  //             : total + item.name + '/',
-  //         ''
-  //       )
-  //       : row.ar[0].name
-  //   },
-  // // 格式化时间
-  // timeFormate: () => (time) => {
-  //   // 补零
-  //   const zeroPad = (num) => {
-  //     if (num.toString().length < 2) num = `0${num}`
-  //     return num
-  //   }
-  //   const seconds = Math.floor(time % 60)
-  //   const minute = Math.floor(time / 60)
-  //   return zeroPad(minute) + ':' + zeroPad(seconds)
-  // },
-  // // currentSongInfo: () => () => {
-
-  // // },
   // 正在播放歌曲的信息
   playingSongInfo(state) {
     // if (state.playingSongIndex !== null) {

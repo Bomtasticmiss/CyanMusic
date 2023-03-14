@@ -22,7 +22,7 @@
 
   <!-- <KeepAlive> -->
   <!-- </KeepAlive> -->
-  
+
   <div class="layout-wrapper">
     <div class="header">
       <headerBar />
@@ -34,7 +34,7 @@
       <div class="center-main">
         <div style="width: 90%; margin: auto">
           <transition name="el-fade-in">
-            <router-view></router-view>
+            <router-view :key="route.fullPath"></router-view>
           </transition>
         </div>
       </div>
@@ -49,8 +49,8 @@
   import musicMenus from '@/views/leftBar/musicMenus.vue'
   import playFooter from '../components/playFooter/playFooter.vue'
 
-  import { useRouter } from 'vue-router'
-
+  import { useRouter, useRoute } from 'vue-router'
+  const route = useRoute()
   const router = useRouter()
 </script>
 <style scoped lang="less">
@@ -73,12 +73,14 @@
     // left: 0;
     width: 100%;
     height: 8%;
+    background-color: #ec4141;
   }
   .main {
     // position: absolute;
     display: flex;
     height: 80%;
     .aside {
+      overflow: auto;
       // width: 20%;
     }
     .center-main {
@@ -91,8 +93,6 @@
     height: 11%;
   }
 
-
-  
   .el-header {
     // border-bottom: solid 1px;
     position: relative;
@@ -137,27 +137,5 @@
   .el-main {
     overflow: auto;
     height: 550px;
-  }
-
-  .center-main::-webkit-scrollbar {
-    /*滚动条整体样式*/
-    width: 5px; /*高宽分别对应横竖滚动条的尺寸*/
-    height: 5px;
-    scrollbar-arrow-color: red;
-  }
-
-  .center-main::-webkit-scrollbar-thumb {
-    /*滚动条里面小方块*/
-    border-radius: 5px;
-    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    background: rgba(0, 0, 0, 0.2);
-    scrollbar-arrow-color: red;
-  }
-
-  .center-main::-webkit-scrollbar-track {
-    /*滚动条里面轨道*/
-    -webkit-box-shadow: inset 0 0 5px rgba(238, 210, 210, 0.3);
-    border-radius: 5px;
-    background: rgba(221, 197, 197, 0);
   }
 </style>

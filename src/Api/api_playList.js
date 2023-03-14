@@ -33,6 +33,10 @@ export const getTopAlbum = ({area, type}) => get('/top/album', { area, type })
 // 登录后调用此接口 ,可获取全部新碟
 export const getTopAlbumNew = ({area, type}) => get('/album/new',{area,type})
 
+// 收藏歌单,t:类型,1:收藏,2:取消收藏
+export const setUserSubscribe = ({t,id}) => get('/playlist/subscribe', {t,id,timestamp: Date.now() })
+
+
 
 
 
