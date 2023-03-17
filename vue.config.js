@@ -6,6 +6,7 @@ const Components = require('unplugin-vue-components/webpack')
 // const IconsResolver = require('unplugin-icons/resolver')
 const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 module.exports = defineConfig({
+  publicPath: './',
   transpileDependencies: true,
   lintOnSave: false,
   // webpack配置
