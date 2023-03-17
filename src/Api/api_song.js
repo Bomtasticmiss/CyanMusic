@@ -13,6 +13,6 @@ export const getlyric = (id) => get('/lyric', { id })
 export const getRecentPlaySong = () => get('/record/recent/song', { limit: 100 })
 
 // 喜欢音乐
-export const setLike = ({id,like}) => get('/like', { id ,like})
+export const setLike = (id,like) => get('/like', { id ,like})
 
 

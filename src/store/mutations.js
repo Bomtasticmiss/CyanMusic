@@ -3,7 +3,7 @@
 export default {
     setPlaylists(state, value) {
         state.playlists = value
-    }, 
+    },
     setPlayingSongIndex(state, index) {
         state.playingSongIndex = index
         state.paused = true
@@ -29,6 +29,20 @@ export default {
         if (state.isLogin) {
             window.sessionStorage.setItem('isLogin', true)
         }
+    },
+    setLikeIdList(state, list){
+        if(list.type=='get'){
+            state.likeIdList=list.data
+        }
+         if(list.type=='unshift'){
+            state.likeIdList.unshift(list.id)
+        }
+        if(list.type=='delete'){
+            state.likeIdList.splice(state.likeIdList.indexOf(list.id),1)
+        }
+    },
+    setUserPlaylist(state, playlist) {
+        state.UserPlaylist = playlist
     },
     // setPlayDurationTime(state, DurationTime) {
     //   state.playDurationTime = DurationTime

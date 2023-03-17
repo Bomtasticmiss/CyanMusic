@@ -21,7 +21,7 @@
   const props = defineProps(['imgsrc', 'title', 'playCount'])
 
 </script>
-<style scoped>
+<style scoped lang="less">
   .card-wrapper {
     margin-bottom: 30px;
     margin-right: 2%;
@@ -82,5 +82,13 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     transform: translate3d(0, 0, 0);
+  }
+
+  @media screen and(max-width:415px) {
+    .card-wrapper {
+    margin-bottom: 30px;
+    margin-right: 2%;
+    width: 31% ;
+  }
   }
 </style>

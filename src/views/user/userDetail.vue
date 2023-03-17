@@ -98,7 +98,7 @@
   const userLists = ref([])
 
   const GetUserPlaylistl = async () => {
-    const res = await getUserPlaylist(userQuery)
+    const res = await getUserPlaylist(userQuery.uid)
     if (res.code !== 200) return
     console.log(res)
     userLists.value = Object.freeze(res.playlist)

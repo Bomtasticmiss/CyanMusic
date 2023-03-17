@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-col :span="4">
+    <el-col :span="4" class="theme">
       <el-button size="small" circle />
       <el-button size="small" circle />
       <el-button size="small" circle
@@ -15,16 +15,16 @@
           class="pointer">
           <i class="fa fa-angle-left fa-2x"></i>
         </span>
-        <span text circle @click="globalGo" style="width: 30px" class="pointer">
+        <span
+          text
+          circle
+          @click="globalGo"
+          style="width: 30px"
+          class="pointer globalGo">
           <i class="fa fa-angle-right fa-2x"></i>
         </span></div
     ></el-col>
-    <el-col :span="7">
-      <!-- <el-input size="large" placeholder="search">
-        <template #prefix>
-          <i class="fa fa-search" aria-hidden="true"></i>
-        </template> </el-input
-    > -->
+    <el-col :span="10">
       <!-- 搜索框 -->
       <div class="search-wrapper">
         <input
@@ -66,7 +66,7 @@
         </transition>
       </div>
     </el-col>
-    <el-col :span="10" class="user-area-container">
+    <el-col :span="7" class="user-area-container">
       <!-- <el-dropdown ref="dropdown1" trigger="contextmenu" placement="bottom-end"> -->
       <div class="full-user-area-container">
         <el-avatar
@@ -76,11 +76,8 @@
           @click="userLogin">
           <el-icon><UserFilled /></el-icon
         ></el-avatar>
-        <div
-          @click="getUserInfo"
-          class="font-12 pointer text-hidden"
-          style="width: 100px; color: white">
-          <div class="mleft-5">
+        <div @click="getUserInfo" class="font-12 pointer  username">
+          <div class="mleft-5 text-hidden"  >
             <span v-if="!isLogin">未登录</span
             ><span v-if="isLogin">{{ profile.nickname }}</span>
           </div>
@@ -127,7 +124,7 @@
 
   // 热搜列表
   const searchHotList = ref([])
-
+  // 获取热搜列表
   const GetSearchHot = async () => {
     const res = await getSearchHotDetail()
     console.log(res)
@@ -169,7 +166,8 @@
   .el-row {
     align-items: center;
     height: 100%;
-    padding: 0 20px;
+    padding: 0 10px;
+    justify-content: space-between;
   }
 
   .search-wrapper {
@@ -177,7 +175,7 @@
     .search {
       border-radius: 15px;
       height: 35px;
-      width: 200px;
+      // width: 200px;
       background-color: #e13e3e;
       border: none;
       outline: none;
@@ -221,6 +219,11 @@
       }
     }
   }
+
+  .username {
+    width: 100px;
+    color: white;
+  }
   /deep/ .el-input__wrapper {
     background-color: #e13e3e !important;
   }
@@ -247,5 +250,23 @@
   .drop-width-container {
     padding: 10px;
     width: 170px;
+  }
+  @media screen and(max-width:768px) {
+    .theme {
+      display: none;
+    }
+    .globalGo {
+      display: none;
+    }
+    .search {
+      width: 100px;
+    }
+    .search-container{
+      width: 250px !important;
+    }
+    .username {
+      width: 4rem;
+      // color: white;
+    }
   }
 </style>

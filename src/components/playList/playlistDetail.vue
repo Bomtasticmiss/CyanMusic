@@ -50,21 +50,21 @@
               <div class="creator-btn-ul">
                 <button class="btn btn-red" @click="playAllPlayList">
                   <i class="fa fa-play" aria-hidden="true"></i>
-                  <span>播放全部</span>
+                  <span class="btn-text"> 播放全部</span>
                 </button>
                 <button
                   class="btn mleft-12 btn-white"
                   @click="handleUserCollect">
                   <i class="fa fa-star-o" aria-hidden="true"></i>
-                  <span>收藏({{ subscribedCount }})</span>
+                  <span class="btn-text">收藏({{ subscribedCount }})</span>
                 </button>
                 <button class="btn mleft-12 btn-white">
                   <i class="fa fa-share-square-o" aria-hidden="true"></i>
-                  <span>分享({{ shareCount }})</span>
+                  <span class="btn-text">分享({{ shareCount }})</span>
                 </button>
                 <button class="btn mleft-12 btn-red">
                   <i class="fa fa-spinner" aria-hidden="true"></i>
-                  <span>加载完整歌单</span>
+                  <span class="btn-text">加载完整歌单</span>
                 </button>
               </div>
               <!-- 歌单描述 -->
@@ -141,15 +141,29 @@
                     style="color: red"></span>
                 </template>
               </el-table-column>
-              <el-table-column  width="35px" class-name="pointer">
+              <el-table-column width="35px" class-name="pointer">
                 <template #default="scope">
-                  <i
+                  <span
+                    class="iconfont icon-xihuan"
+                    @click="SetLike(scope.row)"
+                    v-if="!isLike(scope.row)"></span>
+
+                  <span
+                    class="iconfont icon-xihuan2"
+                    style="color: red"
+                    @click="CancelLike(scope.row)"
+                    v-if="isLike(scope.row)"></span>
+                  <!-- <i
                     class="fa fa-heart-o"
                     aria-hidden="true"
-                    @click="SetLike(scope.row)"></i>
+                    ></i> -->
                 </template>
               </el-table-column>
-              <el-table-column prop="name" label="音乐" class-name="default" />
+              <el-table-column
+                prop="name"
+                label="音乐"
+                class-name="default"
+                show-overflow-tooltip />
               <el-table-column
                 label="歌手"
                 :formatter="SingersFormate"
@@ -189,7 +203,7 @@
   import tabMenu from '@/components/menus/tabMenu.vue'
   import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
   import { getPlaylistDetail } from '@/Api/api_playList'
-  import { getPlayListCmd, getSong, setLike } from '@/Api/api_song'
+  import { getSong, setLike } from '@/Api/api_song'
   import { useStore } from 'vuex'
   import { useRouter, useRoute } from 'vue-router'
   import useGetSong from '@/hooks/useGetSong'
@@ -309,20 +323,31 @@
     // store.commit('setSongUrl', res.data[0].url)
     store.commit('setCurrentSongId')
   }
+
+  const isLike = (row) => {
+    return store.state.likeIdList.indexOf(row.id) != -1
+  }
   // 收藏
   const handleUserCollect = () => {
     if (!store.state.isLogin)
       return ElMessage({ message: '请先登录', type: 'wran' })
   }
-
+  // 喜欢歌曲
   const SetLike = async (row) => {
-    const res = await setLike({ id: row.id })
-    console.log(res)
+    if (!store.state.isLogin)
+      return ElMessage({ message: '请先登录', type: 'wran' })
+    store.dispatch('SetLike', { type: 'unshift', id: row.id })
+  }
+  // 取消喜欢歌曲
+  const CancelLike = async (row) => {
+    if (!store.state.isLogin)
+      return ElMessage({ message: '请先登录', type: 'wran' })
+    store.dispatch('SetLike', { type: 'delete', id: row.id })
   }
   // 活动添加样式按钮
   const tabActive = (index) => {
     tabCurrent.value = index
-  } 
+  }
   // 格式化音乐演唱歌手
   const SingersFormate = (row) => {
     // console.log(row)
@@ -476,5 +501,14 @@
   // }
   .comment-wrapper {
     padding: 10px;
+  }
+
+  @media screen and(max-width:768px) {
+    .btn-text {
+      display: none;
+    }
+    .song-search {
+      display: none;
+    }
   }
 </style>

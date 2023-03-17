@@ -63,7 +63,8 @@
 </script>
 <style scoped lang="less">
   .isActive {
-    font-size: 20px;
+    font-size: 18px;
+    font-weight: bold;
     color: #ec4141;
 
   }
@@ -83,5 +84,13 @@
     li {
       margin: 10px;
     }
+  }
+
+
+  @media screen and(max-width:768px) {
+    .isActive {
+    font-size: 16px;
+
+  }
   }
 </style>

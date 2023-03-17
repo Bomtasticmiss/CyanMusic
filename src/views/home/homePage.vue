@@ -15,7 +15,7 @@
 
   const topMenus = ref([
     { title: '个性推荐', router: '/homeRmd' },
-    { title: '分类歌单', router: '/playList' },
+    { title: '歌单', router: '/playList' },
     { title: '排行榜', router: '/songRank' },
     { title: '歌手', router: '/singers' },
     { title: '新歌速递', router: '/newSongRmd' },

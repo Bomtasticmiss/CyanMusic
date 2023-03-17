@@ -14,7 +14,10 @@ export const getSubcount = () => get('/user/subcount', { timerstamp: Date.now() 
 export const getUserDetail = (uid) => get('/user/detail', { uid, timestamp: Date.now() })
 
 // 获取用户歌单
-export const getUserPlaylist = ({uid,limit,offset}) => get('/user/playlist', { uid, limit,offset,timestamp: Date.now() })
+export const getUserPlaylist = (uid,limit,offset) => get('/user/playlist', { uid, limit,offset,timestamp: Date.now() })
+
+// 获取用户已喜欢音乐 id 列表
+export const getUserLikelist = (uid) => get('/likelist', { uid })
 
 
 // 获取用户粉丝

@@ -31,7 +31,7 @@
       <div class="aside">
         <musicMenus />
       </div>
-      <div class="center-main">
+      <div class="center-main" ref="centerMain">
         <div style="width: 90%; margin: auto">
           <transition name="el-fade-in">
             <router-view :key="route.fullPath"></router-view>
@@ -48,10 +48,21 @@
   import headerBar from '@/views/headerBar/headerBar.vue'
   import musicMenus from '@/views/leftBar/musicMenus.vue'
   import playFooter from '../components/playFooter/playFooter.vue'
-
+  import { watch, ref } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   const route = useRoute()
   const router = useRouter()
+
+  const centerMain = ref()
+  // 监听路由变化，重置滚动条
+  watch(
+    () => route.path,
+    () => {
+      // console.log(route.path)
+      centerMain.value.scrollTo(0, 0)
+      // console.log(centerMain.value)
+    }
+  )
 </script>
 <style scoped lang="less">
   /deep/ .el-container {
@@ -82,6 +93,8 @@
     .aside {
       overflow: auto;
       // width: 20%;
+      // position: relative;
+      transition: all 0.4s;
     }
     .center-main {
       overflow: auto;
@@ -90,7 +103,8 @@
   }
   .footer {
     // position: absolute;
-    height: 11%;
+    // height: 11%;
+    flex-grow: 1;
   }
 
   .el-header {
@@ -125,17 +139,21 @@
     height: 36px;
   }
 
-  // :root{
-  //   --el-fill-color-light:white;
-  // }
-  // .btn-changeTheme {
-  //   .el-button {
-  //     padding: 10px;
-  //   }
-  // }
-
   .el-main {
     overflow: auto;
     height: 550px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .aside {
+      position: absolute !important;
+      left: -200px;
+      z-index: 2000;
+    }
+  }
+  @media screen and (min-width: 769px) {
+    .aside {
+      left: 0 !important;
+    }
   }
 </style>

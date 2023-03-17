@@ -3,19 +3,14 @@
 
 </template>
 <script setup>
-  import lyricPageVue from '@/components/playFooter/lyricPage.vue'
-  import { computed ,onMounted} from 'vue'
+  import {  onMounted,watch} from 'vue'
   import { useStore } from 'vuex'
-
   const store = useStore()
 
-  const lyricPage = computed(() => {
-    return !store.state.lyricPage
-  })
-  
   onMounted(()=>{
     store.dispatch('GetAcount')
   })
+
 </script>
 <style scoped lang="less">
 

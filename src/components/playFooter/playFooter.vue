@@ -26,7 +26,9 @@
         </div>
         <div class="song-info">
           <div class="text-hidden font-14 w-150">
-            <p class="pointer songInfo">{{ playingSongInfo.name }}</p>
+            <p class="pointer songInfo">
+              {{ playingSongInfo.name || '未知歌曲' }}
+            </p>
           </div>
           <div class="text-hidden font-12 w-100" v-if="SingersFormate">
             <p class="pointer songInfo">{{ SingersFormate }}</p>
@@ -139,7 +141,11 @@
         :row-class-name="RowClassName"
         empty-text="当前暂无正在播放的音乐">
         <el-table-column type="index" width="50px" class-name="default" />
-        <el-table-column prop="name" label="音乐" class-name="default" />
+        <el-table-column
+          prop="name"
+          label="音乐"
+          class-name="default"
+          show-overflow-tooltip />
         <el-table-column
           label="歌手"
           :formatter="singersFormate"
@@ -250,6 +256,7 @@
   // 获取音乐链接
   const getSongUrl = async () => {
     const res = await getSong(playingSongInfo.value.id)
+    console.log(res)
     if (res.code !== 200) return
     if (!res.data[0].url) {
       ElMessage({ message: '资源获取失败', type: 'error' })
@@ -275,7 +282,7 @@
   })
   // 格式化歌手信息
   const SingersFormate = computed(() => {
-    return useSingersFormate(playingSongInfo.value)
+    return useSingersFormate(playingSongInfo.value) || '未知歌手名'
     // return useSingersFormate(playingSongInfo.value)
   })
 
@@ -560,7 +567,6 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 600px;
   }
   ul {
     list-style: none;
@@ -816,6 +822,23 @@
         }
         100% {
           transform: rotate(360deg);
+        }
+      }
+    }
+  }
+
+  @media screen and(max-width:768px) {
+    .play-time {
+      display: none;
+    }
+    .right-util {
+      display: none;
+    }
+    .play-btn {
+      width: 200px;
+      li {
+        &:nth-child(1) {
+          display: none;
         }
       }
     }

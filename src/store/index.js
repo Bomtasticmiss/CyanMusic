@@ -26,6 +26,8 @@ const state = {
   profile: {},
   //  喜欢的音乐列表 
   likeIdList: [],
+  // 用户歌单
+  UserPlaylist: []
 }
 
 const getters = {
@@ -34,6 +36,14 @@ const getters = {
     // if (state.playingSongIndex !== null) {
     return state.playlists[state.playingSongIndex]
     // }
+  },
+  // 用户创建的歌单
+  userCreateLists(state) {
+    return state.isLogin ? state.UserPlaylist.filter((item) => item.userId == state.account.id) : []
+  },
+  //用户收藏的歌单
+  userCollectLists(state) {
+    return state.isLogin ? state.UserPlaylist.filter((item) => item.userId != state.account.id) : []
   }
 }
 

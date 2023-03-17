@@ -32,6 +32,7 @@
   .starWrapper {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-around;
   }
   .avator-wrapper {
     display: flex;
@@ -52,5 +53,30 @@
   }
   .img {
     width: 100%;
+  }
+
+
+  @media screen and(max-width:950px) {
+    .starWrapper {
+      display: block;
+      .avator-wrapper {
+        width: fit-content;
+       
+      }
+    }
+
+  }
+
+  @media screen and(max-width:950px) {
+    .img-div {
+          width: 60px;
+          height: 60px;
+          min-width: 60px;
+        }
+  }
+  @media screen and(max-width:1200px) {
+    .avator-wrapper {
+      width: 42%;
+    }
   }
 </style>
