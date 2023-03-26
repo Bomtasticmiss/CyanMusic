@@ -3,7 +3,7 @@
     <div class="filter-wrapper font-14">
       <div class="filter-btn-wrapper">
         <span>语种</span>
-        <div>
+        <div class="phone-btn">
           <button
             v-for="area in artistData.area"
             :key="area.id"
@@ -16,7 +16,7 @@
       </div>
       <div class="filter-btn-wrapper">
         <span>分类</span>
-        <div>
+        <div class="phone-btn">
           <button
             v-for="_type in artistData.type"
             :key="_type.id"
@@ -29,7 +29,7 @@
       </div>
       <div class="filter-btn-wrapper">
         <span>筛选</span>
-        <div style="width: 80%">
+        <div style="width: 80%" class="phone-btn">
           <button
             v-for="initial in artistData.initial"
             :key="initial.id"
@@ -39,7 +39,7 @@
             }"
             @click="handleInitialBtn(initial.id)">
             {{ initial.value }}
-          </button> 
+          </button>
         </div>
       </div>
     </div>
@@ -113,7 +113,7 @@
   }
   .artistList-wrapper {
     display: flex;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
     margin-top: 20px;
     .artistList-border {
       margin-bottom: 30px;
@@ -137,6 +137,27 @@
     }
     .artistList-border:hover {
       transform: scale(1.1);
+    }
+  }
+  @media screen and(max-width:500px) {
+    .artistList-wrapper .artistList-border {
+      width: 31%;
+    }
+    .filter-btn-wrapper {
+      justify-content: space-between;
+      .filter-btn {
+        padding: 5px 5px;
+      }
+    }
+    .phone-btn {
+      display: flex;
+      overflow-x: auto;
+      width: 80%;
+    }
+  }
+  @media screen and(max-width:1000px){
+    .artistList-wrapper .artistList-border {
+      width: 31%;
     }
   }
 </style>

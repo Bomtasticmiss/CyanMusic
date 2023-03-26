@@ -1,7 +1,7 @@
 
 import { getAcount, getUserPlaylist, getUserLikelist } from '@/Api/api_user'
 import { setLike } from '@/Api/api_song'
-
+import { setSubscribe } from '@/Api/api_playList'
 export default {
     async GetAcount({ commit, dispatch }) {
         const res = await getAcount()
@@ -25,9 +25,10 @@ export default {
     },
     //  获取用户喜欢的音乐列表 
     async getLikeList({ commit, state }) {
+        console.log(111111111111)
         const res = await getUserLikelist(state.account.id)
         if (res.code !== 200) return
-        // console.log(res)
+        console.log(res)
         if (res.ids instanceof Array) {
             commit('setLikeIdList', {
                 type: 'get',
@@ -46,5 +47,5 @@ export default {
             commit('setLikeIdList', list)
         }
 
-    }
+    },
 }

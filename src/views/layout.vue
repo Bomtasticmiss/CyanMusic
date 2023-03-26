@@ -85,9 +85,10 @@
     width: 100%;
     height: 8%;
     background-color: #ec4141;
+    z-index: 2001;
   }
   .main {
-    // position: absolute;
+    position:relative;
     display: flex;
     height: 80%;
     .aside {
@@ -104,7 +105,8 @@
   .footer {
     // position: absolute;
     // height: 11%;
-    flex-grow: 1;
+    flex-grow: 0.98;
+    z-index: 2001;
   }
 
   .el-header {
@@ -147,8 +149,9 @@
   @media screen and (max-width: 768px) {
     .aside {
       position: absolute !important;
-      left: -200px;
+      left: -210px;
       z-index: 2000;
+      height: 100%;
     }
   }
   @media screen and (min-width: 769px) {

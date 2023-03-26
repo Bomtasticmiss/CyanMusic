@@ -20,9 +20,11 @@ const songList = () => import('@/views/songList/songList.vue')
 
 /*视频页*/
 const videoHomePage = () => import('@/views/video/videoHomePage.vue')
-const videoHome=()=>import('@/views/video/videoPage/videoHome.vue')
-const videoDetial=()=>import ('@/views/video/videoPage/videoDetial.vue')
+const videoHome = () => import('@/views/video/videoPage/videoHome.vue')
+const videoDetial = () => import('@/views/video/videoPage/videoDetial.vue')
 
+const mvHome = () => import('@/views/video/mv/mvHome.vue')
+const allMv=()=>import ('@/views/video/mv/allMv.vue')
 /*登录*/
 const musicLogin = () => import('@/views/login/musicLogin.vue')
 
@@ -91,29 +93,41 @@ const routes = [
       },
       {
         path: '/userDetail/:id',
-        name: 'userDetail',
+        name: 'userDetail', 
         component: userDetail,
         meta: { title: '用户详情页' }
       },
       {
         path: '/videoHomePage',
         name: 'videoHomePage',
-        component:videoHomePage,
-        redirect:'/videoHome',
+        component: videoHomePage,
+        redirect: '/videoHome',
         meta: { title: '视频' },
-        children:[
+        children: [
           {
             path: '/videoHome',
             name: 'videoHome',
             component: videoHome,
             meta: { title: '视频主页' },
+          },
+          {
+            path: '/mvHome',
+            name: 'mvHome',
+            component: mvHome,
+            meta: { title: 'MV' }
           }
         ]
       },
       {
-        path: '/videoDetial/:vid',
+        path: '/allMv',
+        name: 'allMv',
+        component: allMv,
+        meta: { title: '全部MV' },
+      },
+      {
+        path: '/videoDetial/:type/:id',
         name: 'videoDetial',
-        component:videoDetial,
+        component: videoDetial,
         meta: { title: '视频内容页' },
       }
     ]

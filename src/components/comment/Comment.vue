@@ -1,108 +1,121 @@
 <template>
-  <div class="comment-text-wrapper">
-    <div class="font-20 fontbd-700 mbtm-10">
-      评论
-      <span class="font-14">({{ totalCount }})</span>
+  <div>
+    <div class="comment-text-wrapper">
+      <div class="font-20 fontbd-700 mbtm-10">
+        评论
+        <span class="font-14">({{ totalCount }})</span>
+      </div>
+      <textarea
+        name=""
+        id=""
+        cols="30"
+        rows="10"
+        class="comment-text"></textarea>
     </div>
-    <textarea name="" id="" cols="30" rows="10" class="comment-text"></textarea>
-  </div>
-  <div class="send-wrapper">
-    <button class="btn btn-white">发送</button>
-  </div>
-  <div class="font-16 font-bold">精彩评论</div>
-  <!-- 最热评论 -->
-  <div
-    class="comment-content-wrapper"
-    v-for="comment in hotComment"
-    :key="comment.commentId">
-    <div class="comment-content font-12">
-      <div class="comment-avator pointer">
-        <img
-          v-if="comment.user.avatarUrl"
-          :src="comment.user.avatarUrl + '?param=200y200'"
-          alt=""
-          class="avator" />
+    <div class="send-wrapper">
+      <button class="btn btn-white">发送</button>
+    </div>
+    <div v-if="totalCount">
+      <div class="font-16 font-bold">精彩评论</div>
+      <!-- 最热评论 -->
+      <div
+        class="comment-content-wrapper"
+        v-for="comment in hotComment"
+        :key="comment.commentId">
+        <div class="comment-content font-12">
+          <div class="comment-avator pointer" @click="enterUserPage(comment.user.userId)">
+            <img
+              v-if="comment.user.avatarUrl"
+              :src="comment.user.avatarUrl + '?param=200y200'"
+              alt=""
+              class="avator" />
+          </div>
+          <div class="content mleft-10">
+            <div>
+              <span style="color: rgb(80, 125, 175)"
+                >{{ comment.user.nickname }}:</span
+              >
+              <span>{{ comment.content }}</span>
+            </div>
+            <div class="comment-info">
+              <div style="color: rgb(159, 159, 159)">
+                {{ comment.timeStr }}
+              </div>
+              <div style="display: flex; align-items: center">
+                <button class="no-btn">
+                  <i class="fa fa-thumbs-o-up" aria-hidden="true"></i
+                  >{{ comment.likedCount }}
+                </button>
+                <button class="no-btn">
+                  <i class="fa fa-share-square-o" aria-hidden="true"></i>
+                </button>
+                <button class="no-btn" style="padding-bottom: 3px">
+                  <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="line-bottom"></div>
       </div>
-      <div class="content mleft-10">
-        <div>
-          <span style="color: rgb(80, 125, 175)"
-            >{{ comment.user.nickname }}:</span
-          >
-          <span>{{ comment.content }}</span>
-        </div>
-        <div class="comment-info">
-          <div style="color: rgb(159, 159, 159)">
-            {{ comment.timeStr }}
+      <div style="text-align: center; margin: 10px 0">
+        <button class="btn btn-white">更多精彩评论</button>
+      </div>
+      <!-- 最新评论 -->
+      <div class="font-16 font-bold">最新评论</div>
+      <div
+        class="comment-content-wrapper"
+        v-for="comment in lastedComment"
+        :key="comment.commentId">
+        <div class="comment-content font-12">
+          <div class="comment-avator pointer" @click="enterUserPage(comment.user.userId)">
+            <img
+              v-if="comment.user.avatarUrl"
+              v-lazy="comment.user.avatarUrl + '?param=200y200'"
+              alt="头像"
+              class="avator" />
           </div>
-          <div style="display: flex; align-items: center">
-            <button class="no-btn">
-              <i class="fa fa-thumbs-o-up" aria-hidden="true"></i
-              >{{ comment.likedCount }}
-            </button>
-            <button class="no-btn">
-              <i class="fa fa-share-square-o" aria-hidden="true"></i>
-            </button>
-            <button class="no-btn" style="padding-bottom: 3px">
-              <i class="fa fa-commenting-o" aria-hidden="true"></i>
-            </button>
+          <div class="content mleft-10">
+            <div>
+              <span style="color: rgb(80, 125, 175)"
+                >{{ comment.user.nickname }}:</span
+              >
+              <span>{{ comment.content }}</span>
+            </div>
+            <div class="comment-info">
+              <div style="color: rgb(159, 159, 159)">
+                {{ comment.timeStr }}
+              </div>
+              <div style="display: flex; align-items: center">
+                <button class="no-btn">
+                  <i class="fa fa-thumbs-o-up" aria-hidden="true"></i
+                  >{{ comment.likedCount }}
+                </button>
+                <button class="no-btn">
+                  <i class="fa fa-share-square-o" aria-hidden="true"></i>
+                </button>
+                <button class="no-btn" style="padding-bottom: 3px">
+                  <i class="fa fa-commenting-o" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+        <div class="line-bottom"></div>
+      </div>
+      <!-- 分页 -->
+      <div class="pagegination mtop-20">
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :page-size="20"
+          :total="commentInfo.totalCount"
+          @current-change="getNewPage" />
       </div>
     </div>
-    <div class="line-bottom"></div>
-  </div>
-  <div style="text-align: center; margin: 10px 0">
-    <button class="btn btn-white">更多精彩评论</button>
-  </div>
-  <div class="font-16 font-bold">最新评论</div>
-  <!-- 最新评论 -->
-  <div
-    class="comment-content-wrapper"
-    v-for="comment in lastedComment"
-    :key="comment.commentId">
-    <div class="comment-content font-12">
-      <div class="comment-avator pointer">
-        <img
-          v-if="comment.user.avatarUrl"
-          v-lazy="comment.user.avatarUrl + '?param=200y200'"
-          alt="头像"
-          class="avator" />
-      </div>
-      <div class="content mleft-10">
-        <div>
-          <span style="color: rgb(80, 125, 175)"
-            >{{ comment.user.nickname }}:</span
-          >
-          <span>{{ comment.content }}</span>
-        </div>
-        <div class="comment-info">
-          <div style="color: rgb(159, 159, 159)">
-            {{ comment.timeStr }}
-          </div>
-          <div style="display: flex; align-items: center">
-            <button class="no-btn">
-              <i class="fa fa-thumbs-o-up" aria-hidden="true"></i
-              >{{ comment.likedCount }}
-            </button>
-            <button class="no-btn">
-              <i class="fa fa-share-square-o" aria-hidden="true"></i>
-            </button>
-            <button class="no-btn" style="padding-bottom: 3px">
-              <i class="fa fa-commenting-o" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
-      </div>
+    <div v-else style="display: flex">
+      <div style="margin: auto">没有更多评论哦,快来添加评论吧~~</div>
     </div>
-    <div class="line-bottom"></div>
-  </div>
-  <div class="pagegination mtop-20">
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :page-size="20"
-      :total="commentInfo.totalCount"
-      @current-change="getNewPage" />
   </div>
 </template>
 
@@ -110,7 +123,10 @@
   import { reactive, toRefs, watch, onMounted } from 'vue'
   import { useStore } from 'vuex'
   import { getComment } from '@/Api/api_comment'
+  import {useRouter} from "vue-router"
   const store = useStore()
+
+  const router=useRouter()
   const data = reactive({
     totalCount: 0,
     // 最新评论时间
@@ -159,13 +175,20 @@
     console.log(res)
   }
 
-  watch(()=>props.id, () => {
-    GetlastCmd()
-    getHotCmt()
-  })
+  watch(
+    () => props.id,
+    () => {
+      GetlastCmd()
+      getHotCmt()
+    }
+  )
   //   换页
   const getNewPage = (newPage) => {
     GetlastCmd(newPage)
+  }
+
+  const enterUserPage=(userId)=>{
+    router.push({name:'userDetail',params:{id:userId}})
   }
   let { cursor, commentInfo, hotComment, lastedComment, totalCount } =
     toRefs(data)

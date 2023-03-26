@@ -16,11 +16,11 @@
           <el-image
             style="
               width: 100%;
-              height: 160px;
+              height: 140px;
               /* height: 160px; */
               border-radius: 4px;
             "
-            :src="item.data.coverUrl + '?param=250y160'">
+            :src="item.data.coverUrl + '?param=290y140'">
             <template #placeholder>
               <div style="width: 100%">
                 <img src="@/assets/img/loading-2.gif" alt="" />
@@ -28,7 +28,7 @@
             </template>
           </el-image>
           <span class="playcount font-12">
-            <i class="fa fa-play card-play" aria-hidden="true"></i>
+            <span class="iconfont icon-play card-play"></span>
             {{ useCountFormate(item.data.playTime) }}
           </span>
           <span class="playBtn pointer">
@@ -79,7 +79,7 @@
   }
 
   const toVideoDetail = (vid) => {
-    router.push({ name: 'videoDetial', params: { vid } })
+    router.push({ name: 'videoDetial', params: { id: vid, type: 'video' } })
   }
 </script>
 <style scoped lang="less">
@@ -97,9 +97,9 @@
       flex-wrap: wrap;
       li {
         margin-bottom: 20px;
-        margin-left: 2%;
+        margin-left: 1%;
         margin-right: 2%;
-        width: 20%;
+        width: 22%;
         .video-border {
           position: relative;
 
@@ -112,6 +112,8 @@
             top: 10px;
             right: 6px;
             color: white;
+            display: flex;
+            align-items: center;
           }
           .playBtn {
             color: white;

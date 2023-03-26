@@ -5,7 +5,7 @@
       <template #template>
         <el-skeleton-item
           variant="image"
-          style="width: 150px; height: 150px; margin-left: 20px" />
+          style="width: 180px; height: 180px; margin-left: 20px" />
         <div style="padding: 14px">
           <el-skeleton-item variant="text" style="width: 40%" />
           <el-skeleton-item
@@ -54,16 +54,35 @@
                 </button>
                 <button
                   class="btn mleft-12 btn-white"
-                  @click="handleUserCollect">
-                  <i class="fa fa-star-o" aria-hidden="true"></i>
-                  <span class="btn-text">收藏({{ subscribedCount }})</span>
+                  @click="handleUserCollect"
+                  :style="{
+                    cursor:
+                      isUserCreateLists == true ? 'not-allowed' : 'pointer',
+                  }"
+                  :class="{'author-color':isUserCreateLists == true}">
+                  <!-- <i class="fa fa-star-o" aria-hidden="true"></i> -->
+                  <a v-if="!isSubscribe">
+                    <span class="iconfont icon-star2"></span>
+                    <span class="btn-text">收藏({{ subscribedCount }})</span>
+                  </a>
+                  <a v-else>
+                    <span
+                      class="iconfont icon-star3"
+                      style="color: #d81e06"></span>
+                    <span class="btn-text">已收藏({{ subscribedCount }})</span>
+                  </a>
                 </button>
                 <button class="btn mleft-12 btn-white">
-                  <i class="fa fa-share-square-o" aria-hidden="true"></i>
+                  <!-- <i class="fa fa-share-square-o" aria-hidden="true"></i> -->
+                  <span class="iconfont icon-Share"></span>
                   <span class="btn-text">分享({{ shareCount }})</span>
                 </button>
-                <button class="btn mleft-12 btn-red">
-                  <i class="fa fa-spinner" aria-hidden="true"></i>
+                <button
+                  class="btn mleft-12 btn-red"
+                  @click="GetPlaylistAll"
+                  v-if="!isPlaylistAll">
+                  <!-- <i class="fa fa-spinner" aria-hidden="true"></i> -->
+                  <span class="iconfont icon-loading"></span>
                   <span class="btn-text">加载完整歌单</span>
                 </button>
               </div>
@@ -180,6 +199,15 @@
                 :formatter="timeFormate"
                 class-name="default" />
             </el-table>
+            <div
+              style="margin: auto"
+              class="font-12 author-color pointer"
+              @click="GetPlaylistAll"
+              v-if="!isPlaylistAll">
+              ~~点击
+              <span class="iconfont icon-loading"></span>
+              加载更多音乐~~
+            </div>
           </div>
           <!-- 评论区 -->
           <div class="comment-wrapper" v-if="tabCurrent == 1">
@@ -202,7 +230,11 @@
   import Comment from '@/components/comment/Comment.vue'
   import tabMenu from '@/components/menus/tabMenu.vue'
   import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
-  import { getPlaylistDetail } from '@/Api/api_playList'
+  import {
+    getPlaylistDetail,
+    setSubscribe,
+    getPlaylistAll,
+  } from '@/Api/api_playList'
   import { getSong, setLike } from '@/Api/api_song'
   import { useStore } from 'vuex'
   import { useRouter, useRoute } from 'vue-router'
@@ -211,14 +243,15 @@
     useCountFormate,
     useSingersFormate,
     useTimeFormate,
+    useDateFormate,
   } from '@/hooks/useFormate'
   const loading = ref(true)
 
   onMounted(() => {
     GetPlaylistDetail()
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
+    // setTimeout(() => {
+    //   loading.value = false
+    // }, 500)
   })
 
   const store = useStore()
@@ -237,8 +270,8 @@
   })
   // 歌单创建时时间
   const playlistCreateTime = computed(() => {
-    const date = new Date(playlist.value.createTime)
-    return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate()
+    // const date = new Date(playlist.value.createTime)
+    return useDateFormate(playlist.value.createTime)
   })
   // 收藏
   const subscribedCount = computed(() => {
@@ -259,6 +292,7 @@
   })
   // 获取歌单详情页
   const GetPlaylistDetail = async () => {
+    loading.value = true
     const res = await getPlaylistDetail(playlistQuery)
     console.log(res)
     if (res.code !== 200)
@@ -268,6 +302,9 @@
     headerTabs.value[1].title = '评论' + '(' + playlist.value.commentCount + ')'
     // console.log(playlist.value)
     console.log(tracks.value)
+    setTimeout(() => {
+      loading.value = false
+    }, 1000)
   }
   // 添加索引
   const RowClassName = ({ row, rowIndex }) => {
@@ -324,14 +361,55 @@
     store.commit('setCurrentSongId')
   }
 
+  // 是否收藏
+  const isSubscribe = computed(() => {
+    return store.state.UserPlaylist.some(
+      (item) => item.id === playlist.value.id
+    )
+  })
+  //  是否为用户创建
+  const isUserCreateLists = computed(() => {
+    return store.getters.userCreateLists.some(
+      (item) => item.id === playlist.value.id
+    )
+  })
+
+  // 收藏
+  const handleUserCollect = async () => {
+    if (!store.state.isLogin)
+      return ElMessage({ message: '请先登录', type: 'wran' })
+    if (isUserCreateLists.value) return
+    //取消收藏
+    if (isSubscribe.value) {
+      await setSubscribe(playlist.value.id, 2)
+      store.dispatch('GetUserPlaylist')
+      console.log('取消收藏')
+    }
+    // 收藏
+    if (!isSubscribe.value) {
+      await setSubscribe(playlist.value.id, 1)
+      store.dispatch('GetUserPlaylist')
+      console.log('收藏')
+    }
+  }
+  const isPlaylistAll = ref(false)
+  // 获取歌单所有音乐
+  const GetPlaylistAll = async () => {
+    if (!store.state.isLogin)
+      return ElMessage({ message: '请先登录', type: 'wran' })
+    let trackIds = playlist.value.trackIds.map((item) => item.id).join(',')
+    // console.log(trackIds)
+    const res = await getPlaylistAll(trackIds)
+    if (res.code !== 200) return
+    console.log(res)
+    tracks.value = Object.freeze(res.songs)
+    isPlaylistAll.value = true
+  }
+
   const isLike = (row) => {
     return store.state.likeIdList.indexOf(row.id) != -1
   }
-  // 收藏
-  const handleUserCollect = () => {
-    if (!store.state.isLogin)
-      return ElMessage({ message: '请先登录', type: 'wran' })
-  }
+
   // 喜欢歌曲
   const SetLike = async (row) => {
     if (!store.state.isLogin)
@@ -370,8 +448,8 @@
   }
 
   .detail-img {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     border-radius: 5px;
     overflow: hidden;
 
@@ -484,6 +562,10 @@
     }
   }
 
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
   .song-search {
     display: flex;
     align-items: center;

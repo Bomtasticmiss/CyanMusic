@@ -95,10 +95,9 @@
   }
 </script>
 <style lang="less" scoped>
-  // .el-menu {
-  //   margin-left: 10px;
-  //   margin-right: 10px;
-  // }
+  .el-menu {
+    height: 100%;
+  }
 
   .el-menu-item {
     height: 40px;

@@ -26,7 +26,7 @@
     </div>
     <!-- 新歌速递-->
     <div class="newsong-wrapper mtop-20" v-show="_index == 0">
-      <div style="display: flex; justify-content: space-between">
+      <div style="display: flex; justify-content: space-between;align-items: center;">
         <ul class="category">
           <li
             v-for="item in typeData"
@@ -57,7 +57,7 @@
               @dblclick="getSong(index)" />
             <div
               class="song-list-name mleft-10 text-hidden pointer"
-              @dblclick="getSong(index)" >
+              @dblclick="getSong(index)">
               {{ item.name }}
             </div>
             <div style="width: 150px" class="font-12 text-hidden">
@@ -246,11 +246,13 @@
   }
   .newsong-wrapper {
     ul li {
+      white-space: nowrap;
       list-style: none;
     }
     .category {
       color: rgb(169, 169, 169);
       display: flex;
+      overflow-x: auto;
     }
   }
   .song-list {
@@ -278,11 +280,13 @@
   }
   .newAlbum-wrapper {
     ul li {
+      white-space: nowrap;
       list-style: none;
     }
     .category {
       color: rgb(169, 169, 169);
       display: flex;
+      overflow-x: auto;
     }
 
     .album-wrapper {

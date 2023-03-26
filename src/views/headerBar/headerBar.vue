@@ -5,6 +5,16 @@
       <el-button size="small" circle />
       <el-button size="small" circle
     /></el-col>
+    <el-col :span="4" class="left-menus" style="color: white; display: none">
+      <span
+        class="iconfont icon-menu"
+        @click="openMenu"
+        v-show="!showMenuInPhone"></span>
+      <span
+        class="iconfont icon-quxiao-xian"
+        @click="openMenu"
+        v-show="showMenuInPhone"></span>
+    </el-col>
     <el-col :span="3">
       <div style="display: flex; color: white">
         <span
@@ -76,8 +86,8 @@
           @click="userLogin">
           <el-icon><UserFilled /></el-icon
         ></el-avatar>
-        <div @click="getUserInfo" class="font-12 pointer  username">
-          <div class="mleft-5 text-hidden"  >
+        <div @click="getUserInfo" class="font-12 pointer username">
+          <div class="mleft-5 text-hidden">
             <span v-if="!isLogin">未登录</span
             ><span v-if="isLogin">{{ profile.nickname }}</span>
           </div>
@@ -161,6 +171,21 @@
   const isLogin = computed(() => {
     return store.state.isLogin
   })
+
+  const showMenuInPhone = ref(false)
+
+// phone打开菜单页
+  const openMenu = () => {
+    if (!showMenuInPhone.value)
+      nextTick(() => {
+        document.querySelector('.aside').style.left = 0 + 'px'
+      })
+    else
+      nextTick(() => {
+        document.querySelector('.aside').style.left = -210 + 'px'
+      })
+    showMenuInPhone.value = !showMenuInPhone.value
+  }
 </script>
 <style lang="less" scoped>
   .el-row {
@@ -252,6 +277,9 @@
     width: 170px;
   }
   @media screen and(max-width:768px) {
+    .left-menus {
+      display: block !important;
+    }
     .theme {
       display: none;
     }
@@ -261,7 +289,7 @@
     .search {
       width: 100px;
     }
-    .search-container{
+    .search-container {
       width: 250px !important;
     }
     .username {

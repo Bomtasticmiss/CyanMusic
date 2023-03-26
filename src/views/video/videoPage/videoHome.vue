@@ -4,8 +4,10 @@
     <div class="btn-wrapper mtop-20">
       <div style="position: relative">
         <button class="btn video-btn" @click="isHiddenSquare = !isHiddenSquare">
-          {{ tabName }}
-          <span class="iconfont icon-you"></span>
+          <span>
+            {{ tabName }}
+          </span>
+          <span class="iconfont icon-right1"></span>
         </button>
         <div
           class="hidden-square font-14"
@@ -37,7 +39,7 @@
         </div>
       </div>
       <!-- 右侧标签 -->
-      <div>
+      <div class="rigth-btn">
         <button
           class="btn"
           :class="{
@@ -206,8 +208,15 @@
         }
       }
     }
+    .rigth-btn{
+      display: flex;
+      height: 35px;
+    overflow-x: auto;
+    }
   }
   .video-btn {
+    display: flex;
+    align-items: center;
     padding: 0 20px;
     background-color: white;
     border: 1px solid #d8d8d8;

@@ -828,6 +828,10 @@
   }
 
   @media screen and(max-width:768px) {
+    .left-util {
+      width: 180px;
+    }
+
     .play-time {
       display: none;
     }
@@ -835,7 +839,7 @@
       display: none;
     }
     .play-btn {
-      width: 200px;
+      width: 180px;
       li {
         &:nth-child(1) {
           display: none;
