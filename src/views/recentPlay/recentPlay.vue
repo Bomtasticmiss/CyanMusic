@@ -16,62 +16,26 @@
       </template>
       <template #default>
         <div class="recentplay_contrainer">
-          <div class="recentplay_header">
+          <div class="recentplay_header mtop-20">
             <div class="recentplay_header_top">
               <span class="font-24 font-bold">最近播放</span>
-              <span class="font-14 mleft-10">共---首</span>
+              <span class="font-14 mleft-10">共 {{ total }} 首</span>
             </div>
             <div>
               <p></p>
               清除列表
             </div>
           </div>
-          <button class="btn btn-red pd-10 start_btn">
-            <i class="fa fa-play" aria-hidden="true"></i>
+          <button class="btn btn-red pd-10 start_btn" @click="playAllPlayList">
+            <!-- <i class="fa fa-play" aria-hidden="true"></i> -->
+            <span class="iconfont icon-play"></span>
+
             <span>播放全部</span>
           </button>
+          <div class="line mtop-10"></div>
           <div class="RecentPlay_container">
             <div class="content-wrapper">
-              <el-table
-                :data="recentPlaySong"
-                stripe
-                style="width: 100%"
-                size="small"
-                @row-dblclick="GetSong"
-                :row-class-name="RowClassName">
-                <el-table-column
-                  type="index"
-                  width="50px"
-                  class-name="default" />
-                <el-table-column prop="date" width="35px" class-name="pointer">
-                  <template #default>
-                    <i class="fa fa-heart-o" aria-hidden="true"></i>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  prop="data.name"
-                  label="音乐"
-                  class-name="default" />
-
-                <!-- :formatter="SingersFormate" -->
-
-                <el-table-column
-                  label="歌手"
-                  show-overflow-tooltip
-                  class-name="pointer" />
-                <el-table-column
-                  prop="data.al.name"
-                  label="专辑名"
-                  class-name="pointer"
-                  show-overflow-tooltip />
-
-                <!-- :formatter="timeFormate" -->
-
-                <el-table-column
-                  label="时长"
-                  width="100px"
-                  class-name="default" />
-              </el-table>
+              <songList :tracks="recentPlaySong" />
             </div>
           </div>
         </div>
@@ -83,8 +47,8 @@
 <script setup>
   import { reactive, toRefs, ref, onMounted } from 'vue'
   import { getRecentPlaySong } from '@/Api/api_song'
-  import useGetSong from '@/hooks/useGetSong'
   import { useStore } from 'vuex'
+  import songList from '@/components/songList/songList'
 
   const loading = ref(true)
 
@@ -92,33 +56,29 @@
 
   onMounted(() => {
     GetRecentPlaySong()
-    setTimeout(() => {
-      loading.value = false
-    }, 1000)
   })
 
   const recentPlaySong = ref([])
 
+  const total = ref(0)
+
   const GetRecentPlaySong = async () => {
+    loading.value = true
     const res = await getRecentPlaySong()
-    // console.log(res)
-    recentPlaySong.value = res.data.list
-    console.log(recentPlaySong.value)
+    if (res.code !== 200) return
+    console.log(res)
+    total.value = res.data.total
+    recentPlaySong.value = res.data.list.map((item) => item.data)
+    // console.log(recentPlaySong.value)
+    loading.value = false
   }
 
-  const { getSongUrl } = useGetSong()
-  // 获取音乐数据
-  const GetSong = async (row) => {
-    const songUrl = await getSongUrl(row.id)
-    // console.log(songUrl)
-    store.commit('setPlayingSongIndex', row.index)
-    // store.commit('setSongUrl', songUrl)
-    store.commit('setCurrentSongId', row.id)
-  }
-
-  // 添加索引
-  const RowClassName = ({ row, rowIndex }) => {
-    row.index = rowIndex
+  // 播放全部
+  const playAllPlayList = () => {
+    store.commit('setPlaylists', recentPlaySong.value)
+    store.commit('setPlayingSongIndex', 0)
+    // store.commit('setSongUrl', res.data[0].url)
+    store.commit('setCurrentSongId')
   }
 </script>
 <style scoped lang="less">
@@ -126,7 +86,7 @@
     margin: 0 auto;
     width: 90%;
     max-width: 1200px;
-    .start_btn{
+    .start_btn {
       margin: 10px 0;
     }
   }

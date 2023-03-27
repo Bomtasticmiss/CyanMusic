@@ -59,7 +59,7 @@
                     cursor:
                       isUserCreateLists == true ? 'not-allowed' : 'pointer',
                   }"
-                  :class="{'author-color':isUserCreateLists == true}">
+                  :class="{ 'author-color': isUserCreateLists == true }">
                   <!-- <i class="fa fa-star-o" aria-hidden="true"></i> -->
                   <a v-if="!isSubscribe">
                     <span class="iconfont icon-star2"></span>
@@ -143,64 +143,10 @@
             </div>
           </div>
           <!-- 音乐区 -->
-          <div class="content-wrapper" v-if="tabCurrent == 0">
-            <el-table
-              :data="tracks"
-              stripe
-              style="width: 100%"
-              size="small"
-              @row-dblclick="GetSong"
-              :row-class-name="RowClassName"
-              empty-text="当前暂无音乐">
-              <el-table-column type="index" width="50px" class-name="default">
-                <template #default="scope">
-                  <span
-                    v-if="showPlaying(scope.row.index)"
-                    class="iconfont icon-shengyin-kai"
-                    style="color: red"></span>
-                </template>
-              </el-table-column>
-              <el-table-column width="35px" class-name="pointer">
-                <template #default="scope">
-                  <span
-                    class="iconfont icon-xihuan"
-                    @click="SetLike(scope.row)"
-                    v-if="!isLike(scope.row)"></span>
-
-                  <span
-                    class="iconfont icon-xihuan2"
-                    style="color: red"
-                    @click="CancelLike(scope.row)"
-                    v-if="isLike(scope.row)"></span>
-                  <!-- <i
-                    class="fa fa-heart-o"
-                    aria-hidden="true"
-                    ></i> -->
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="name"
-                label="音乐"
-                class-name="default"
-                show-overflow-tooltip />
-              <el-table-column
-                label="歌手"
-                :formatter="SingersFormate"
-                show-overflow-tooltip
-                class-name="pointer" />
-              <el-table-column
-                prop="al.name"
-                label="专辑名"
-                class-name="pointer"
-                show-overflow-tooltip />
-              <el-table-column
-                label="时长"
-                width="100px"
-                :formatter="timeFormate"
-                class-name="default" />
-            </el-table>
+          <div v-if="tabCurrent == 0">
+            <songList :tracks="tracks" />
             <div
-              style="margin: auto"
+              style="text-align: center;"
               class="font-12 author-color pointer"
               @click="GetPlaylistAll"
               v-if="!isPlaylistAll">
@@ -229,6 +175,7 @@
   import subscribersWrappper from '@/components/star/subscribersWrapper.vue'
   import Comment from '@/components/comment/Comment.vue'
   import tabMenu from '@/components/menus/tabMenu.vue'
+  import songList from '@/components/songList/songList'
   import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
   import {
     getPlaylistDetail,
@@ -241,17 +188,13 @@
   import useGetSong from '@/hooks/useGetSong'
   import {
     useCountFormate,
-    useSingersFormate,
-    useTimeFormate,
     useDateFormate,
   } from '@/hooks/useFormate'
+  import jConfirm from '../custom/confirm'
   const loading = ref(true)
 
   onMounted(() => {
     GetPlaylistDetail()
-    // setTimeout(() => {
-    //   loading.value = false
-    // }, 500)
   })
 
   const store = useStore()
@@ -268,9 +211,9 @@
     // 按钮文本
     headerTabs: [{ title: '歌曲列表' }, { title: '评论' }, { title: '收藏者' }],
   })
+
   // 歌单创建时时间
   const playlistCreateTime = computed(() => {
-    // const date = new Date(playlist.value.createTime)
     return useDateFormate(playlist.value.createTime)
   })
   // 收藏
@@ -285,6 +228,7 @@
   const playCount = computed(() => {
     return useCountFormate(playlist.value.playCount)
   })
+
 
   const playlistQuery = reactive({
     id: route.params.id,
@@ -306,33 +250,7 @@
       loading.value = false
     }, 1000)
   }
-  // 添加索引
-  const RowClassName = ({ row, rowIndex }) => {
-    row.index = rowIndex
-  }
-
-  const { getSongUrl } = useGetSong()
-  // 获取音乐数据
-  const GetSong = async (row) => {
-    // const songUrl = await getSongUrl(row.id)
-    // const res=await getSong(row.id)
-    // if(res.code!==200)return
-    // if(!res.data[0].url) return ElMessage({ message: '音乐资源不存在', type: 'error' })
-    // console.log(songUrl)
-    store.commit('setPlaylists', playlist.value.tracks)
-    store.commit('setPlayingSongIndex', row.index)
-    // store.commit('setSongUrl', res.data[0].url)
-    store.commit('setCurrentSongId')
-  }
-
-  // 正在播放图标
-  const showPlaying = (index) => {
-    // console.log(index)
-    return playingIndex.value == index
-  }
-  const playingIndex = computed(() => {
-    return store.state.playingSongIndex
-  })
+  
   /*歌单详情内容DOM*/
   const descontnent = ref()
   const caretdown = ref()
@@ -355,7 +273,7 @@
   }
   // 播放全部
   const playAllPlayList = () => {
-    store.commit('setPlaylists', playlist.value.tracks)
+    store.commit('setPlaylists', tracks.value)
     store.commit('setPlayingSongIndex', 0)
     // store.commit('setSongUrl', res.data[0].url)
     store.commit('setCurrentSongId')
@@ -379,17 +297,25 @@
     if (!store.state.isLogin)
       return ElMessage({ message: '请先登录', type: 'wran' })
     if (isUserCreateLists.value) return
-    //取消收藏
-    if (isSubscribe.value) {
-      await setSubscribe(playlist.value.id, 2)
-      store.dispatch('GetUserPlaylist')
-      console.log('取消收藏')
-    }
+
     // 收藏
     if (!isSubscribe.value) {
       await setSubscribe(playlist.value.id, 1)
       store.dispatch('GetUserPlaylist')
       console.log('收藏')
+    } else {
+      jConfirm({ text: '确定取消收藏吗?' })
+        .then(async () => {
+          //取消收藏
+          if (isSubscribe.value) {
+            await setSubscribe(playlist.value.id, 2)
+            store.dispatch('GetUserPlaylist')
+            console.log('取消收藏')
+          }
+        })
+        .catch(() => {
+          return ElMessage({ message: '已取消' })
+        })
     }
   }
   const isPlaylistAll = ref(false)
@@ -403,37 +329,13 @@
     if (res.code !== 200) return
     console.log(res)
     tracks.value = Object.freeze(res.songs)
+    store.commit('setPlaylists', tracks.value)
     isPlaylistAll.value = true
   }
 
-  const isLike = (row) => {
-    return store.state.likeIdList.indexOf(row.id) != -1
-  }
-
-  // 喜欢歌曲
-  const SetLike = async (row) => {
-    if (!store.state.isLogin)
-      return ElMessage({ message: '请先登录', type: 'wran' })
-    store.dispatch('SetLike', { type: 'unshift', id: row.id })
-  }
-  // 取消喜欢歌曲
-  const CancelLike = async (row) => {
-    if (!store.state.isLogin)
-      return ElMessage({ message: '请先登录', type: 'wran' })
-    store.dispatch('SetLike', { type: 'delete', id: row.id })
-  }
   // 活动添加样式按钮
   const tabActive = (index) => {
     tabCurrent.value = index
-  }
-  // 格式化音乐演唱歌手
-  const SingersFormate = (row) => {
-    // console.log(row)
-    return useSingersFormate(row)
-  }
-  // 格式化时间
-  const timeFormate = (row) => {
-    return useTimeFormate(row.dt / 1000)
   }
   // 跳转用户页面
   const enterUserDetail = (id) => {
@@ -562,10 +464,6 @@
     }
   }
 
-  .content-wrapper {
-    display: flex;
-    flex-direction: column;
-  }
   .song-search {
     display: flex;
     align-items: center;
