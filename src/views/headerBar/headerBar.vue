@@ -36,27 +36,82 @@
     ></el-col>
     <el-col :span="10">
       <!-- 搜索框 -->
-      <div class="search-wrapper">
+      <div class="search-wrapper" ref="searchContainer">
         <input
           type="text"
           class="search"
-          placeholder="搜索"
+          :placeholder="searchDefault"
           @focus="showSearchHot"
-          @blur="isSearchShow = false" />
-        <span class="serachIcon" style="color: white">
+          v-model="inputword"
+          @keyup.enter="enterList(inputword)" />
+        <span
+          class="serachIcon pointer"
+          style="color: white"
+          @click="enterList(inputword)">
           <i class="fa fa-search" aria-hidden="true"></i>
         </span>
+        <div
+          style="position: relative"
+          v-show="inputword != ''"
+          @click="inputword = ''">
+          <span class="iconfont icon-quxiao serachCancelIcon pointer"> </span>
+        </div>
         <transition name="el-fade-in-linear">
-          <div class="search-container" v-show="isSearchShow">
-            <div class="font-14">热搜榜</div>
+          <div class="search-container" v-show="isSearchShow" ref="searchBottom">
+            <!-- 搜索历史 -->
+            <div class="search-history">
+              <div
+                class="search-history-title font-14 mleft-10 mright-10 min-color">
+                <div>
+                  搜索历史
+                  <span
+                    class="iconfont icon-delete pointer"
+                    style="font-size: 12px !important"
+                    @click="clearHistoryALL"></span>
+                </div>
+                <div
+                  class="pointer font-12"
+                  @click="isShowHistoryData = true"
+                  v-show="!isShowHistoryData">
+                  查看全部
+                </div>
+                <div
+                  class="pointer font-12"
+                  @click="isShowHistoryData = false"
+                  v-show="isShowHistoryData">
+                  收起
+                </div>
+              </div>
+              <div
+                class="history mtop-10 mbtm-10"
+                :style="{
+                  'max-height': isShowHistoryData ? 'fit-content' : '60px',
+                  'overflow': isShowHistoryData ? 'visible' : 'hidden',
+                }">
+                <button
+                  v-for="(item, index) in searchData"
+                  :key="index"
+                  class="btn-list btn btn-white font-12 mleft-10 mtop-5"
+                  @click="enterList(item)">
+                  {{ item }}
+                  <span
+                    class="iconfont icon-cancel cancel"
+                    style="font-size: 12px !important; z-index: 1000"
+                    @click="clearHitory($event, index)"></span>
+                </button>
+              </div>
+            </div>
+            <div class="font-14 mleft-10">热搜榜</div>
+            <!-- 热搜列表 -->
             <ul>
               <li
                 v-for="(item, index) in searchHotList"
                 :key="index"
-                class="mtop-20 pointer">
+                class="mtop-10 pointer searchList"
+                @click="enterList(item.searchWord)">
                 <div
                   :style="{ color: index < 3 ? '#e13e3e' : '#c2c2c2' }"
-                  class="mleft-5">
+                  class="mleft-15">
                   {{ index + 1 }}
                 </div>
                 <div class="mleft-20">
@@ -114,7 +169,11 @@
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useStore } from 'vuex'
-  import { getSearchHot, getSearchHotDetail } from '@/Api/api_search'
+  import {
+    getSearchHot,
+    getSearchHotDetail,
+    getSearchDefault,
+  } from '@/Api/api_search'
 
   const router = useRouter()
   const store = useStore()
@@ -129,9 +188,57 @@
   }
 
   onMounted(() => {
-    // GetSearchHot()
+    GetSearchHot()
+    GetSearchDefault()
+    searchData.value =
+      JSON.parse(window.localStorage.getItem('search-history')) || []
   })
+  const inputword = ref('')
+  // 历史搜索数据
+  const searchData = ref([])
 
+  const isShowHistoryData = ref(false)
+  // 点击热搜词条，搜索
+  const enterList = (searchWord) => {
+    // 使用默认词条
+    if (searchWord == '') {
+      inputword.value = searchDefault.value
+    } else {
+      inputword.value = searchWord
+    }
+    //更新searchWord历史记录到首位
+    let index = searchData.value.indexOf(inputword.value)
+    if (index != -1) {
+      searchData.value = searchData.value
+        .splice(index, 1)
+        .concat(searchData.value)
+    } else {
+      searchData.value.unshift(inputword.value)
+    }
+    window.localStorage.setItem(
+      'search-history',
+      JSON.stringify(searchData.value)
+    )
+    router.push(`/search/${inputword.value}`)
+    isSearchShow.value = false
+    isShowHistoryData.value=false
+    searchBottom.value.scrollTo(0, 0)
+    window.removeEventListener('click', closeContainer)
+  }
+
+  // 清除所有历史记录
+  const clearHistoryALL = () => {
+    searchData.value = []
+  }
+  //清除历史记录
+  const clearHitory = (e, index) => {
+    searchData.value.splice(index, 1)
+    window.localStorage.setItem(
+      'search-history',
+      JSON.stringify(searchData.value)
+    )
+    e.stopPropagation()
+  }
   // 热搜列表
   const searchHotList = ref([])
   // 获取热搜列表
@@ -142,13 +249,40 @@
     searchHotList.value = res.data
   }
 
+  // 默认搜索关键词
+  const searchDefault = ref('搜索')
+  // 获取默认搜索关键词
+  const GetSearchDefault = async () => {
+    const res = await getSearchDefault()
+    console.log(res)
+    if (res.code !== 200) return
+    searchDefault.value = res.data.showKeyword
+  }
+  //搜索框显示
   const isSearchShow = ref(false)
+
+  const searchContainer = ref(null)
+
+  const searchBottom=ref(null)
 
   const showSearchHot = () => {
     isSearchShow.value = true
     GetSearchHot()
+    setTimeout(() => {
+      window.addEventListener('click', closeContainer)
+    }, 300)
   }
-
+  const closeContainer = (e) => {
+    console.log(searchContainer.value.contains(e.target))
+    if (!searchContainer.value.contains(e.target)) {
+      isSearchShow.value = false
+      isShowHistoryData.value=false
+      searchBottom.value.scrollTo(0, 0)
+      window.removeEventListener('click', closeContainer)
+    }
+  }
+  // const
+  // @blur="isSearchShow = false"
   const userLogin = () => {
     router.push('/login')
   }
@@ -174,7 +308,7 @@
 
   const showMenuInPhone = ref(false)
 
-// phone打开菜单页
+  // phone打开菜单页
   const openMenu = () => {
     if (!showMenuInPhone.value)
       nextTick(() => {
@@ -197,6 +331,7 @@
 
   .search-wrapper {
     position: relative;
+    display: flex;
     .search {
       border-radius: 15px;
       height: 35px;
@@ -212,8 +347,15 @@
       top: 5px;
       position: absolute;
     }
+    .serachCancelIcon {
+      position: absolute;
+      top: 8px;
+      left: -19px;
+      color: white;
+    }
     .search-container {
       position: absolute;
+      top: 35px;
       margin-top: 10px;
       width: 300px;
       height: 400px;
@@ -221,14 +363,37 @@
       background-color: white;
       border-radius: 5px;
       box-shadow: 1px 2px 8px #e5e5e5;
-      padding: 10px;
-      overflow: auto;
+      padding: 10px 0px;
+      overflow:auto ;
       // transition: all 0.8s;
       // animation: s 0.4s;
+      .search-history {
+        .search-history-title {
+          display: flex;
+          justify-content: space-between;
+        }
+        .history {
+          .btn-list {
+            padding: 4px 2px 4px 12px;
+            .cancel {
+              visibility: hidden;
+            }
+            height: 25px;
+            &:hover .cancel {
+              visibility: visible;
+            }
+          }
+        }
+      }
       ul {
         li {
           display: flex;
           align-items: center;
+          height: 50px;
+          border-radius: 2px;
+          &:hover {
+            background-color: #e5e5e5;
+          }
         }
         // list-style: none;
       }

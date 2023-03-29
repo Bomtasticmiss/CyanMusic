@@ -61,10 +61,35 @@
         ">
         dianji
       </button> -->
-      <videoList
-        @loadMore="load"
-        :videoData="videoData"
-        :disabled="isLoading" />
+      <videoList @loadMore="load" :videoData="videoData" :disabled="isLoading">
+        <template #img="{ item }">
+          <el-image
+            style="
+              width: 100%;
+              height: 140px;
+              /* height: 160px; */
+              border-radius: 4px;
+            "
+            :src="item.data.coverUrl + '?param=290y140'">
+            <template #placeholder>
+              <div style="width: 100%">
+                <img src="@/assets/img/loading-2.gif" alt="" />
+              </div>
+            </template>
+          </el-image>
+        </template>
+        <template #playcount="{ item }">
+          {{ useCountFormate(item.data.playTime) }}
+        </template>
+        <template #title="{ item }">
+          {{ item.data.title }}
+        </template>
+        <template #nickname="{ item }">
+          <span v-if="item.data.creator">
+          by{{ item.data.creator.nickname }}
+          </span>
+        </template>
+      </videoList>
     </div>
   </div>
 </template>
@@ -78,6 +103,7 @@
     getVideoGroupById,
     getAllVideo,
   } from '@/Api/api_video.js'
+  import { useCountFormate } from '@/hooks/useFormate'
 
   onMounted(() => {
     GetVideoCategoryList()
@@ -208,10 +234,10 @@
         }
       }
     }
-    .rigth-btn{
+    .rigth-btn {
       display: flex;
       height: 35px;
-    overflow-x: auto;
+      overflow-x: auto;
     }
   }
   .video-btn {

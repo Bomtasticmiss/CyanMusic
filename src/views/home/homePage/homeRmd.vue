@@ -112,7 +112,7 @@
   .card-wrapper {
     margin-bottom: 30px;
     margin-right: 2%;
-    width: 18%;
+    width: 17%;
     position: relative;
     .card-border {
       display: flex;

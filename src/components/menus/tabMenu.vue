@@ -81,8 +81,10 @@
     display: flex;
     list-style: none;
     align-items: center;
+    margin: 20px 0 20px 0;
     li {
-      margin: 10px;
+      // margin: 10px;
+      margin-right: 20px;
     }
   }
 

@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3930816 */
-  src: url('//at.alicdn.com/t/c/font_3930816_ipra3m6ac39.woff2?t=1679928477751') format('woff2'),
-       url('//at.alicdn.com/t/c/font_3930816_ipra3m6ac39.woff?t=1679928477751') format('woff'),
-       url('//at.alicdn.com/t/c/font_3930816_ipra3m6ac39.ttf?t=1679928477751') format('truetype');
+  src: url('//at.alicdn.com/t/c/font_3930816_vcxy7aguov.woff2?t=1680105040136') format('woff2'),
+       url('//at.alicdn.com/t/c/font_3930816_vcxy7aguov.woff?t=1680105040136') format('woff'),
+       url('//at.alicdn.com/t/c/font_3930816_vcxy7aguov.ttf?t=1680105040136') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,26 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-user:before {
+  content: "\e682";
+}
+
+.icon-quxiao:before {
+  content: "\e605";
+}
+
+.icon-xiazai:before {
+  content: "\e60e";
+}
+
+.icon-delete:before {
+  content: "\ea16";
+}
+
+.icon-cancel:before {
+  content: "\e61f";
 }
 
 .icon-rili:before {

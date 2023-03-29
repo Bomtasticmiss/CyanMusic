@@ -11,6 +11,9 @@ const songRank = () => import('@/views/home/homePage/songRank.vue')
 const artistList = () => import('@/views/home/homePage/artistList.vue')
 const newSongRmd = () => import('@/views/home/homePage/newSongRmd.vue')
 
+/*搜索页*/
+const search=()=>import ('@/views/search/searchHomePage.vue')
+
 /*左侧菜单页*/
 const playlistDetail = () => import('@/components/playList/playlistDetail.vue')
 const dailyRmd = () => import('@/views/dailyRmd/dailyRmd.vue')
@@ -129,6 +132,12 @@ const routes = [
         name: 'videoDetial',
         component: videoDetial,
         meta: { title: '视频内容页' },
+      },
+      {
+        path: '/search/:keywords',
+        name: 'search',
+        component: search,
+        meta: { title: '搜索内容页' },
       }
     ]
   },

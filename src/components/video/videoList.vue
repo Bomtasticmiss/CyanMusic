@@ -5,40 +5,28 @@
       :infinite-scroll-disabled="disabled"
       infinite-scroll-distance="5">
       <li
-        v-for="(item, index) in videoData"
-        :key="item.data.vid"
-        @click="toVideoDetail(item.data.vid)">
+        v-for="item in videoData"
+        :key="item.data?item.data.vid:item.vid"
+        @click="toVideoDetail(item.data?item.data.vid:item.vid)">
         <div class="video-border">
           <!-- <img
             style="border-radius: 7px"
             v-lazy="`${item.data.coverUrl}?param=250y160`"
             alt="" /> -->
-          <el-image
-            style="
-              width: 100%;
-              height: 140px;
-              /* height: 160px; */
-              border-radius: 4px;
-            "
-            :src="item.data.coverUrl + '?param=290y140'">
-            <template #placeholder>
-              <div style="width: 100%">
-                <img src="@/assets/img/loading-2.gif" alt="" />
-              </div>
-            </template>
-          </el-image>
+          <slot name="img" :item="item"></slot>
           <span class="playcount font-12">
             <span class="iconfont icon-play card-play"></span>
-            {{ useCountFormate(item.data.playTime) }}
+            <slot name="playcount" :item="item"></slot>
           </span>
           <span class="playBtn pointer">
             <i class="fa fa-play-circle fa-3x" aria-hidden="true"></i>
           </span>
         </div>
-
-        <div class="text-hidden font-14">{{ item.data.title }}</div>
-        <div class="text-hidden font-12 creatorName" v-if="item.data.creator">
-          by{{ item.data.creator.nickname }}
+        <div class="text-hidden font-14">
+          <slot name="title" :item="item"></slot>
+        </div>
+        <div class="text-hidden font-12 creatorName" >
+          <slot name="nickname" :item="item"></slot>
         </div>
       </li>
     </ul>
@@ -46,7 +34,7 @@
 </template>
 
 <script setup>
-  import { reactive, toRefs, watch } from 'vue'
+  import {  watch } from 'vue'
   import { useCountFormate } from '@/hooks/useFormate'
   import { useRouter } from 'vue-router'
 
@@ -59,7 +47,7 @@
     },
     disabled: {
       type: Boolean,
-      require: true,
+      default: true,
     },
   })
 
