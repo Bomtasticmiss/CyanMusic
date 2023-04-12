@@ -78,7 +78,7 @@
       </div>
 
       <div>
-        <Comment :id="route.params.id" :type="_type=='video'?5:1" />
+        <Comment :id="route.params.id" :type="_type == 'video' ? 5 : 1" />
       </div>
     </div>
     <!-- 右侧相关推荐 -->
@@ -115,7 +115,7 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, computed, reactive } from 'vue'
+  import { ref, onMounted, computed, reactive, watch } from 'vue'
   import {
     getAllDetail,
     getRelatedAllvideo,
@@ -128,6 +128,18 @@
   const route = useRoute()
   const router = useRouter()
 
+  //监听路由强制刷新页面
+  // watch(
+  //   () => route.params,
+  //   () => {
+  //     if(route.name!='videoDetial')return 
+  //     GetVideoDetail()
+  //     GetAllUrl()
+  //     GetRelatedAllvideo()
+  //     GetBtnInfo()
+  //   }
+  // )
+
   onMounted(() => {
     GetVideoDetail()
     GetAllUrl()
@@ -136,12 +148,9 @@
     // console.log(route.params)
   })
 
- 
-
   const _type = computed(() => {
     return route.params.type
   })
-
 
   const creator = computed(() => {
     return _type.value == 'video'
@@ -194,15 +203,15 @@
 
   // 获取相关视频
   const GetRelatedAllvideo = async () => {
-      const res = await getRelatedAllvideo(route.params.id)
-      console.log(res)
-      if (res.code != 200) return
-      RelatedAllvideo.value = res.data
+    const res = await getRelatedAllvideo(route.params.id)
+    console.log(res)
+    if (res.code != 200) return
+    RelatedAllvideo.value = res.data
   }
 
   const enterUserPage = () => {
     router.push({
-      name: 'userDetail', 
+      name: 'userDetail',
       params: { id: creator.value.userId },
     })
   }
@@ -217,7 +226,7 @@
   }
 
   const jumpOtherVideo = (id) => {
-      router.push({ name: 'videoDetial', params: { type: 'video', id } })
+    router.push({ name: 'videoDetial', params: { type: 'video', id } })
   }
 </script>
 <style scoped lang="less">
@@ -225,7 +234,7 @@
     display: flex;
     justify-content: space-around;
   }
-  .main{
+  .main {
     width: 600px;
   }
   .video {

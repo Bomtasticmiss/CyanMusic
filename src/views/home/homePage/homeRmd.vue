@@ -6,6 +6,7 @@
     </div>
     <div class="hot-songs">
       <div class="card-wrapper" @click="enterDailyPage">
+        <div class="top-title font-14 white-color"><a>根据您的音乐口味生成每日更新</a></div>
         <div class="card-border" v-if="dailyRmdImg">
           <!-- <div class="calendar"></div> -->
           <div style="position: relative; overflow: hidden; border-radius: 4px">
@@ -89,7 +90,7 @@
     return date.getDate()
   })
 
-  const enterDailyPage=()=>{
+  const enterDailyPage = () => {
     router.push('/dailyRmd')
   }
   let { cardPlaylists } = toRefs(data)
@@ -114,6 +115,27 @@
     margin-right: 2%;
     width: 17%;
     position: relative;
+    overflow: hidden;
+
+    .top-title {
+      display: flex;
+      width: 100%;
+      height: 20%;
+      // display: block; 
+      position: absolute;
+      background-color: rgb(30 30 30 / 54%);
+      transition: all 0.5s;
+      z-index: 1;
+      overflow: hidden;
+      top: -20%;
+      a{
+        margin: auto;
+      }
+    }
+    &:hover .top-title {
+      top: 0%;
+    }
+   
     .card-border {
       display: flex;
       flex-direction: column;
@@ -180,6 +202,7 @@
         transform: translate3d(0, 0, 0);
       }
     }
+   
   }
   @media screen and (max-width: 1000px) {
     .card-wrapper {

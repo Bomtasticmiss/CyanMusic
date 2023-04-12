@@ -6,7 +6,7 @@
         v-for="(tab, index) in props.menuList"
         :key="index"
         class="pointer"
-        :class="{ isActive: tabIndexMenu == index }"
+        :class="{ isActive: props.mIndex == index }"
         @click="handleChangePage_menu(index)">
         {{ tab }}
       </li>
@@ -26,8 +26,9 @@
 </template>
 
 <script setup>
+  import { get, set } from 'lodash'
   import { ref, computed, watch } from 'vue'
-  import { useRouter,useRoute } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
   const props = defineProps({
     menuList: {
       type: Array,
@@ -37,25 +38,36 @@
       type: String,
       default: 'menu',
     },
+    mIndex: {
+      type: Number,
+      default: 0,
+    },
   })
 
   const router = useRouter()
-  const route =useRoute()
-  const emits = defineEmits(['getMenuIndex'])
+  const route = useRoute()
+  const emits = defineEmits(['getMenuIndex','update:mIndex'])
 
-  const tabIndexMenu = ref(0)
+  // const tabIndexMenu=ref(0)
 
   const handleChangePage_menu = (index) => {
-    tabIndexMenu.value = index
-    emits('getMenuIndex', tabIndexMenu.value)
+    // tabIndexMenu.value = index
+    // emits('getMenuIndex', tabIndexMenu.value)
+    emits('update:mIndex', index)
+
   }
 
+  
   const tabIndexRouter = ref('')
   // 监听路由地址变化
-  watch(() => router.currentRoute.value.fullPath,(newPath)=>{
-    tabIndexRouter.value=newPath
-    console.log(newPath)
-  },{ immediate: true})
+  watch(
+    () => router.currentRoute.value.fullPath,
+    (newPath) => {
+      tabIndexRouter.value = newPath
+      console.log(newPath)
+    },
+    { immediate: true }
+  )
   const handleChangePage = (routerPath) => {
     router.push(routerPath)
     console.log(router)
@@ -66,7 +78,6 @@
     font-size: 18px;
     font-weight: bold;
     color: #ec4141;
-
   }
   .isActive::after {
     display: block;
@@ -88,11 +99,9 @@
     }
   }
 
-
   @media screen and(max-width:768px) {
     .isActive {
-    font-size: 16px;
-
-  }
+      font-size: 16px;
+    }
   }
 </style>

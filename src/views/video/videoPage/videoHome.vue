@@ -86,7 +86,7 @@
         </template>
         <template #nickname="{ item }">
           <span v-if="item.data.creator">
-          by{{ item.data.creator.nickname }}
+            by{{ item.data.creator.nickname }}
           </span>
         </template>
       </videoList>
@@ -105,6 +105,7 @@
   } from '@/Api/api_video.js'
   import { useCountFormate } from '@/hooks/useFormate'
 
+  
   onMounted(() => {
     GetVideoCategoryList()
     GetVideoGroupList()

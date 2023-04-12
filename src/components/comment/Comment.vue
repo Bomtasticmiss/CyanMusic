@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mtop-20 mbtm-20">
     <div class="comment-text-wrapper">
       <div class="font-20 fontbd-700 mbtm-10">
         评论

@@ -1,5 +1,6 @@
 <template>
-  <div class="card-wrapper">
+  <div class="card-wrapper" >
+    <div class="top-title"></div>
     <div class="card-border">
       <img v-lazy="`${props.imgsrc}?param=250y250`" alt="加载中" />
       <!-- <img :src="props.imgsrc" alt="加载中" /> -->
@@ -18,9 +19,8 @@
 </template>
 
 <script setup>
-  import { ref} from 'vue'
+  import { ref } from 'vue'
   const props = defineProps(['imgsrc', 'title', 'playCount'])
-
 </script>
 <style scoped lang="less">
   .card-wrapper {
@@ -28,8 +28,29 @@
     margin-right: 2%;
     width: 18%;
     position: relative;
-
   }
+  // .top-title{
+  //   width: 100%;
+  //   height: 0%;
+  //   display: block;
+  //   position: absolute;
+  //   background-color: rgb(30 30 30 / 54%);
+  //   transition: all .5s;
+  // }
+  // .card-wrapper:hover .top-title{
+  //   height:20%;
+  // }
+  
+  // .card-wrapper::before {
+  //   content: '';
+  //   width: 100%;
+  //   height: 0%;
+  //   display: block;
+  //   position: absolute;
+  //   background-color: rgb(30 30 30 / 54%);
+  //   transition: all .5s;
+  // }
+
   .card-border {
     display: flex;
     flex-direction: column;
@@ -85,21 +106,18 @@
     transform: translate3d(0, 0, 0);
   }
 
-
-  @media screen and (max-width:1000px){
+  @media screen and (max-width: 1000px) {
     .card-wrapper {
-    margin-bottom: 30px;
-    margin-right: 2%;
-    width: 23% ;
-  }
+      margin-bottom: 30px;
+      margin-right: 2%;
+      width: 23%;
+    }
   }
   @media screen and(max-width:415px) {
     .card-wrapper {
-    margin-bottom: 30px;
-    margin-right: 2%;
-    width: 31% ;
+      margin-bottom: 30px;
+      margin-right: 2%;
+      width: 31%;
+    }
   }
-  }
-
- 
 </style>

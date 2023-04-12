@@ -11,9 +11,6 @@ const state = {
   currentSongId: 0,
   // 播放音乐的URL
   playSongUrl: '',
-  // 正在播放的音乐总时长
-  // playDurationTime: 0,
-  // SingersFormate: ''
   // 暂停状态(false暂停||true播放)
   paused: false,
   // 歌词页面

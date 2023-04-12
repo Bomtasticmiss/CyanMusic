@@ -8,7 +8,7 @@ const homePage = () => import('@/views/home/homePage.vue')
 const homeRmd = () => import('@/views/home/homePage/homeRmd.vue')
 const playList = () => import('@/views/home/homePage/playList.vue')
 const songRank = () => import('@/views/home/homePage/songRank.vue')
-const artistList = () => import('@/views/home/homePage/artistList.vue')
+const artistPage = () => import('@/views/home/homePage/artistPage.vue')
 const newSongRmd = () => import('@/views/home/homePage/newSongRmd.vue')
 
 /*搜索页*/
@@ -19,7 +19,7 @@ const playlistDetail = () => import('@/components/playList/playlistDetail.vue')
 const dailyRmd = () => import('@/views/dailyRmd/dailyRmd.vue')
 const recentPlay = () => import('@/views/recentPlay/recentPlay.vue')
 const songList = () => import('@/views/songList/songList.vue')
-
+const albumDetail=()=>import('@/views/album/albumDetail.vue')
 
 /*视频页*/
 const videoHomePage = () => import('@/views/video/videoHomePage.vue')
@@ -33,6 +33,9 @@ const musicLogin = () => import('@/views/login/musicLogin.vue')
 
 // 用户页面
 const userDetail = () => import('@/views/user/userDetail.vue')
+
+// 歌手详情页
+const artistDetail=()=>import ('@/views/artist/artistDetail.vue')
 
 const routes = [
   {
@@ -64,7 +67,7 @@ const routes = [
         },
         {
           path: '/singers',
-          component: artistList,
+          component: artistPage,
           meta: { title: '歌手' }
         },
         {
@@ -78,6 +81,13 @@ const routes = [
         name: 'playlistDetail',
         component: playlistDetail,
         meta: { title: '歌单详情页' }
+      },
+      {
+        path: '/albumDetail/:id',
+        name: 'albumDetail',
+        component: albumDetail,
+        meta: { title: '专辑详情页' }
+        
       },
       {
         path: '/dailyRmd',
@@ -128,7 +138,7 @@ const routes = [
         meta: { title: '全部MV' },
       },
       {
-        path: '/videoDetial/:type/:id',
+        path: '/videoDetial/:id/:type',
         name: 'videoDetial',
         component: videoDetial,
         meta: { title: '视频内容页' },
@@ -138,6 +148,12 @@ const routes = [
         name: 'search',
         component: search,
         meta: { title: '搜索内容页' },
+      },
+      {
+        path: '/artistDetail/:id',
+        name: 'artistDetail',
+        component: artistDetail,
+        meta: { title: '歌手详情页' },
       }
     ]
   },

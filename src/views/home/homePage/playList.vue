@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="topDisplay">
     <div class="top-display-wrapper">
       <img :src="topDisplay.coverImgUrl" alt="顶端背景" class="img-back" />
       <img
@@ -91,6 +91,7 @@
   import { useCountFormate } from '@/hooks/useFormate'
   import { useRouter } from 'vue-router'
 
+  const isLoading=ref(true)
   const router = useRouter()
 
   onMounted(() => {

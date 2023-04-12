@@ -52,7 +52,7 @@
         </span>
         <div
           style="position: relative"
-          v-show="inputword != ''"
+          v-show="inputword != ''&&isSearchShow"
           @click="inputword = ''">
           <span class="iconfont icon-quxiao serachCancelIcon pointer"> </span>
         </div>
@@ -219,7 +219,7 @@
       'search-history',
       JSON.stringify(searchData.value)
     )
-    router.push(`/search/${inputword.value}`)
+    router.push({name:'search',params:{keywords:inputword.value},query:{index:0}})
     isSearchShow.value = false
     isShowHistoryData.value=false
     searchBottom.value.scrollTo(0, 0)

@@ -7,7 +7,7 @@
       <li
         v-for="item in videoData"
         :key="item.data?item.data.vid:item.vid"
-        @click="toVideoDetail(item.data?item.data.vid:item.vid)">
+        @click="toVideoDetail(item.data?item.data:item,item.type)">
         <div class="video-border">
           <!-- <img
             style="border-radius: 7px"
@@ -66,8 +66,14 @@
     emits('loadMore', props.videoData.length)
   }
 
-  const toVideoDetail = (vid) => {
-    router.push({ name: 'videoDetial', params: { id: vid, type: 'video' } })
+  const toVideoDetail = (item) => {
+    console.log(item.type)
+    if(item.type==0){
+      router.push({ name: 'videoDetial', params: { id: item.vid, type: 'mv' } })
+    }
+    if(item.type==1||item.type==undefined){
+      router.push({ name: 'videoDetial', params: { id: item.vid, type: 'video' } })
+    }
   }
 </script>
 <style scoped lang="less">

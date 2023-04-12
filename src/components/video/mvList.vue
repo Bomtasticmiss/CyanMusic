@@ -11,7 +11,7 @@
         <div class="mv-border">
           <img
             style="border-radius: 7px"
-            v-lazy="`${item.cover}?param=260y140`"
+            v-lazy="`${item.cover||item.imgurl}?param=260y140`"
             alt="" />
           <span class="playcount font-12">
             <span class="iconfont icon-play card-play"></span>

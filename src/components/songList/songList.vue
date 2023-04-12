@@ -11,7 +11,7 @@
       <el-table-column type="index" width="50px" class-name="default">
         <template #default="scope">
           <span
-            v-if="showPlaying(scope.row.index)"
+            v-if="showPlaying(scope.row.id)"
             class="iconfont icon-shengyin-kai"
             style="color: red"></span>
         </template>
@@ -22,7 +22,6 @@
             class="iconfont icon-xihuan"
             @click="SetLike(scope.row)"
             v-if="!isLike(scope.row)"></span>
-
           <span
             class="iconfont icon-xihuan2"
             style="color: red"
@@ -55,7 +54,6 @@
         :formatter="timeFormate"
         class-name="default" />
     </el-table>
-  
   </div>
 </template>
 
@@ -72,7 +70,7 @@
     row.index = rowIndex
   }
 
-//   const { getSongUrl } = useGetSong()
+  //   const { getSongUrl } = useGetSong()
   // 获取音乐数据
   const GetSong = async (row) => {
     // const songUrl = await getSongUrl(row.id)
@@ -87,13 +85,13 @@
   }
 
   // 正在播放图标
-  const showPlaying = (index) => {
+  const showPlaying = (id) => {
     // console.log(index)
-    return playingIndex.value == index
+    return currentSongId.value == id
   }
 
-  const playingIndex = computed(() => {
-    return store.state.playingSongIndex
+  const currentSongId = computed(() => {
+    return store.state.currentSongId
   })
 
   const isLike = (row) => {

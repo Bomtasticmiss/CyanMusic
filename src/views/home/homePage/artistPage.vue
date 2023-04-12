@@ -43,14 +43,8 @@
         </div>
       </div>
     </div>
-    <div class="artistList-wrapper">
-      <div class="artistList-border" v-for="artist in artists" :key="artist.id">
-        <div style="display: flex; flex-direction: column">
-          <img v-lazy="`${artist.img1v1Url}?param=200y200`" alt="歌手图片" />
-          <div class="artistList-name text-hidden">{{ artist.name }}</div>
-        </div>
-      </div>
-    </div>
+
+    <artistList :artists="artists"/>
   </div>
 </template>
 
@@ -58,6 +52,7 @@
   import { reactive, toRefs, ref, onMounted, watch } from 'vue'
   import playlistCard from '@/components/card/playlistCard.vue'
   import { getTopArtists } from '@/Api/api_artist'
+  import artistList from '@/components/artist/artistList.vue';
   const artistData = require('@/assets/json/artistData.json')
 
   onMounted(() => {
@@ -111,38 +106,8 @@
       padding: 0;
     }
   }
-  .artistList-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    .artistList-border {
-      margin-bottom: 30px;
-      margin-right: 2%;
-      width: 14%;
-      overflow: hidden;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: 0.3s;
-      img {
-        border-radius: 4px;
-      }
-      .artistList-name {
-        height: 20px;
-        /* width: 150px; */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        transform: translate3d(0, 0, 0);
-      }
-    }
-    .artistList-border:hover {
-      transform: scale(1.1);
-    }
-  }
   @media screen and(max-width:500px) {
-    .artistList-wrapper .artistList-border {
-      width: 31%;
-    }
+  
     .filter-btn-wrapper {
       justify-content: space-between;
       .filter-btn {
@@ -155,9 +120,5 @@
       width: 80%;
     }
   }
-  @media screen and(max-width:1000px){
-    .artistList-wrapper .artistList-border {
-      width: 31%;
-    }
-  }
+
 </style>

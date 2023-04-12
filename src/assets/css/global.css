@@ -86,6 +86,10 @@ textarea {
     margin-bottom: 10px;
 }
 
+.mbtm-20 {
+    margin-bottom: 20px;
+}
+
 .mleft-5 {
     margin-left: 5px;
 }
@@ -242,4 +246,18 @@ textarea {
 }
 .min-color {
     color: #8f8f8f;
+}
+
+.white-color{
+    color: white;
+}
+.black-color{
+    color: black;
+}
+
+.text-desc{
+    text-indent: 2em;
+    line-height: 2;
+    width: 100%;
+    color: #676767;
 }

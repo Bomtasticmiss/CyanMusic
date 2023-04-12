@@ -31,7 +31,9 @@
                 <span>{{ playlist.name }}</span>
               </div>
               <div class="creator">
-                <div class="creator-avatar pointer">
+                <div
+                  class="creator-avatar pointer"
+                  @click="enterUserDetail(playlist.creator.userId)">
                   <img
                     v-if="playlist.creator"
                     :src="playlist.creator.avatarUrl + '?param=200y200'"
@@ -41,6 +43,7 @@
                   <span
                     class="creator-name mleft-12 font-12 pointer"
                     v-if="playlist.creator"
+                    @click="enterUserDetail(playlist.creator.userId)"
                     >{{ playlist.creator.nickname }}</span
                   >
                   <span class="mleft-12 font-12">{{ playlistCreateTime }}</span>
@@ -146,7 +149,7 @@
           <div v-if="tabCurrent == 0">
             <songList :tracks="tracks" />
             <div
-              style="text-align: center;"
+              style="text-align: center"
               class="font-12 author-color pointer"
               @click="GetPlaylistAll"
               v-if="!isPlaylistAll">
@@ -176,7 +179,15 @@
   import Comment from '@/components/comment/Comment.vue'
   import tabMenu from '@/components/menus/tabMenu.vue'
   import songList from '@/components/songList/songList'
-  import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
+  import {
+    reactive,
+    ref,
+    toRefs,
+    onMounted,
+    computed,
+    nextTick,
+    watch,
+  } from 'vue'
   import {
     getPlaylistDetail,
     setSubscribe,
@@ -186,10 +197,7 @@
   import { useStore } from 'vuex'
   import { useRouter, useRoute } from 'vue-router'
   import useGetSong from '@/hooks/useGetSong'
-  import {
-    useCountFormate,
-    useDateFormate,
-  } from '@/hooks/useFormate'
+  import { useCountFormate, useDateFormate } from '@/hooks/useFormate'
   import jConfirm from '../custom/confirm'
   const loading = ref(true)
 
@@ -200,6 +208,17 @@
   const store = useStore()
   const router = useRouter()
   const route = useRoute()
+
+  // 监听路由数据重载
+  watch(
+    () => route.params.id,
+    () => {
+      console.log(route.params.id)
+      if (route.name != 'playlistDetail') return
+      GetPlaylistDetail()
+      tabCurrent.value = 0
+    }
+  )
 
   const data = reactive({
     // 歌单详情
@@ -229,15 +248,17 @@
     return useCountFormate(playlist.value.playCount)
   })
 
-
+  const playlistId = computed(() => {
+    return route.params.id
+  })
   const playlistQuery = reactive({
-    id: route.params.id,
+    id: playlistId.value,
     s: 20,
   })
   // 获取歌单详情页
   const GetPlaylistDetail = async () => {
     loading.value = true
-    const res = await getPlaylistDetail(playlistQuery)
+    const res = await getPlaylistDetail({ id: playlistId.value, s: 20 })
     console.log(res)
     if (res.code !== 200)
       return ElMessage({ message: '歌单详情获取失败', type: 'error' })
@@ -246,11 +267,9 @@
     headerTabs.value[1].title = '评论' + '(' + playlist.value.commentCount + ')'
     // console.log(playlist.value)
     console.log(tracks.value)
-    setTimeout(() => {
-      loading.value = false
-    }, 1000)
+    loading.value = false
   }
-  
+
   /*歌单详情内容DOM*/
   const descontnent = ref()
   const caretdown = ref()

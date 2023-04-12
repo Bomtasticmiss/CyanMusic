@@ -74,15 +74,10 @@
             class="time-through"
             style="width: 0%; left: 0%"
             ref="progress"></div>
-          <!-- <div
-            class="time-through-btn-border"
-            -->
           <div
             class="time-through-btn"
             @mousedown="handleMousedown"
             @mouseup="handleMouseup"></div>
-
-          <!-- </div> -->
         </div>
         <span class="font-14">{{ duration }}</span>
       </div>
@@ -318,12 +313,14 @@
   // 播放上一首
   const handlePlayPre = () => {
     store.commit('HandlePlayPre')
+    paused.value = true
     // changeSongUrl()
     // getSongUrl()
   }
   // 播放下一首
   const handlePlayNext = () => {
     store.commit('HandlePlayNext')
+    paused.value = true   
     // changeSongUrl()
     // getSongUrl()
   }
@@ -390,7 +387,6 @@
     // 进度条拖拽
     let move = (e) => {
       // console.log(11)
-
       const moveMin = progress.value.offsetParent.offsetLeft
       moved = Math.floor(
         (100 * (e.pageX - moveMin)) / fullTime.value.offsetWidth
@@ -533,6 +529,7 @@
       margin: 0 10px;
       // z-index: 1000;
       position: relative;
+      flex-shrink: 0;
       .topIcon {
         color: white;
         position: absolute;
@@ -602,6 +599,11 @@
         border-top-left-radius: 3px;
         border-bottom-left-radius: 3px;
         // position: absolute;
+        transition: height 0.15s;
+        transition: width 0.05s;
+        &:hover {
+          height: 4px;
+        }
       }
       // .time-through-btn-border{
       //   width: 36px;
@@ -621,6 +623,7 @@
         transform: scale(1.2);
         cursor: grab;
       }
+
       // -moz-user-select: none; /*火狐*/
       //   -webkit-user-select: none;  /*webkit浏览器*/
       //   -ms-user-select: none;   /*IE10*/

@@ -34,11 +34,12 @@
       <div class="center-main" ref="centerMain">
         <div style="width: 90%; margin: auto">
           <transition name="el-fade-in">
-            <router-view :key="route.fullPath"></router-view>
+            <router-view ></router-view>
           </transition>
         </div>
       </div>
     </div>
+    <!-- :key="route.fullPath" -->
     <div class="footer">
       <playFooter />
     </div>
@@ -63,6 +64,8 @@
       // console.log(centerMain.value)
     }
   )
+
+ 
 </script>
 <style scoped lang="less">
   /deep/ .el-container {
@@ -88,7 +91,7 @@
     z-index: 2001;
   }
   .main {
-    position:relative;
+    position: relative;
     display: flex;
     height: 80%;
     .aside {
