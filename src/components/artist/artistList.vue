@@ -14,10 +14,10 @@
 </template>
 
 <script setup>
-  import {useRouter} from 'vue-router'
+  import { useRouter } from 'vue-router'
   import { reactive, toRefs } from 'vue'
 
-  const router=useRouter()
+  const router = useRouter()
 
   const props = defineProps(['artists'])
 
@@ -51,18 +51,8 @@
       }
     }
     .artistList-border:hover {
-      transition: all 0.5s;
-      animation: img-slow 0.5s linear;
-      transform: scale(1.02);
-    }
-
-    @keyframes img-slow {
-      50% {
-        transform: scale(1.05);
-      }
-      95% {
-        transform: scale(1.02);
-      }
+      box-shadow: 3px 3px 10px 1px rgba(0, 0, 0, 0.075);
+      transform: translate(0, -10px);
     }
   }
   @media screen and(max-width:500px) {

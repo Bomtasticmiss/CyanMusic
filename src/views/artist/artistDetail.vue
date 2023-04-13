@@ -94,6 +94,7 @@
     getSimiArtist,
     getSubArtists,
     subArtist,
+    getTopSong
   } from '@/Api/api_artist'
   import { useRoute } from 'vue-router'
   import tabMenu from '@/components/menus/tabMenu.vue'
@@ -114,6 +115,7 @@
     GetArtistAlbum()
     GetArtistDetail()
     GetSubArtists()
+    GetTopSong()
   })
   // 歌手ID
   const artistId = computed(() => {
@@ -153,6 +155,11 @@
     loading.value = false
   }
   const isSub = ref(false)
+
+  const GetTopSong = async () => {
+    const res = await getTopSong(artistId.value)
+    console.log(res)
+  }
 
   const GetSubArtists = async () => {
     loading.value = true

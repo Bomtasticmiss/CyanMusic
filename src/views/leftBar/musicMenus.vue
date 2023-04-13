@@ -16,7 +16,7 @@
         <el-icon><i class="fa fa-youtube-play" aria-hidden="true"></i></el-icon>
         <span>视频</span>
       </el-menu-item>
-      <el-menu-item index="4">
+      <el-menu-item index="/fmPage">
         <el-icon><setting /></el-icon>
         <span>FM</span>
       </el-menu-item>

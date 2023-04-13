@@ -38,6 +38,7 @@ export default {
             state.likeIdList.unshift(list.id)
         }
         if(list.type=='delete'){
+            console.log(state.likeIdList.indexOf(list.id));
             state.likeIdList.splice(state.likeIdList.indexOf(list.id),1)
         }
     },

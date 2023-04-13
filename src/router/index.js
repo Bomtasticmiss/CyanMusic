@@ -28,6 +28,9 @@ const videoDetial = () => import('@/views/video/videoPage/videoDetial.vue')
 
 const mvHome = () => import('@/views/video/mv/mvHome.vue')
 const allMv=()=>import ('@/views/video/mv/allMv.vue')
+
+/*FM页面*/
+const fmPage=()=>import ('@/views/FM/fmPage.vue')
 /*登录*/
 const musicLogin = () => import('@/views/login/musicLogin.vue')
 
@@ -130,6 +133,12 @@ const routes = [
             meta: { title: 'MV' }
           }
         ]
+      },
+      {
+        path: '/fmPage',
+        name: 'fmPage',
+        component: fmPage,
+        meta: { title: 'FM' },
       },
       {
         path: '/allMv',

@@ -10,7 +10,7 @@ export const getlyric = (id) => get('/lyric', { id })
 export const getRecentPlaySong = () => get('/record/recent/song', { limit: 100 })
 
 // 喜欢音乐
-export const setLike = (id,like) => get('/like', { id ,like})
+export const setLike = (id,like) => get('/like', { id ,like,timestamp: Date.now()})
 
 // 获取每日推荐歌曲
 export const getRecommendSongs = () => get('/recommend/songs')

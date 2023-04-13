@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="top pointer" @click="handleGoto">
-      <h3>热门推荐</h3>
+      <h3>推荐歌单</h3>
       <i class="fa fa-angle-right fa-2x mleft-5" aria-hidden="true"></i>
     </div>
     <div class="hot-songs">

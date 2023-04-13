@@ -184,8 +184,8 @@
           </div>
           <lyricPage
             v-if="playingSongInfo"
-            :currentTime="audioCurrentTime.toFixed(3)"
-            :durationTime="audioDurationTime.toFixed(3)"
+            :currentTime="Number(audioCurrentTime.toFixed(3))"
+            :durationTime="Number(audioDurationTime.toFixed(3))"
             :songName="playingSongInfo.name" />
         </div>
         <div style="margin: 20px 300px">
@@ -320,7 +320,7 @@
   // 播放下一首
   const handlePlayNext = () => {
     store.commit('HandlePlayNext')
-    paused.value = true   
+    paused.value = true
     // changeSongUrl()
     // getSongUrl()
   }
@@ -351,10 +351,10 @@
   }
   // 播放开始时时暂停获取总时间
   const getDuration = () => {
-    // if(audio.value.duration){
-    //   console.log(audio.value.duration)
-    // audioDurationTime.value=audio.value.duration;
-    // }
+    if (audio.value.duration) {
+      console.log(audio.value.duration)
+      audioDurationTime.value = audio.value.duration
+    }
     // store.commit('setPlayDurationTime',audio.value.duration)
     duration.value = useTimeFormate(audio.value.duration)
   }

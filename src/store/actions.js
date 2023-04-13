@@ -10,8 +10,8 @@ export default {
             commit('setProfile', res.profile)
             commit('setAccount', res.account)
             commit('setIsLogin', true)
-            dispatch('GetUserPlaylist')
             dispatch('getLikeList')
+            dispatch('GetUserPlaylist')
 
         }
     },
@@ -39,11 +39,14 @@ export default {
     // 用户(喜欢，取消)歌曲
     async SetLike({ commit }, list) {
         if (list.type == 'unshift') {
-            setLike(list.id, true)
+            const res= await setLike(list.id, true)
+            console.log(res,'unshift')
+            if(!res)return 
             commit('setLikeIdList', list)
         }
         if (list.type == 'delete') {
-            setLike(list.id, false)
+            const res= await  setLike(list.id, false)
+            console.log(res,'delete')
             commit('setLikeIdList', list)
         }
 

@@ -11,7 +11,7 @@
         </div>
         <div class="mtop-10">
           <span
-            class="font-12 mright-10 author-color tags"
+            class=" font-12 mright-10 author-color mtop-5 tags"
             v-for="item in recommendReasons"
             :key="item.songId">
             {{ item.reason }}
@@ -84,6 +84,7 @@
         height: 100px;
         width: 110px;
         background: url('@/assets/img/calendar.png') 0 0/100% no-repeat;
+        flex-shrink: 0;
         .date {
           margin-top: 10px;
           color: rgb(222, 53, 53);
@@ -95,6 +96,7 @@
         background-color: #efefef;
         border-radius: 20px;
         padding: 3px 10px;
+        display: inline-block;
       }
     }
   }

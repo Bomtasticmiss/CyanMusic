@@ -20,3 +20,7 @@ export const getSubArtists = () => get('/artist/sublist', { timestamp: Date.now(
 
 // login 收藏歌手 t=1 收藏 
 export const subArtist = (id, t) => get('/artist/sub', { id, t, timestamp: Date.now() })
+
+// 歌手热门 50 首歌曲
+export const getTopSong = (id) => get('/artist/top/song', { id, timestamp: Date.now() })
+

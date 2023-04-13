@@ -18,13 +18,13 @@
         </div>
         <div>
           <tableList
-            is-index="true"
-            :data="songs"
+            :is-index="true"
+            :data="displaySongs"
             :t-default="5"
             :t-name="85"
             :t-playcount="5"
             @rowClick="playMusic">
-            <template #t-index="{item}">
+            <template #t-index="{ item }">
               <span
                 v-if="showPlaying(item.id)"
                 class="iconfont icon-shengyin-kai"
@@ -51,6 +51,9 @@
             </template>
           </tableList>
         </div>
+        <div class="mtop-5 pointer" v-if="songs.length > 10&&isShow" @click="showAll">
+          <span style="float: right">查看全部></span>
+        </div>
       </div>
     </div>
   </div>
@@ -65,6 +68,14 @@
   const store = useStore()
   const props = defineProps(['songs', 'albumInfo'])
 
+  const displaySongs=ref(props.songs.slice(0, 10))
+
+  const isShow=ref(true)
+
+  const showAll=()=>{
+    displaySongs.value=props.songs
+    isShow.value=false
+  }
   const playMusic = (item, index) => {
     store.commit('setPlaylists', props.songs)
     store.commit('setPlayingSongIndex', index)

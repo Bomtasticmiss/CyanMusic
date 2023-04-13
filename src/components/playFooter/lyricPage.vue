@@ -1,31 +1,24 @@
 <template>
-  
       <div class="lyric_wrapper">
         <div class="lyric_name">{{ props.songName }}</div>
-        <div class="lyricAuto">
-          <div class="lyric" ref="lyric" @mousedown="sliding">
+          <div class="lyric" ref="lyric">
             <div
-              v-for="(lyric, index) in lyrics"
+              v-for="(lyric, index) in lyricsObj.formate_lyric"
               :key="index"
               class="lineLyric"
               :class="{
-                active: index == lyric_row,
+                // active: index == lyric_row,
                 lyricName: index == 0,
               }">
               {{ lyric.content }}
             </div>
           </div>
-        </div>
       </div>
- 
 </template>
 
 <script setup>
   import {
-    customRef,
     ref,
-    createVNode,
-    render,
     onMounted,
     computed,
     watch,
@@ -34,6 +27,7 @@
   import { getlyric } from '@/Api/api_song'
 
   import { useStore } from 'vuex'
+  import Lyric from '@/hooks/lyric'
   const props = defineProps(['currentTime', 'songName', 'durationTime'])
 
   const store = useStore()
@@ -42,68 +36,16 @@
     // 初始化获取歌词
     Getlyric()
   })
-  const lyric = ref()
-  // 歌词滑动顶部距离
-  const lyric_top = ref(0)
-  // 正在播放的歌词
-  const lyric_row = ref(0)
 
-  // 歌词回弹防抖
-  const debounceRef = (value, time) => {
-    let timer = null
-    console.log(timer)
-    return customRef((track, trigger) => {
-      return {
-        get() {
-          track()
-          return value
-        },
-        set(newValue) {
-          console.log(newValue)
-          clearTimeout(timer)
-          timer = setTimeout(() => {
-            value = newValue
-            trigger()
-          }, time)
-        },
-      }
-    })
-  }
+  const lyric = ref(null)
+
   // 是否正在滑动
-  // const isSlide = debounceRef(false, 3000)
   const isSlide = ref(false)
  
   watch(
     () => props.currentTime,
     (newCurrentTime) => {
-      if (lyrics.value) {
-        // parseInt(lyrics.value[key].t) == parseInt(props.currentTime)&&
-        for (let key in lyrics.value) {
-          // let lyric_row=1;
-          // console.log(key)
-          if (
-            parseFloat(lyrics.value[key].time) <= parseFloat(newCurrentTime)
-          ) {
-            // console.log(1)
-            lyric_row.value = key
-            if (!isSlide.value) {
-              if (lyric_row.value > 3) {
-                lyric_top.value = 0 - 41 * (lyric_row.value - 3)
-                lyric.value.style.transform = `translateY(${lyric_top.value}px)`
-                // lyric_translateY.value=lyric_translateY.value-40 * (key - 6);
-                // lyric_top.value=lyric_top.value-40 * (key - 6);
-              } else {
-                lyric.value.style.transform = `translateY(${0}px)`
-              }
-            }
-            // break
-          }
-        }
-        // }
-      }
-      // i++;
-      // console.log(props.currentTime)
-      // console.log(row.value)
+
     }
   )
   // 取消歌词页面
@@ -127,58 +69,16 @@
   watch(playingSongInfo, () => {
     Getlyric()
     // 歌曲回弹
-    lyric_row.value = 0
+    // lyric_row.value = 0
   })
 
-  // 歌词
-  const lyrics = ref(null)
+  // 歌词实例对象
+  const lyricsObj=ref({})
   // 播放歌曲 获取歌词
   const Getlyric = async () => {
-    let fin_Array = []
     const res = await getlyric(playingSongInfo.value.id)
     let strLyric = res.lrc.lyric
-    // let pattern=/\[\d{2}:\d{2}\.\d{2}\]/g
-    let pattern = /.*\n/g
-    let arrLyric = strLyric.split('\n')
-    arrLyric.pop()
-    let Time = []
-    for (let i in arrLyric) {
-      // arrLyric[i].replace(/[\\n]/g,'')
-      // console.log(arrLyric[i])
-      // let timePattern=/\[.*\]/g
-      //  Time[i] = arrLyric[i].split(/\]/)
-      //  Time[i][0]=Time[i][0].replace(/[\[\]]/g,"")
-      //  Time[i][0]=Number((Time[i][0].split(":")[0]*60+parseFloat(Time[i][0].split(":")[1])).toFixed(3))
-
-      let t = arrLyric[i].substring(
-        arrLyric[i].indexOf('[') + 1,
-        arrLyric[i].indexOf(']')
-      )
-      fin_Array.push({
-        time: (t.split(':')[0] * 60 + parseFloat(t.split(':')[1])).toFixed(3),
-        content: arrLyric[i].substring(
-          arrLyric[i].indexOf(']') + 1,
-          arrLyric[i].length
-        ),
-      })
-    }
-    // medisArray.splice(0, 0, { content: props.songName, time: '0.000' })
-    fin_Array.forEach((item, i) => {
-      if (i == fin_Array.length - 1) {
-        item.next = null
-      } else {
-        item.next = fin_Array[i + 1].time
-      }
-      item.active = ''
-      // 去除空句
-      if(item.content==''){
-        fin_Array.splice(i,1)
-      }
-    })
-    console.log(props.durationTime)
-    console.log(arrLyric)
-    console.log(fin_Array)
-    lyrics.value = fin_Array
+    lyricsObj.value=new Lyric(strLyric)
   }
 
   // 歌词拖拽
@@ -271,8 +171,7 @@
       width: 600px;
       // flex-basis: 60%;
       height: 300px;
-      overflow: hidden;
-      // overflow: scroll;
+      overflow-y: scroll;
     }
 
     .lyricBack:hover {
@@ -280,9 +179,12 @@
     }
     .lyric {
       // margin: 100px auto;
-      width: 100%;
+      // width: 100%;
+      width: 600px;
+      // flex-basis: 60%;
+      height: 300px;
+      overflow-y: scroll;
       text-align: center;
-      overflow: hidden;
       transition: all 0.5s;
       position: relative;
       // .lyricName {
