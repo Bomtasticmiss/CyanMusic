@@ -9,7 +9,7 @@ export default class Lyric {
                 arrLyric[i].indexOf(']')
             )
             formate_lyric.push({
-                time: (t.split(':')[0] * 60 + parseFloat(t.split(':')[1])).toFixed(3),
+                time: Number((t.split(':')[0] * 60 + parseFloat(t.split(':')[1])).toFixed(3)),
                 content: arrLyric[i].substring(
                     arrLyric[i].indexOf(']') + 1,
                     arrLyric[i].length

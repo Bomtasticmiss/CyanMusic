@@ -45,6 +45,14 @@ export default {
     setUserPlaylist(state, playlist) {
         state.UserPlaylist = playlist
     },
+    setPersonalFm(state,Fm){
+        if(Fm.type=='set'){
+            state.playlists = Fm.data
+        }
+        else if(Fm.type=='next'){
+            state.playingSongIndex++
+        }
+    },
     // setPlayDurationTime(state, DurationTime) {
     //   state.playDurationTime = DurationTime
     // },
