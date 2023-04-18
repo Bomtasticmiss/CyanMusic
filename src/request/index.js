@@ -29,7 +29,11 @@ export const get = (url, params) => {
   // getRealIP()
   return Service.get(url, {params})
     .then(res => res.data)
-    .catch(error => console.log(error))
+    .catch(error => {
+      console.log(error)
+      ElMessage({ message: error.response.data.msg, type: 'warning' })
+      return {code:error.response.status}
+    })
 }
 
 

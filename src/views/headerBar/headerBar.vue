@@ -5,7 +5,7 @@
       <el-button size="small" circle />
       <el-button size="small" circle
     /></el-col>
-    <el-col :span="4" class="left-menus" style="color: white; display: none">
+    <el-col :span="4" class="left-menus" style="display: none">
       <span
         class="iconfont icon-menu"
         @click="openMenu"
@@ -16,7 +16,7 @@
         v-show="showMenuInPhone"></span>
     </el-col>
     <el-col :span="3">
-      <div style="display: flex; color: white">
+      <div style="display: flex" class="back-forward">
         <span
           text
           circle
@@ -44,20 +44,20 @@
           @focus="showSearchHot"
           v-model="inputword"
           @keyup.enter="enterList(inputword)" />
-        <span
-          class="serachIcon pointer"
-          style="color: white"
-          @click="enterList(inputword)">
+        <span class="serachIcon pointer" @click="enterList(inputword)">
           <i class="fa fa-search" aria-hidden="true"></i>
         </span>
         <div
           style="position: relative"
-          v-show="inputword != ''&&isSearchShow"
+          v-show="inputword != '' && isSearchShow"
           @click="inputword = ''">
           <span class="iconfont icon-quxiao serachCancelIcon pointer"> </span>
         </div>
         <transition name="el-fade-in-linear">
-          <div class="search-container" v-show="isSearchShow" ref="searchBottom">
+          <div
+            class="search-container"
+            v-show="isSearchShow"
+            ref="searchBottom">
             <!-- 搜索历史 -->
             <div class="search-history">
               <div
@@ -86,7 +86,7 @@
                 class="history mtop-10 mbtm-10"
                 :style="{
                   'max-height': isShowHistoryData ? 'fit-content' : '60px',
-                  'overflow': isShowHistoryData ? 'visible' : 'hidden',
+                  overflow: isShowHistoryData ? 'visible' : 'hidden',
                 }">
                 <button
                   v-for="(item, index) in searchData"
@@ -132,7 +132,6 @@
       </div>
     </el-col>
     <el-col :span="7" class="user-area-container">
-      <!-- <el-dropdown ref="dropdown1" trigger="contextmenu" placement="bottom-end"> -->
       <div class="full-user-area-container">
         <el-avatar
           :size="30"
@@ -148,18 +147,30 @@
           </div>
         </div>
       </div>
-      <!-- <template #dropdown>
-          <el-dropdown-menu class="drop-width-container">
-            <el-dropdown-item
-              ><router-link to="/login">账号</router-link></el-dropdown-item
-            >
-            <el-dropdown-item>Action 2</el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
-            <el-dropdown-item disabled>Action 4</el-dropdown-item>
-            <el-dropdown-item divided>Action 5</el-dropdown-item>
-          </el-dropdown-menu>
+      <popover v-model:visible="themeIsShow" :width="270">
+        <template #reference>
+          <span
+            class="iconfont icon-pifu1 pointer pifu"
+            @click="themeIsShow = !themeIsShow"></span>
         </template>
-      </el-dropdown> -->
+        <template #default>
+          <div class="theme-container">
+            <div
+              v-for="item in theme"
+              :key="item.name"
+              class="theme-item mright-10 mbtm-10 pointer"
+              @click="handleChangeTheme(item.value)">
+              <div
+                :style="{ 'background-color': item.value }"
+                class="theme-item-color"></div>
+              <div class="font-12 author-color" style="text-align: center">
+                {{ item.name }}
+              </div>
+            </div>
+          </div>
+        </template>
+      </popover>
+      <!-- </div> -->
     </el-col>
   </el-row>
 </template>
@@ -174,10 +185,31 @@
     getSearchHotDetail,
     getSearchDefault,
   } from '@/Api/api_search'
+  import popover from '@/components/custom/popover/popover'
 
   const router = useRouter()
   const store = useStore()
 
+  const themeIsShow = ref(false)
+
+  const theme = ref([
+    { name: '红色', value: '#ec4141' },
+    { name: '白色', value: '#ffffff' },
+    { name: '棕色', value: '#c07505' },
+    { name: '银灰', value: '#aeaeae9c' },
+    { name: '青绿', value: '#23ad8ff5' },
+  ])
+  const handleChangeTheme = (value) => {
+    if (value == '#ffffff') {
+      document.documentElement.style.setProperty('--theme_bg_color', value)
+      document.documentElement.style.setProperty('--theme_font_color', 'black')
+      document.documentElement.style.setProperty('--theme_input_color','#f5f5f5')
+      document.documentElement.style.setProperty('--theme_btn_color', 'black')
+    } else {
+      document.documentElement.style.setProperty('--theme_bg_color', value)
+      document.documentElement.style.setProperty('--theme_btn_color', 'white')
+    }
+  }
   //全局回退
   const globalBack = () => {
     router.go(-1)
@@ -219,9 +251,13 @@
       'search-history',
       JSON.stringify(searchData.value)
     )
-    router.push({name:'search',params:{keywords:inputword.value},query:{index:0}})
+    router.push({
+      name: 'search',
+      params: { keywords: inputword.value },
+      query: { index: 0 },
+    })
     isSearchShow.value = false
-    isShowHistoryData.value=false
+    isShowHistoryData.value = false
     searchBottom.value.scrollTo(0, 0)
     window.removeEventListener('click', closeContainer)
   }
@@ -263,7 +299,7 @@
 
   const searchContainer = ref(null)
 
-  const searchBottom=ref(null)
+  const searchBottom = ref(null)
 
   const showSearchHot = () => {
     isSearchShow.value = true
@@ -276,7 +312,7 @@
     console.log(searchContainer.value.contains(e.target))
     if (!searchContainer.value.contains(e.target)) {
       isSearchShow.value = false
-      isShowHistoryData.value=false
+      isShowHistoryData.value = false
       searchBottom.value.scrollTo(0, 0)
       window.removeEventListener('click', closeContainer)
     }
@@ -329,6 +365,12 @@
     justify-content: space-between;
   }
 
+  .left-menus {
+    color: var(--theme_font_color);
+  }
+  .back-forward {
+    color: var(--theme_font_color);
+  }
   .search-wrapper {
     position: relative;
     display: flex;
@@ -336,22 +378,23 @@
       border-radius: 15px;
       height: 35px;
       // width: 200px;
-      background-color: #e13e3e;
+      background-color: var(--theme_input_color);
       border: none;
       outline: none;
       padding: 0 30px;
-      color: rgb(240, 240, 240);
+      color: var(--theme_font_color);
     }
     .serachIcon {
       left: 10px;
       top: 5px;
       position: absolute;
+      color: var(--theme_font_color);
     }
     .serachCancelIcon {
       position: absolute;
       top: 8px;
       left: -19px;
-      color: white;
+      color: var(--theme_font_color);
     }
     .search-container {
       position: absolute;
@@ -362,9 +405,9 @@
       z-index: 1000;
       background-color: white;
       border-radius: 5px;
-      box-shadow: 1px 2px 8px #e5e5e5;
+      box-shadow: var(--box-shadow);
       padding: 10px 0px;
-      overflow:auto ;
+      overflow: auto;
       // transition: all 0.8s;
       // animation: s 0.4s;
       .search-history {
@@ -412,31 +455,48 @@
 
   .username {
     width: 100px;
-    color: white;
+    color: var(--theme_font_color);
   }
-  /deep/ .el-input__wrapper {
-    background-color: #e13e3e !important;
-  }
-  .el-input {
-    // --el-input-focus-border-color: #3534344a;
-  }
+
   .user-area-container {
     display: flex;
-    justify-content: flex-end;
-  }
-  .full-user-area-container {
-    display: flex;
+    // justify-content: flex-end;
     align-items: center;
-    .el-avatar {
-      cursor: pointer;
+    .full-user-area-container {
+      display: flex;
+      align-items: center;
+      .el-avatar {
+        cursor: pointer;
+      }
+      button {
+        padding: 10px;
+        border-style: none;
+        background-color: white;
+        cursor: pointer;
+      }
     }
-    button {
-      padding: 10px;
-      border-style: none;
-      background-color: white;
-      cursor: pointer;
+    .pifu {
+      color: var(--theme_font_color);
+    }
+    .theme-container {
+      display: flex;
+      padding: 20px 15px;
+      // justify-content: space-around;
+      flex-wrap: wrap;
+      .theme-item {
+        width: 50px;
+        height: 60px;
+        box-sizing: border-box;
+        .theme-item-color {
+          border-radius: 5px;
+          border: 1px solid rgb(182, 182, 182);
+          width: 50px;
+          height: 50px;
+        }
+      }
     }
   }
+
   .drop-width-container {
     padding: 10px;
     width: 170px;

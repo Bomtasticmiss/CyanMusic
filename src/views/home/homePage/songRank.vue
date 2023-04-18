@@ -117,7 +117,9 @@
     store.commit('setPlayingSongIndex', songIndex)
     // store.commit('setSongUrl', res.data[0].url)
     store.commit('setCurrentSongId')
+    store.commit('setPlayType','Normal')
     console.log(window.sessionStorage.getItem('isLogin'))
+    
   }
 
   // 传入歌单Id获取详情页

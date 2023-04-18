@@ -69,6 +69,8 @@
     store.commit('setPlayingSongIndex', 0)
     // store.commit('setSongUrl', res.data[0].url)
     store.commit('setCurrentSongId')
+    store.commit('setPlayType','Normal')
+
   }
 </script>
 <style scoped lang="less">

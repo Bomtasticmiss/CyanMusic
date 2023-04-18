@@ -1,17 +1,17 @@
 <template>
   <div class="lyric_wrapper">
-    <div class="lyric_name">{{ props.songName }}</div>
-    <div class="lyric" ref="lyric">
-      <div
+    <div class="lyric_name" v-if="props.songName">{{ props.songName }}</div>
+    <div class="lyric font-14" ref="lyric" :style="{ 'text-align': _type }">
+      <p
         v-for="(lyric, index) in lyricsObj.formate_lyric"
         :key="index"
-        class="lineLyric"
+        class="lineLyric text-hidden"
         :class="{
           active: index == lyricsObj.current,
           lyricName: index == 0,
         }">
         {{ lyric.content }}
-      </div>
+      </p>
     </div>
   </div>
 </template>
@@ -24,13 +24,30 @@
     watch,
     nextTick,
     onBeforeUnmount,
+    onBeforeMount,
   } from 'vue'
   import { getlyric } from '@/Api/api_song'
 
   import { useStore } from 'vuex'
   import Lyric from '@/hooks/lyric'
-  const props = defineProps(['currentTime', 'songName', 'durationTime'])
-
+  const props = defineProps({
+    currentTime: {
+      type: Number,
+      require: true,
+    },
+    songName: {
+      type: String,
+      default: null,
+    },
+    durationTime: {
+      type: Number,
+      require: true,
+    },
+    _type: {
+      type: String,
+      default: 'center',
+    },
+  })
   const store = useStore()
 
   const lyric = ref(null)
@@ -38,9 +55,15 @@
   // 是否正在滑动
   const isSlide = ref(false)
 
-  onMounted(() => {
+  onBeforeMount(async () => {
     // 初始化获取歌词
-    Getlyric()
+    /* 其他页面切换到Fm页面时，currenttime没有清零，
+    lyricsObj为空，将报错NaN，获取歌词时禁止监听函数执行*/
+    isSlide.value = true
+    await Getlyric()
+    isSlide.value = false
+  })
+  onMounted(() => {
     // 监听鼠轮滚动
     if (lyric.value.addEventListener) {
       lyric.value.addEventListener(
@@ -107,13 +130,15 @@
     (newCurrentTime) => {
       if (isSlide.value) return
       handleCurrentTime(newCurrentTime)
+      // console.log(lyricsObj.value.current)
     }
   )
   // 歌词滚动
   const handleCurrentTime = (time) => {
+    // console.log(lyricsObj.value, time)
     if (
       lyricsObj.value.current !== lyricsObj.value.total - 1 &&
-      time + 0.5 >
+      time + 0.1 >
         lyricsObj.value.formate_lyric[lyricsObj.value.current + 1].time
     ) {
       /* 正常播放或往前拉进度条 */
@@ -121,7 +146,7 @@
       /* 在拉进度的时候，time只改变了一次，但需要定位到歌词进度对应的行 */
       if (
         lyricsObj.value.current !== lyricsObj.value.total - 1 &&
-        time + 0.5 >
+        time + 0.1 >
           lyricsObj.value.formate_lyric[lyricsObj.value.current + 1].time
       ) {
         handleCurrentTime(time)
@@ -129,15 +154,15 @@
       lyricHanlder(lyricsObj.value.current)
     } else if (
       lyricsObj.value.current !== 0 &&
-      time - 0.5 <
+      time - 0.1 <
         lyricsObj.value.formate_lyric[lyricsObj.value.current - 1].time
     ) {
-      /* 正常播放或往前拉进度条 */
+      /* 往回拉进度条 */
       lyricsObj.value.current--
       /* 在拉进度的时候，time只改变了一次，但需要定位到歌词进度对应的行 */
       if (
-        lyricsObj.value.current !== lyricsObj.value.total - 1 &&
-        time - 0.5 <
+        lyricsObj.value.current !== 0 &&
+        time - 0.1 <
           lyricsObj.value.formate_lyric[lyricsObj.value.current - 1].time
       ) {
         handleCurrentTime(time)
@@ -174,11 +199,38 @@
     { deep: true }
   )
   const scrollAnimation = (num) => {
-    nextTick(() => {
-      // lyric.value.scrollTo({top:num * 41,behavior:'smooth'})
-      lyric.value.scrollTop = num * 40
-    })
-    console.log(lyric.value.scrollTop)
+    let count = 0
+
+    let animationTop = (timestamp) => {
+      // console.log(lyric.value.scrollTop)
+      count++
+      nextTick(() => {
+        lyric.value.scrollTop = (num - 1) * 40 + count + 1
+      })
+      // console.log(timestamp)
+      if (count < 40) {
+        window.requestAnimationFrame(animationTop)
+      }
+    }
+    // let start
+    // const animationTop = (timestamp) => {
+    //   if (start === undefined) start = timestamp
+    //   const elapsed = timestamp - start
+    //   console.log(elapsed)
+    //   nextTick(() => {
+    //     lyric.value.scrollTop = Math.min(
+    //       0.16 * elapsed + (num - 1) * 40,
+    //       num * 40
+    //     )
+    //   })
+    //   if (elapsed < 250) {
+    //     // 在.25秒后停止动画
+    //     window.requestAnimationFrame(animationTop)
+    //   }
+    // }
+
+    // console.log(lyric.value.scrollTop)
+    window.requestAnimationFrame(animationTop)
     lyricScrollTop.value = num * 40
   }
   // 取消歌词页面
@@ -234,11 +286,7 @@
     // 鼠标弹起
     const Mouseup = () => {
       console.log(1)
-      // a.value++;
-      // isSlide.value = false
-      // debounce(() => {
       isSlide.value = false
-      // }, 3000)
       document.removeEventListener('mousemove', slide)
     }
     document.addEventListener('mousemove', slide)
@@ -255,12 +303,13 @@
 <style lang="less">
   .active {
     color: #ec4141;
-    font-size: 20px;
+    // font-size: 18px;
+    font-weight: bold;
   }
 
   .lyric_wrapper {
     margin: auto;
-    margin-left: 100px;
+    // margin-left: 100px;
     .lyric_name {
       margin: 20px;
       text-align: center;
@@ -273,20 +322,19 @@
     transform: rotate(-90deg);
   }
   .lyric {
-    width: 600px;
-    height: 300px;
+    width: 400px;
+    height: 440px;
     overflow-y: scroll;
-    text-align: center;
+
     transition: all 0.5s;
     position: relative;
     // .lyricName {
     //   font-size: 28px;
     // }
     .lineLyric {
-      padding: 10px 0;
       transition: all 0.4s;
-      width: fit-content;
-      margin: 0 auto;
+      // width: fit-content;
+      // margin: 0 auto;
       box-sizing: border-box;
       height: 40px;
     }

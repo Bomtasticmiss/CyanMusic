@@ -167,6 +167,8 @@
     store.commit('setPlaylists', topSongData.value)
     store.commit('setPlayingSongIndex', songIndex)
     store.commit('setCurrentSongId')
+    store.commit('setPlayType','Normal')
+
     // console.log(window.sessionStorage.getItem('isLogin'))
   }
 

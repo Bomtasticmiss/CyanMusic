@@ -80,6 +80,8 @@
     store.commit('setPlaylists', props.songs)
     store.commit('setPlayingSongIndex', index)
     store.commit('setCurrentSongId')
+    store.commit('setPlayType','Normal')
+
   }
 
   // 正在播放图标

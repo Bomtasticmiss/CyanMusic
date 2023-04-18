@@ -113,7 +113,7 @@
           @current-change="getNewPage" />
       </div>
     </div>
-    <div v-else style="display: flex">
+    <div v-else style="display: flex" class="author-color font-14">
       <div style="margin: auto">没有更多评论哦,快来添加评论吧~~</div>
     </div>
   </div>

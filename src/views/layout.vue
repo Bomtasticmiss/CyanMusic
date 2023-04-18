@@ -34,7 +34,7 @@
       <div class="center-main" ref="centerMain">
         <div style="width: 90%; margin: auto">
           <transition name="el-fade-in">
-            <router-view ></router-view>
+            <router-view></router-view>
           </transition>
         </div>
       </div>
@@ -64,8 +64,6 @@
       // console.log(centerMain.value)
     }
   )
-
- 
 </script>
 <style scoped lang="less">
   /deep/ .el-container {
@@ -87,8 +85,11 @@
     // left: 0;
     width: 100%;
     height: 8%;
-    background-color: #ec4141;
+    background-color: var(--theme_bg_color);
     z-index: 2001;
+    box-shadow: rgba(0, 0, 0, 0.04) 0px 1px 3px,
+      rgba(0, 0, 0, 0.08) 0px 4px 12px;
+    transition: background-color 0.5s;
   }
   .main {
     position: relative;
@@ -110,6 +111,10 @@
     // height: 11%;
     flex-grow: 0.98;
     z-index: 2001;
+    // background-color: var(--theme_bg_color);
+    box-shadow: rgba(0, 0, 0, 0.04) 0px -1px 3px,
+      rgba(0, 0, 0, 0.08) 0px -4px 12px;
+    transition: background-color 0.5s;
   }
 
   .el-header {
@@ -157,9 +162,18 @@
       height: 100%;
     }
   }
-  @media screen and (min-width: 769px) {
+
+  @media screen and(max-width:769px) {
     .aside {
-      left: 0 !important;
+      position: absolute !important;
+      left: -210px;
+      z-index: 2000;
+      height: 100%;
     }
   }
+  // @media screen and (min-width: 1051px) {
+  //   .aside {
+  //     left: 0 !important;
+  //   }
+  // }
 </style>

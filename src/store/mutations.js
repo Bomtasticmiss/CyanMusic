@@ -15,8 +15,20 @@ export default {
         // state.currentSongId = songId
         state.currentSongId = state.playlists[state.playingSongIndex].id
     },
+    // 设置播放歌曲类型
+    setPlayType(state,type){
+        state.playType=type
+    },
     setPaused(state, paused) {
         state.paused = paused
+    },
+    setCurrenMusicInfo(state, info) {
+        if (info.type == 'cur') {
+            state.currenMusicInfo.currenTime = info.time
+        }
+        else if (info.type == 'total') {
+            state.currenMusicInfo.totalTime = info.time
+        }
     },
     setProfile(state, profile) {
         state.profile = profile
@@ -30,32 +42,34 @@ export default {
             window.sessionStorage.setItem('isLogin', true)
         }
     },
-    setLikeIdList(state, list){
-        if(list.type=='get'){
-            state.likeIdList=list.data
+    setLikeIdList(state, list) {
+        if (list.type == 'get') {
+            state.likeIdList = list.data
         }
-         if(list.type=='unshift'){
+        if (list.type == 'unshift') {
             state.likeIdList.unshift(list.id)
         }
-        if(list.type=='delete'){
+        if (list.type == 'delete') {
             console.log(state.likeIdList.indexOf(list.id));
-            state.likeIdList.splice(state.likeIdList.indexOf(list.id),1)
+            state.likeIdList.splice(state.likeIdList.indexOf(list.id), 1)
         }
     },
     setUserPlaylist(state, playlist) {
         state.UserPlaylist = playlist
     },
-    setPersonalFm(state,Fm){
-        if(Fm.type=='set'){
+    setPersonalFm(state, Fm) {
+        if (Fm.type == 'set') {
             state.playlists = Fm.data
         }
-        else if(Fm.type=='next'){
+        else if (Fm.type == 'next') {
             state.playingSongIndex++
+            state.currentSongId = state.playlists[state.playingSongIndex].id
+        }
+        else if (Fm.type == 'remove') {
+            console.log('移除')
+            state.playlists.splice(state.playingSongIndex,1)
         }
     },
-    // setPlayDurationTime(state, DurationTime) {
-    //   state.playDurationTime = DurationTime
-    // },
     // 播放上一首
     HandlePlayPre(state) {
         state.playingSongIndex -= 1;

@@ -82,6 +82,8 @@
     store.commit('setPlayingSongIndex', row.index)
     // store.commit('setSongUrl', res.data[0].url)
     store.commit('setCurrentSongId')
+    store.commit('setPlayType','Normal')
+
   }
 
   // 正在播放图标

@@ -43,12 +43,15 @@ export default {
         if (list.type == 'unshift') {
             const res = await setLike(list.id, true)
             console.log(res, 'unshift')
-            if (!res) return
+            if (res.code!==200) return
+            else if (res.code==200) ElMessage({ message: '已添加喜欢', type: 'success' })
             commit('setLikeIdList', list)
         }
         if (list.type == 'delete') {
             const res = await setLike(list.id, false)
             console.log(res, 'delete')
+            if (res.code!==200) return
+            else if (res.code==200) ElMessage({ message: '已取消喜欢', type: 'success' }) 
             commit('setLikeIdList', list)
         }
 
@@ -71,11 +74,26 @@ export default {
                     mv: item.mvid
                 })
             })
-        commit('setPersonalFm', {data:list,type:'set'})
-
+            commit('setPersonalFm', { data: list, type: 'set' })
+            commit('setPlayingSongIndex', 0)
+            commit('setCurrentSongId')
         }
-        else if(type == 'next'){
-            
+        else if (type == 'next') {
+            if (state.playingSongIndex == state.playlists.length - 1) {
+                dispatch('GetPersonal_fm', 'get')
+            }
+            else {
+                commit('setPersonalFm', { type: 'next' })
+            }
+        }else if(type=='remove'){
+            const res=await rubbish(state.currentSongId)
+            console.log(res)
+            if(state.playingSongIndex==state.playlists.length-1){
+                dispatch('GetPersonal_fm', 'get')
+            }else{
+                commit('setPersonalFm', { type: 'remove' })
+            }
+
         }
 
     }

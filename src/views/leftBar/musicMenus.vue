@@ -17,7 +17,8 @@
         <span>视频</span>
       </el-menu-item>
       <el-menu-item index="/fmPage">
-        <el-icon><setting /></el-icon>
+        <!-- <el-icon><setting /></el-icon> -->
+        <span class="iconfont icon-fm mright-5"></span>
         <span>FM</span>
       </el-menu-item>
       <el-menu-item index="/dailyRmd">
