@@ -5,104 +5,44 @@
         评论
         <span class="font-14">({{ totalCount }})</span>
       </div>
-      <textarea
-        name=""
-        id=""
-        cols="30"
-        rows="10"
-        class="comment-text"></textarea>
-    </div>
-    <div class="send-wrapper">
-      <button class="btn btn-white">发送</button>
-    </div>
-    <div v-if="totalCount">
-      <div class="font-16 font-bold">精彩评论</div>
-      <!-- 最热评论 -->
-      <div
-        class="comment-content-wrapper"
-        v-for="comment in hotComment"
-        :key="comment.commentId">
-        <div class="comment-content font-12">
-          <div class="comment-avator pointer" @click="enterUserPage(comment.user.userId)">
-            <img
-              v-if="comment.user.avatarUrl"
-              :src="comment.user.avatarUrl + '?param=200y200'"
-              alt=""
-              class="avator" />
-          </div>
-          <div class="content mleft-10">
-            <div>
-              <span style="color: rgb(80, 125, 175)"
-                >{{ comment.user.nickname }}:</span
-              >
-              <span>{{ comment.content }}</span>
-            </div>
-            <div class="comment-info">
-              <div style="color: rgb(159, 159, 159)">
-                {{ comment.timeStr }}
-              </div>
-              <div style="display: flex; align-items: center">
-                <button class="no-btn">
-                  <i class="fa fa-thumbs-o-up" aria-hidden="true"></i
-                  >{{ comment.likedCount }}
-                </button>
-                <button class="no-btn">
-                  <i class="fa fa-share-square-o" aria-hidden="true"></i>
-                </button>
-                <button class="no-btn" style="padding-bottom: 3px">
-                  <i class="fa fa-commenting-o" aria-hidden="true"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="line-bottom"></div>
+      <div class="area-wrapper">
+        <textarea
+          name=""
+          id=""
+          cols="30"
+          rows="10"
+          ref="commentAreaRef"
+          v-model="userCommentInfo.content"
+          class="comment-text"></textarea>
+        <span class="area-number font-12 author-color">{{ restNum }}</span>
       </div>
-      <div style="text-align: center; margin: 10px 0">
-        <button class="btn btn-white">更多精彩评论</button>
+      <div class="send-wrapper">
+        <button class="btn btn-white" @click="sendComment">发送</button>
+      </div>
+    </div>
+
+    <div v-if="totalCount">
+      <div v-if="totalCount > 10">
+        <div class="font-16 font-bold">精彩评论</div>
+        <!-- 最热评论 -->
+        <commentList
+          :commentInfo="hotComment"
+          _type="hot"
+          @toUserDetail="enterUserPage"
+          @like="like"
+          @reply="reply" />
+        <div style="text-align: center; margin: 10px 0">
+          <button class="btn btn-white">更多精彩评论</button>
+        </div>
       </div>
       <!-- 最新评论 -->
       <div class="font-16 font-bold">最新评论</div>
-      <div
-        class="comment-content-wrapper"
-        v-for="comment in lastedComment"
-        :key="comment.commentId">
-        <div class="comment-content font-12">
-          <div class="comment-avator pointer" @click="enterUserPage(comment.user.userId)">
-            <img
-              v-if="comment.user.avatarUrl"
-              v-lazy="comment.user.avatarUrl + '?param=200y200'"
-              alt="头像"
-              class="avator" />
-          </div>
-          <div class="content mleft-10">
-            <div>
-              <span style="color: rgb(80, 125, 175)"
-                >{{ comment.user.nickname }}:</span
-              >
-              <span>{{ comment.content }}</span>
-            </div>
-            <div class="comment-info">
-              <div style="color: rgb(159, 159, 159)">
-                {{ comment.timeStr }}
-              </div>
-              <div style="display: flex; align-items: center">
-                <button class="no-btn">
-                  <i class="fa fa-thumbs-o-up" aria-hidden="true"></i
-                  >{{ comment.likedCount }}
-                </button>
-                <button class="no-btn">
-                  <i class="fa fa-share-square-o" aria-hidden="true"></i>
-                </button>
-                <button class="no-btn" style="padding-bottom: 3px">
-                  <i class="fa fa-commenting-o" aria-hidden="true"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="line-bottom"></div>
-      </div>
+      <commentList
+        :commentInfo="lastedComment"
+        _type="lasted"
+        @toUserDetail="enterUserPage"
+        @like="like"
+        @reply="reply" />
       <!-- 分页 -->
       <div class="pagegination mtop-20">
         <el-pagination
@@ -120,13 +60,14 @@
 </template>
 
 <script setup>
-  import { reactive, toRefs, watch, onMounted } from 'vue'
+  import { reactive, toRefs, ref, watch, onMounted, computed } from 'vue'
   import { useStore } from 'vuex'
-  import { getComment } from '@/Api/api_comment'
-  import {useRouter} from "vue-router"
+  import { getComment, userComment, likeComment } from '@/Api/api_comment'
+  import { useRouter } from 'vue-router'
+  import commentList from './commentList.vue'
   const store = useStore()
 
-  const router=useRouter()
+  const router = useRouter()
   const data = reactive({
     totalCount: 0,
     // 最新评论时间
@@ -150,19 +91,16 @@
     },
   })
 
-  onMounted(() => {
-    GetlastCmd()
+  onMounted(async () => {
+    await GetlastCmd()
     getHotCmt()
   })
   // 获取最热评论
   const getHotCmt = async () => {
-    const res = await getComment(
-      props.id,
-      props.type,
-      2,
-      commentInfo.value.cursor
-    )
-    console.log(res.data.comments)
+    // 评论总数小于10条，不显示热评
+    if (totalCount.value < 10) return
+    const res = await getComment(props.id, props.type, 2)
+    console.log(res, '最热评论')
     commentInfo.value = res.data
     hotComment.value = res.data.comments.slice(0, 8)
   }
@@ -173,6 +111,76 @@
     lastedComment.value = res.data.comments
     totalCount.value = res.data.totalCount
     console.log(res)
+  }
+
+  const userCommentInfo = reactive({
+    /* 1评论 2回复 0删除 */
+    t: 1,
+    type: props.type,
+    id: props.id,
+    content: '',
+    commentId: 0,
+  })
+  // 可输入字数情况
+  const restNum = computed(() => {
+    return 140 - userCommentInfo.content.length
+  })
+  // 发送评论
+  const sendComment = async () => {
+    if (!store.state.isLogin)
+      return ElMessage({ message: '请先登录', type: 'warning' })
+    if (restNum.value < 0)
+      return ElMessage({ message: '评论过长', type: 'warning' })
+    const res = await userComment(userCommentInfo)
+    console.log(res)
+    if (res.code != 200) return
+    userCommentInfo.content = ''
+    // 1s后刷新
+    setTimeout(() => {
+      GetlastCmd()
+    }, 1000)
+  }
+  // 点赞
+  const like = async (info) => {
+    if (!store.state.isLogin)
+      return ElMessage({ message: '请先登录', type: 'wran' })
+    let obj = {
+      id: props.id,
+      cid: info.cid,
+      t: info.liked ? 0 : 1,
+      type: props.type,
+    }
+    const res = await likeComment(obj)
+    if (info._type == 'hot') {
+      hotComment.value[info.index].liked = !hotComment.value[info.index].liked
+      if (info.liked) {
+        hotComment.value[info.index].likedCount--
+      } else {
+        hotComment.value[info.index].likedCount++
+      }
+    }
+    if (info._type == 'lasted') {
+      lastedComment.value[info.index].liked =
+        !lastedComment.value[info.index].liked
+      if (info.liked) {
+        lastedComment.value[info.index].likedCount--
+      } else {
+        lastedComment.value[info.index].likedCount++
+      }
+    }
+    console.log(res)
+  }
+
+  const commentAreaRef = ref(null)
+  // 回复
+  const reply = (info) => {
+    if (!store.state.isLogin)
+      return ElMessage({ message: '请先登录', type: 'warning' })
+    userCommentInfo.content = '@' + info.name + ':'
+    userCommentInfo.commentId = info.cid
+    userCommentInfo.t = 2
+
+    commentAreaRef.value.focus()
   }
 
   watch(
@@ -187,8 +195,8 @@
     GetlastCmd(newPage)
   }
 
-  const enterUserPage=(userId)=>{
-    router.push({name:'userDetail',params:{id:userId}})
+  const enterUserPage = (userId) => {
+    router.push({ name: 'userDetail', params: { id: userId } })
   }
   let { cursor, commentInfo, hotComment, lastedComment, totalCount } =
     toRefs(data)
@@ -196,15 +204,23 @@
 <style lang="less" scoped>
   .comment-text-wrapper {
     margin-bottom: 10px;
-    .comment-text {
-      width: 100%;
-      height: 50px;
-      border: 1px solid #e5e5e5;
-      resize: none;
-      font-size: 14px;
-      border-radius: 4px;
-      outline: none;
-      padding: 3px;
+    .area-wrapper {
+      position: relative;
+      .comment-text {
+        width: 100%;
+        height: 50px;
+        border: 1px solid #e5e5e5;
+        resize: none;
+        font-size: 14px;
+        border-radius: 4px;
+        outline: none;
+        padding: 3px;
+      }
+      .area-number {
+        position: absolute;
+        right: 0;
+        bottom: 5px;
+      }
     }
   }
 
@@ -216,37 +232,6 @@
     .send-btn {
       border-radius: ;
     }
-  }
-  .comment-content-wrapper {
-    // width: 100%;
-    // height: 40px;
-    .comment-content {
-      display: flex;
-      align-items: center;
-      margin: 10px 0;
-      .comment-avator {
-        height: 40px;
-        width: 40px;
-        display: flex;
-        align-items: center;
-        .avator {
-          border-radius: 50%;
-          width: 100%;
-        }
-      }
-      .content {
-        flex: 1;
-        line-height: 30px;
-      }
-    }
-  }
-  .comment-info {
-    display: flex;
-    justify-content: space-between;
-  }
-  .line-bottom {
-    width: 100%;
-    border-top: 1px solid #e0e0e0;
   }
   .pagegination {
     display: flex;

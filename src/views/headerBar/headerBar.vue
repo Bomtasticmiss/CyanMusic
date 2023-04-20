@@ -190,8 +190,8 @@
   const router = useRouter()
   const store = useStore()
 
+  
   const themeIsShow = ref(false)
-
   const theme = ref([
     { name: '红色', value: '#ec4141' },
     { name: '白色', value: '#ffffff' },

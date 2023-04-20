@@ -78,34 +78,14 @@
       store.commit('setPlayType', 'Fm')
     }
 
-    // getFmInfo()
   })
-
-  const FmInfo = reactive({
-    imgInfo: '',
-    name: '',
-    album: {
-      name: '',
-    },
-    artists: {
-      name: '',
-    },
-  })
-  // const getFmInfo=()=>{
-  //     FmInfo.imgInfo=playingSongInfo.value.album.blurPicUrl
-  //   FmInfo.name=playingSongInfo.value.name
-  //   FmInfo.album.name=playingSongInfo.value.album.name
-  //   FmInfo.artists.name=playingSongInfo.value.artists[0].name
-  // }
 
   // 正在播放歌曲信息
   const playingSongInfo = computed(() => {
     return store.getters.playingSongInfo
   })
 
-  // watch(playingSongInfo,()=>{
-  //   getFmInfo()
-  // })
+
 
   const currentTime = computed(() => {
     return store.state.currenMusicInfo.currenTime

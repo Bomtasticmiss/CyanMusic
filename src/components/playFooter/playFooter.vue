@@ -217,10 +217,6 @@
     if (res.code !== 200) return
     if (!res.data[0].url) {
       ElMessage({ message: '资源获取失败', type: 'error' })
-      // songUrl.value = res.data[0].url
-      // audio.value.load()
-      // audio.value.play()
-      // updatetime()
       return
     }
     console.log(res)
@@ -229,10 +225,6 @@
     audio.value.load()
     audio.value.play()
   }
-  // 歌曲链接
-  // const songUrl = computed(() => {
-  //   return store.state.playSongUrl
-  // })
   // 一首歌曲信息
   const playingSongInfo = computed(() => {
     return store.getters.playingSongInfo
@@ -707,8 +699,8 @@
       justify-content: flex-end;
       align-items: center;
       .cover_bg {
-        width: 260px;
-        height: 260px;
+        width: 300px;
+        height: 300px;
         position: absolute;
         background-color: #d7d7d7ad;
         // border: 1px solid black;
@@ -722,13 +714,13 @@
         position: relative;
         border-radius: 50%;
         overflow: hidden;
-        width: 240px;
-        height: 240px;
+        width: 270px;
+        height: 270px;
         background-color: black;
         animation: cover_rotate1 20s linear infinite;
         img {
-          width: 190px;
-          height: 190px;
+          width: 200px;
+          height: 200px;
           border-radius: 50%;
           position: absolute;
           top: 50%;

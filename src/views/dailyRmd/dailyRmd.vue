@@ -1,37 +1,61 @@
 <template>
-  <div class="dailyRmd-wrapper mtop-20">
-    <div class="header">
-      <div class="calendar">
-        <div class="date">{{ date }}</div>
+  <div>
+  <!-- 骨架 -->
+  <el-skeleton :loading="loading" animated>
+    <template #template>
+      <el-skeleton-item
+        variant="image"
+        style="
+          width: 180px;
+          height: 180px;
+          margin-left: 20px;
+          margin-top:20px;
+        " />
+      <div style="padding: 14px">
+        <el-skeleton-item variant="text" style="width: 40%" />
+        <el-skeleton-item
+          variant="text"
+          style="width: 70%; margin-right: 16px" />
+        <el-skeleton-item variant="text" style="width: 20%" />
       </div>
-      <div class="mleft-20">
-        <div class="font-bold font-22">每日歌曲推荐</div>
-        <div class="mtop-5 min-color font-12">
-          根据你的音乐口味生成，每天6:00更新
+    </template>
+    <template #default>
+      <div class="dailyRmd-wrapper mtop-20">
+        <div class="header">
+          <div class="calendar">
+            <div class="date">{{ date }}</div>
+          </div>
+          <div class="mleft-20">
+            <div class="font-bold font-22">每日歌曲推荐</div>
+            <div class="mtop-5 min-color font-12">
+              根据你的音乐口味生成，每天6:00更新
+            </div>
+            <div class="mtop-10">
+              <span
+                class="font-12 mright-10 author-color mtop-5 tags"
+                v-for="item in recommendReasons"
+                :key="item.songId">
+                {{ item.reason }}
+              </span>
+            </div>
+          </div>
         </div>
-        <div class="mtop-10">
-          <span
-            class=" font-12 mright-10 author-color mtop-5 tags"
-            v-for="item in recommendReasons"
-            :key="item.songId">
-            {{ item.reason }}
-          </span>
+        <div class="mtop-20">
+          <button class="btn btn-red pd-10" @click="playAllPlayList">
+            <span class="iconfont icon-play"></span>
+            <span>播放全部</span>
+          </button>
+          <button class="btn btn-white pd-10 mleft-10">
+            <span class="iconfont icon-shoucangwenjianjia"></span>
+            <span>收藏全部</span>
+          </button>
         </div>
+        <div class="line mtop-10"></div>
+        <songList :tracks="dailySongs" />
       </div>
-    </div>
-    <div class="mtop-20">
-      <button class="btn btn-red pd-10" @click="playAllPlayList">
-        <span class="iconfont icon-play"></span>
-        <span>播放全部</span>
-      </button>
-      <button class="btn btn-white pd-10 mleft-10">
-        <span class="iconfont icon-shoucangwenjianjia"></span>
-        <span>收藏全部</span>
-      </button>
-    </div>
-    <div class="line mtop-10"></div>
-    <songList :tracks="dailySongs" />
-  </div>
+    </template>
+  </el-skeleton>
+</div>
 </template>
 
 <script setup>
@@ -41,6 +65,7 @@
   import { useStore } from 'vuex'
 
   const store = useStore()
+  const loading = ref(true)
 
   onMounted(() => {
     GetRecommendSongs()
@@ -56,11 +81,13 @@
   const recommendReasons = ref([])
 
   const GetRecommendSongs = async () => {
+    loading.value = true
     const res = await getRecommendSongs()
     console.log(res)
     if (res.code !== 200) return
     dailySongs.value = Object.freeze(res.data.dailySongs)
     recommendReasons.value = res.data.recommendReasons
+    loading.value = false
   }
 
   // 播放全部
@@ -69,8 +96,7 @@
     store.commit('setPlayingSongIndex', 0)
     // store.commit('setSongUrl', res.data[0].url)
     store.commit('setCurrentSongId')
-    store.commit('setPlayType','Normal')
-
+    store.commit('setPlayType', 'Normal')
   }
 </script>
 <style scoped lang="less">
