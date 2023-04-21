@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div v-load="isLoading">
     <div class="top pointer" @click="handleGoto">
       <h3>推荐歌单</h3>
       <i class="fa fa-angle-right fa-2x mleft-5" aria-hidden="true"></i>
     </div>
     <div class="hot-songs">
-      <div class="card-wrapper" @click="enterDailyPage">
+      <div class="card-wrapper" @click="enterDailyPage" v-if="isLogin">
         <div class="top-title font-14 white-color"><a>根据您的音乐口味生成每日更新</a></div>
         <div class="card-border" v-if="dailyRmdImg">
           <!-- <div class="calendar"></div> -->
@@ -46,12 +46,17 @@
   import playlistCard from '@/components/card/playlistCard.vue'
   import { getHomeMusicRmd } from '@/Api/api_playList'
   import { useCountFormate } from '@/hooks/useFormate'
-  import { toRefs, reactive, onMounted, computed } from 'vue'
+  import { toRefs, reactive, onMounted, computed,ref } from 'vue'
   import { useStore } from 'vuex'
   import { useRouter } from 'vue-router'
   const store = useStore()
   const router = useRouter()
 
+  const isLogin=computed(()=>{
+    return store.state.isLogin
+  })
+
+  const isLoading=ref(true)
   const data = reactive({
     cardPlaylists: [],
   })
@@ -81,8 +86,10 @@
     router.push('/playList')
   }
   // 初始化推荐歌单页面
-  onMounted(() => {
-    getMusicRmd()
+  onMounted(async () => {
+    isLoading.value=true
+    await getMusicRmd()
+    isLoading.value=false
   })
 
   const date = computed(() => {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="topDisplay">
+  <div v-load="isLoading">
     <div class="top-display-wrapper">
       <img :src="topDisplay.coverImgUrl" alt="顶端背景" class="img-back" />
       <img
@@ -94,10 +94,12 @@
   const isLoading=ref(true)
   const router = useRouter()
 
-  onMounted(() => {
-    GetCatlist()
-    GetPlayListByCatlist()
-    GetHotTags()
+  onMounted(async () => {
+    isLoading.value=true
+    await GetCatlist()
+    await GetPlayListByCatlist()
+    await  GetHotTags()
+    isLoading.value=false
   })
   // 所有分类标签
   const allCats = ref([])

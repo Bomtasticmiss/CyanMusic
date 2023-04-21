@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mtop-20">
     <div>
       <h3>搜索 {{ queryData.keywords }}</h3>
     </div>
@@ -252,7 +252,7 @@
     // route.query.index=index
     router.push({
       path: `/search/${route.params.keywords}`,
-      query: { index: index },  
+      query: { index: index },
     })
     // router. (`/search/${route.params.keywords}/${index}`)
     searchData.value = []
@@ -310,7 +310,7 @@
     loading.value = false
   }
 
-  const enterPage = ({id}) => {
+  const enterPage = ({ id }) => {
     switch (ActiveIndex.value) {
       case 0:
         break

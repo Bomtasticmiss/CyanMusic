@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isLoading">
+  <div v-load="isLoading">
     <div>
       <h3>官方榜</h3>
     </div>
@@ -74,7 +74,7 @@
   onMounted(() => {
     GetToplist()
   })
-  const isLoading=ref(true)
+  const isLoading = ref(true)
   const router = useRouter()
   const store = useStore()
   // 其他榜
@@ -89,27 +89,39 @@
     s: 8,
   })
   const GetToplist = async () => {
+    // isLoading.value = true
     const res = await getToplist()
     // console.log(res)
     res.list.slice(0, 4).forEach((item) => {
       officialListsId.value.push(item.id)
     })
     Toplists.value = res.list.slice(4)
-    officialListsId.value.forEach((item) => {
-      queryPlayList.id = item
-      // console.log(item.id)
-      GetPlaylistDetail()
+    officialListsId.value.forEach((id, index) => {
+      queryPlayList.id = id
+      GetPlaylistDetail(index)
     })
+    // isLoading.value = false
   }
   // 查询音乐歌单详情
-  const GetPlaylistDetail = async () => {
-    isLoading.value=true
+  const GetPlaylistDetail = async (index) => {
+    isLoading.value = true
     const res = await getPlaylistDetail(queryPlayList)
     // console.log(res.playlist.tracks.slice(0, 5))
     console.log(res)
     res.playlist.tracks = res.playlist.tracks.slice(0, 5)
     officialLists.value.push(res.playlist)
-    isLoading.value=false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 100)
+
+    // if(officialListsId.value.length==index+1){
+    //   console.log('最终')
+    //   isLoading.value=false
+
+    //   setTimeout(()=>{
+
+    //   },1000)
+    // }
   }
 
   const getSong = (index, songIndex) => {
@@ -117,9 +129,8 @@
     store.commit('setPlayingSongIndex', songIndex)
     // store.commit('setSongUrl', res.data[0].url)
     store.commit('setCurrentSongId')
-    store.commit('setPlayType','Normal')
+    store.commit('setPlayType', 'Normal')
     console.log(window.sessionStorage.getItem('isLogin'))
-    
   }
 
   // 传入歌单Id获取详情页

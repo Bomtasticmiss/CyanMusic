@@ -138,7 +138,7 @@
             </ul>
             <!-- <tabMenu :menuList="headerTabs" @getMenuIndex="tabActive" /> -->
             <div class="song-search" v-show="tabCurrent === 0">
-              <el-input placeholder="搜索音乐">
+              <el-input placeholder="搜索音乐" v-model="songSearchValue">
                 <template #suffix>
                   <i class="fa fa-search" aria-hidden="true"></i>
                 </template>
@@ -147,7 +147,7 @@
           </div>
           <!-- 音乐区 -->
           <div v-if="tabCurrent == 0">
-            <songList :tracks="tracks" />
+            <songList :tracks="list" />
             <div
               style="text-align: center"
               class="font-12 author-color pointer"
@@ -193,22 +193,22 @@
     setSubscribe,
     getPlaylistAll,
   } from '@/Api/api_playList'
-  import { getSong, setLike } from '@/Api/api_song'
   import { useStore } from 'vuex'
   import { useRouter, useRoute } from 'vue-router'
   import useGetSong from '@/hooks/useGetSong'
   import { useCountFormate, useDateFormate } from '@/hooks/useFormate'
   import jConfirm from '../custom/confirm'
+  const store = useStore()
+  const router = useRouter()
+  const route = useRoute()
+
   const loading = ref(true)
 
   onMounted(() => {
     GetPlaylistDetail()
   })
 
-  const store = useStore()
-  const router = useRouter()
-  const route = useRoute()
-
+  
   // 监听路由数据重载
   watch(
     () => route.params.id,
@@ -358,6 +358,13 @@
   const tabActive = (index) => {
     tabCurrent.value = index
   }
+// 歌曲匹配搜索
+  const songSearchValue=ref('')
+  const list=computed(()=>{
+    let reg=new RegExp(songSearchValue.value.trim(),'ig')
+    return tracks.value.filter((item)=>item.name.match(reg))
+  })
+
   // 跳转用户页面
   const enterUserDetail = (id) => {
     router.push({ name: 'userDetail', params: { id } })

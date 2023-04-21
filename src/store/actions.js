@@ -80,6 +80,7 @@ export default {
         }
         else if (type == 'next') {
             if (state.playingSongIndex == state.playlists.length - 1) {
+                console.log('再获取')
                 dispatch('GetPersonal_fm', 'get')
             }
             else {

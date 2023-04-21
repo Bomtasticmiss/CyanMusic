@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div >
     <div class="switch-btn-wrapper">
       <button
         class="switch-btn btn"
@@ -26,7 +26,12 @@
     </div>
     <!-- 新歌速递-->
     <div class="newsong-wrapper mtop-20" v-show="_index == 0">
-      <div style="display: flex; justify-content: space-between;align-items: center;">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        ">
         <ul class="category">
           <li
             v-for="item in typeData"
@@ -42,7 +47,7 @@
           <button class="btn btn-white mleft-10">收藏全部</button>
         </div>
       </div>
-      <div class="mtop-20 font-14">
+      <div class="mtop-20 font-14" v-load="isLoading">
         <ul>
           <li
             v-for="(item, index) in topSongData"
@@ -130,10 +135,12 @@
   const handlePage = (value) => {
     _index.value = value
   }
-
-  onMounted(() => {
-    GetTopSong()
+  const isLoading = ref(true)
+  onMounted(async () => {
+    isLoading.value = true
+    await GetTopSong()
     // GetTopAlbum()
+    isLoading.value = false
   })
 
   const typeQuery = reactive({
@@ -157,17 +164,20 @@
     topSongData.value = Object.freeze(res.data)
   }
 
-  const handleType = (id) => {
+  const handleType = async (id) => {
     if (typeQuery._type == id) return
     typeQuery._type = id
-    GetTopSong()
+    topSongData.value = []
+    isLoading.value = true
+    await GetTopSong()
+    isLoading.value = false
   }
 
   const getSong = (songIndex) => {
     store.commit('setPlaylists', topSongData.value)
     store.commit('setPlayingSongIndex', songIndex)
     store.commit('setCurrentSongId')
-    store.commit('setPlayType','Normal')
+    store.commit('setPlayType', 'Normal')
 
     // console.log(window.sessionStorage.getItem('isLogin'))
   }

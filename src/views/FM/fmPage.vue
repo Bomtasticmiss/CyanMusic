@@ -3,7 +3,7 @@
     <div class="fm">
       <div class="fm-left mright-10">
         <div class="img-info">
-          <img :src="`${playingSongInfo.al.blurPicUrl}?param=250y250`" alt="" />
+          <img v-lazy="`${playingSongInfo.al.blurPicUrl}?param=250y250`" :key="playingSongInfo.id" alt="" />
           <div
             class="img-btn"
             @click="handlePlay"
