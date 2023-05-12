@@ -3,16 +3,8 @@
     <!-- playfooter左侧 -->
     <div class="left-util">
       <div v-if="playingSongInfo" class="left-util">
-        <div
-          class="songWrapper"
-          @mouseover="showTopIcon"
-          @mouseout="hiddeTopIcon"
-          @click="enterlyricPage">
-          <i
-            ref="topIcon"
-            class="fa fa-chevron-circle-up fa-lg topIcon pointer"
-            aria-hidden="true"
-            style="opacity: 0"></i>
+        <div class="songWrapper" @click="enterlyricPage">
+          <span class="iconfont icon-xiangshang topIcon pointer font-20"></span>
           <img
             v-if="playingSongInfo.al"
             class="song-img pointer"
@@ -42,21 +34,22 @@
         <li class="pointer">
           <i class="fa fa-random" aria-hidden="true"></i>
         </li>
-        <li @click="handlePlayPre" class="pointer">
-          <i class="fa fa-step-backward" aria-hidden="true"></i>
+        <li
+          @click="handlePlayPre"
+          class="pointer"
+          :style="{ 'pointer-events': playType == 'Fm' ? 'none' : 'auto' }">
+          <span
+            class="iconfont icon-24gf-previous font-14"
+            :style="{
+              color: playType == 'Fm' ? '#d2d2d2' : 'black',
+            }"></span>
         </li>
-        <li @click="handlePauseOrPlay" class="pointer">
-          <i
-            class="fa fa-play-circle-o fa-lg"
-            aria-hidden="true"
-            v-show="!paused"></i>
-          <i
-            class="fa fa-pause-circle-o fa-lg"
-            aria-hidden="true"
-            v-show="paused"></i>
+        <li @click="handlePauseOrPlay" class="pointer play-btn-center">
+          <span v-show="!paused" class="iconfont icon-play3 font-18"></span>
+          <span v-show="paused" class="iconfont icon-zanting font-18"></span>
         </li>
         <li @click="handlePlayNext" class="pointer">
-          <i class="fa fa-step-forward" aria-hidden="true"></i>
+          <span class="iconfont icon-24gf-next font-14"></span>
         </li>
         <li class="pointer">
           <i class="fa fa-heart-o" aria-hidden="true"></i>
@@ -74,15 +67,10 @@
             class="time-through"
             style="width: 0%; left: 0%"
             ref="progress"></div>
-          <!-- <div
-            class="time-through-btn-border"
-            -->
           <div
             class="time-through-btn"
             @mousedown="handleMousedown"
             @mouseup="handleMouseup"></div>
-
-          <!-- </div> -->
         </div>
         <span class="font-14">{{ duration }}</span>
       </div>
@@ -96,7 +84,7 @@
     </div>
     <div class="right-util">
       <div class="voice pointer">
-        <span class="iconfont icon-shengyin"></span>
+        <span class="iconfont icon-shengyin font-18"></span>
         <div class="voice-control-wrapper">
           <input
             ref="volume"
@@ -107,10 +95,6 @@
             max="100"
             value="100"
             @input="changeVolume" />
-          <!-- <div class="voice-control">
-            <div style="width: 3px; height: 50%" class="voice-througth"></div>
-            <div class="voice-btn"></div>
-          </div> -->
         </div>
       </div>
       <div class="playlist pointer" @click="handleShowPlaylist">
@@ -132,31 +116,7 @@
           当前没有正在播放的歌曲
         </div>
       </template>
-      <el-table
-        :data="playlists"
-        stripe
-        style="width: 100%"
-        size="small"
-        @row-dblclick="GetSong"
-        :row-class-name="RowClassName"
-        empty-text="当前暂无正在播放的音乐">
-        <el-table-column type="index" width="50px" class-name="default" />
-        <el-table-column
-          prop="name"
-          label="音乐"
-          class-name="default"
-          show-overflow-tooltip />
-        <el-table-column
-          label="歌手"
-          :formatter="singersFormate"
-          show-overflow-tooltip
-          class-name="pointer" />
-        <el-table-column
-          label="时长"
-          width="100px"
-          :formatter="timeFormate"
-          class-name="default" />
-      </el-table>
+      <songList :tracks="playlists" />
     </el-drawer>
 
     <el-drawer
@@ -165,15 +125,11 @@
       size="100%"
       :before-close="handleClose">
       <div class="lyricWrapper">
-        <div class="lyric-container">
-          <!-- <div class="lyricBack pointer" @click="cnacel">
-            <i class="fa fa-times fa-lg" aria-hidden="true"></i>
-          </div> -->
+        <div class="lyric-top">
           <div class="lyriCoverPage">
             <div style="position: relative">
               <div class="cover_bg"></div>
-              <div class="cover_bg_1"></div>
-              <div class="cover_bg_2"></div>
+
               <div class="cover">
                 <img
                   v-if="playingSongInfo.al"
@@ -189,11 +145,12 @@
           </div>
           <lyricPage
             v-if="playingSongInfo"
-            :currentTime="audioCurrentTime.toFixed(3)"
-            :durationTime="audioDurationTime.toFixed(3)"
+            :currentTime="Number(audioCurrentTime.toFixed(3))"
+            :durationTime="Number(audioDurationTime.toFixed(3))"
             :songName="playingSongInfo.name" />
         </div>
-        <div style="margin: 20px 300px">
+
+        <div>
           <Comment :id="playingSongInfo.id" :type="0" />
         </div>
       </div>
@@ -210,8 +167,6 @@
     computed,
     watch,
     nextTick,
-    createVNode,
-    render,
   } from 'vue'
   import { useStore } from 'vuex'
   import lyricPage from './lyricPage.vue'
@@ -219,6 +174,8 @@
   import { useTimeFormate, useSingersFormate } from '@/hooks/useFormate'
   import { getSong } from '@/Api/api_song'
   import Comment from '../comment/Comment.vue'
+  import router from '@/router'
+  import songList from '../songList/songList.vue'
   const store = useStore()
   const audio = ref()
   const volume = ref()
@@ -260,10 +217,6 @@
     if (res.code !== 200) return
     if (!res.data[0].url) {
       ElMessage({ message: '资源获取失败', type: 'error' })
-      // songUrl.value = res.data[0].url
-      // audio.value.load()
-      // audio.value.play()
-      // updatetime()
       return
     }
     console.log(res)
@@ -272,10 +225,6 @@
     audio.value.load()
     audio.value.play()
   }
-  // 歌曲链接
-  // const songUrl = computed(() => {
-  //   return store.state.playSongUrl
-  // })
   // 一首歌曲信息
   const playingSongInfo = computed(() => {
     return store.getters.playingSongInfo
@@ -289,15 +238,9 @@
   const currentSongId = computed(() => {
     return store.state.currentSongId
   })
-  // const GetSong
-  // 暂停，播放
-  const paused = computed({
-    get() {
-      return store.state.paused
-    },
-    set(newValue) {
-      store.commit('setPaused', newValue)
-    },
+  // 音乐类型
+  const playType = computed(() => {
+    return store.state.playType
   })
 
   // 监听音乐连接变化
@@ -310,7 +253,7 @@
     // if (currentSongId.value == 0) return
     // changeSongUrl()
     getSongUrl()
-    console.log(1)
+    console.log('播放音乐对象改变')
     // audio.value.load()
     // audio.value.play()
   })
@@ -318,22 +261,45 @@
   // 播放上一首
   const handlePlayPre = () => {
     store.commit('HandlePlayPre')
+    paused.value = true
     // changeSongUrl()
     // getSongUrl()
   }
   // 播放下一首
   const handlePlayNext = () => {
-    store.commit('HandlePlayNext')
+    if (playType.value == 'Normal') {
+      store.commit('HandlePlayNext')
+    } else if (playType.value == 'Fm') {
+      console.log('环FM')
+      store.dispatch('GetPersonal_fm', 'next')
+    }
+    paused.value = true
     // changeSongUrl()
     // getSongUrl()
   }
 
   // 暂停，播放
+  const paused = computed({
+    get() {
+      return store.state.paused
+    },
+    set(newValue) {
+      store.commit('setPaused', newValue)
+    },
+  })
+
+  // 暂停，播放
   const handlePauseOrPlay = () => {
     if (!songUrl.value) return
     audio.value.paused ? (paused.value = true) : (paused.value = false)
-    audio.value.paused ? audio.value.play() : audio.value.pause()
   }
+
+  watch(paused, () => {
+    paused.value ? audio.value.play() : audio.value.pause()
+  })
+  // const audioCurrentTime=computed(()=>{
+  //   return audio.value.currentTime
+  // })
   // 更新进度条
   const updatetime = () => {
     // 播放完自动下一首
@@ -343,6 +309,10 @@
     // console.log(audio.value.currentTime)
     // console.log(audio.value.duration)
     audioCurrentTime.value = audio.value.currentTime
+    store.commit('setCurrenMusicInfo', {
+      type: 'cur',
+      time: Number(audio.value.currentTime.toFixed(3)),
+    })
     currentTime.value = useTimeFormate(audio.value.currentTime)
     if (isMove.value || audio.value.paused) return
     const moveX = Math.trunc(
@@ -354,10 +324,14 @@
   }
   // 播放开始时时暂停获取总时间
   const getDuration = () => {
-    // if(audio.value.duration){
-    //   console.log(audio.value.duration)
-    // audioDurationTime.value=audio.value.duration;
-    // }
+    if (audio.value.duration) {
+      console.log(audio.value.duration)
+      audioDurationTime.value = audio.value.duration
+      store.commit('setCurrenMusicInfo', {
+        type: 'total',
+        time: Number(audio.value.duration.toFixed(3)),
+      })
+    }
     // store.commit('setPlayDurationTime',audio.value.duration)
     duration.value = useTimeFormate(audio.value.duration)
   }
@@ -390,7 +364,6 @@
     // 进度条拖拽
     let move = (e) => {
       // console.log(11)
-
       const moveMin = progress.value.offsetParent.offsetLeft
       moved = Math.floor(
         (100 * (e.pageX - moveMin)) / fullTime.value.offsetWidth
@@ -437,31 +410,14 @@
     }
   }
 
-  const topIcon = ref()
-
-  const showTopIcon = () => {
-    nextTick(() => {
-      topIcon.value.style.opacity = 1
-    })
-    // console.log(topIcon.value.style.opacity)
-  }
-
-  const hiddeTopIcon = () => {
-    nextTick(() => {
-      topIcon.value.style.opacity = 0
-    })
-  }
-
   const isShowlyricPage = ref(false)
   const enterlyricPage = () => {
-    // const div = document.createElement('div')
-    // // 添加类名
-    // div.setAttribute('class', 'lyricWrapper')
-    // // 添加到body上
-    // document.body.appendChild(div)
-    // lyricPage()
-    isShowlyricPage.value = !isShowlyricPage.value
-    store.commit('changeLyricShow')
+    if (playType.value == 'Fm') {
+      router.push('/fmPage')
+    } else {
+      isShowlyricPage.value = !isShowlyricPage.value
+      store.commit('changeLyricShow')
+    }
   }
 
   const handleClose = () => {
@@ -522,7 +478,6 @@
     height: 100%;
     display: flex;
     justify-content: space-between;
-    border-top: 1px solid #d8d8d8;
   }
   .left-util {
     display: flex;
@@ -533,17 +488,18 @@
       margin: 0 10px;
       // z-index: 1000;
       position: relative;
+      flex-shrink: 0;
       .topIcon {
         color: white;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        // opacity: 0;
+        opacity: 0;
         transition: all 0.5s;
       }
-      .topIcon:hover {
-        // opacity: 1;
+      &:hover .topIcon {
+        opacity: 1;
       }
     }
     .song-img {
@@ -580,6 +536,18 @@
     li:hover {
       color: #ec4141;
     }
+    .play-btn-center {
+      border-radius: 50%;
+      background-color: #f3f3f3;
+      // border: 1px solid #a2a2a2;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      span {
+        margin: auto;
+      }
+    }
   }
   .is-disabled {
     cursor: not-allowed;
@@ -602,6 +570,11 @@
         border-top-left-radius: 3px;
         border-bottom-left-radius: 3px;
         // position: absolute;
+        transition: height 0.15s;
+        transition: width 0.05s;
+        &:hover {
+          height: 4px;
+        }
       }
       // .time-through-btn-border{
       //   width: 36px;
@@ -621,6 +594,7 @@
         transform: scale(1.2);
         cursor: grab;
       }
+
       // -moz-user-select: none; /*火狐*/
       //   -webkit-user-select: none;  /*webkit浏览器*/
       //   -ms-user-select: none;   /*IE10*/
@@ -703,24 +677,17 @@
   }
 
   .lyricWrapper {
-    // position: fixed;
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 86%;
-    // z-index: 1000;
-    // background-color: #e1e1e1;
-    .lyric-container {
-      position: relative;
+    margin: 0 20%;
+    position: relative;
+    .lyric-top {
       display: flex;
-      height: 100%;
-      .lyricBack {
-        position: absolute;
-        right: 110px;
-        top: 20px;
-        transition: all 0.5s;
-        z-index: 1000;
-      }
+    }
+    .lyricBack {
+      position: absolute;
+      right: 110px;
+      top: 20px;
+      transition: all 0.5s;
+      z-index: 1000;
     }
     .lyriCoverPage {
       display: flex;
@@ -732,65 +699,34 @@
       justify-content: flex-end;
       align-items: center;
       .cover_bg {
-        width: 310px;
-        height: 310px;
+        width: 300px;
+        height: 300px;
         position: absolute;
         background-color: #d7d7d7ad;
         // border: 1px solid black;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        border-radius: 42%;
+        border-radius: 50%;
         animation: cover_rotate 10s linear infinite;
-      }
-      .cover_bg_1 {
-        width: 310px;
-        height: 310px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        position: absolute;
-        background-color: #c8c8c8ad;
-        // border: 1px solid black;
-        border-radius: 46%;
-        animation: cover_rotate 8s linear infinite;
-      }
-      .cover_bg_2 {
-        width: 310px;
-        height: 310px;
-        position: absolute;
-        background-color: #bdbdbdad;
-        // border: 1px solid black;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        border-radius: 49%;
-        animation: cover_rotate 6s linear infinite;
       }
       .cover {
         position: relative;
         border-radius: 50%;
         overflow: hidden;
-        width: 300px;
-        height: 300px;
-        // margin: 50px;
-        // border: 2px black solid;
+        width: 270px;
+        height: 270px;
+        background-color: black;
         animation: cover_rotate1 20s linear infinite;
         img {
-          width: 100%;
-          height: 100%;
+          width: 200px;
+          height: 200px;
+          border-radius: 50%;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
-        // .cover_center {
-        //   position: absolute;
-        //   transform: translate(-50%, -50%);
-        //   background-color: #e1e1e1;
-        //   top: 50%;
-        //   left: 50%;
-        //   width: 100px;
-        //   height: 100px;
-        //   border-radius: 50%;
-        //   border: 2px black solid;
-        // }
       }
       // .cover::after {
       //   content: '';
@@ -828,6 +764,10 @@
   }
 
   @media screen and(max-width:768px) {
+    .left-util {
+      width: 180px;
+    }
+
     .play-time {
       display: none;
     }
@@ -835,7 +775,7 @@
       display: none;
     }
     .play-btn {
-      width: 200px;
+      width: 180px;
       li {
         &:nth-child(1) {
           display: none;

@@ -12,15 +12,16 @@
         <el-icon><i class="fa fa-music" aria-hidden="true"></i></el-icon>
         <span>乐库</span>
       </el-menu-item>
-      <el-menu-item index="/videoHome">
+      <el-menu-item index="/videoHome" :disabled="isLogin?false:true">
         <el-icon><i class="fa fa-youtube-play" aria-hidden="true"></i></el-icon>
         <span>视频</span>
       </el-menu-item>
-      <el-menu-item index="4">
-        <el-icon><setting /></el-icon>
+      <el-menu-item index="/fmPage" :disabled="isLogin?false:true">
+        <!-- <el-icon><setting /></el-icon> -->
+        <span class="iconfont icon-fm mright-5"></span>
         <span>FM</span>
       </el-menu-item>
-      <el-menu-item index="/dailyRmd">
+      <el-menu-item index="/dailyRmd" :disabled="isLogin?false:true">
         <el-icon><i class="fa fa-align-left" aria-hidden="true"></i></el-icon>
         <span>每日推荐</span>
       </el-menu-item>
@@ -55,7 +56,7 @@
 </template>
 
 <script setup>
-  import { ref, reactive, onMounted, computed, watch } from 'vue'
+  import { ref, onMounted, computed, watch } from 'vue'
   import { getUserPlaylist } from '@/Api/api_user'
   import { useStore } from 'vuex'
   import { useRoute } from 'vue-router'
@@ -70,6 +71,10 @@
     }
   })
 
+  const isLogin=computed(()=>{
+    return store.state.isLogin
+  })
+
   const activeMenus = ref('/homeRmd')
 
   const selectMenuIndex = (index) => {
@@ -78,7 +83,10 @@
     sessionStorage.setItem('activeMenus', index)
   }
 
-  watch(route, () => {})
+  watch(()=>route.path, () => {
+    console.log(route,'-----route')
+    selectMenuIndex(route.path)
+  })
 
   // 用户创建的歌单
   const userCreateLists = computed(() => {
@@ -95,10 +103,9 @@
   }
 </script>
 <style lang="less" scoped>
-  // .el-menu {
-  //   margin-left: 10px;
-  //   margin-right: 10px;
-  // }
+  .el-menu {
+    height: 100%;
+  }
 
   .el-menu-item {
     height: 40px;

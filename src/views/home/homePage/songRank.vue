@@ -1,66 +1,63 @@
 <template>
-  <div>
+  <div v-load="isLoading">
     <div>
-      <div>
-        <h3>官方榜</h3>
-      </div>
-      <div class="display-wrapper">
-        <div
-          class="display"
-          v-for="(officialList, index) in officialLists"
-          :key="officialList.id">
-          <div class="top-display">
-            <div class="card-border" @click="transferPlayList(officialList.id)">
-              <img v-lazy="officialList.coverImgUrl" alt="加载中" />
-              <!-- <img :src="props.imgsrc" alt="加载中" /> -->
-              <div class="card-count">
-                <i class="fa fa-play card-play" aria-hidden="true"></i>
-                {{ useCountFormate(officialList.playCount) }}
-              </div>
-              <div ref="cardBtn" class="card-paly-btn">
-                <i class="fa fa-play-circle fa-3x" aria-hidden="true"></i>
-              </div>
-              <!-- <div class="card-title">{{ officialList.name }}</div> -->
+      <h3>官方榜</h3>
+    </div>
+    <div class="display-wrapper">
+      <div
+        class="display"
+        v-for="(officialList, index) in officialLists"
+        :key="officialList.id">
+        <div class="top-display">
+          <div class="card-border" @click="transferPlayList(officialList.id)">
+            <img v-lazy="officialList.coverImgUrl" alt="加载中" />
+            <!-- <img :src="props.imgsrc" alt="加载中" /> -->
+            <div class="card-count">
+              <i class="fa fa-play card-play" aria-hidden="true"></i>
+              {{ useCountFormate(officialList.playCount) }}
             </div>
-            <ul class="display-list mleft-30">
-              <li
-                v-for="(songObj, songIndex) in officialList.tracks"
-                :key="songObj.id"
-                class="pd-5 default"
-                :style="{
-                  'background-color':
-                    songIndex % 2 == 0 ? '#f9f9f9' : '#ffffff',
-                }"
-                @click="getSong(index,songIndex)">
-                <span
-                  class="mleft-10"
-                  :style="{ color: songIndex < 3 ? 'red' : 'black' }"
-                  >{{ songIndex + 1 }}</span
-                ><span class="mleft-10">{{ songObj.name }}</span
-                ><span class="song-author mright-10">{{
-                  useSingersFormate(songObj)
-                }}</span>
-              </li>
-              <div
-                class="mleft-15 mtop-10 pointer"
-                @click="transferPlayList(officialList.id)">
-                查看全部
-                <span class="iconfont icon-you"></span>
-              </div>
-            </ul>
+            <div ref="cardBtn" class="card-paly-btn">
+              <i class="fa fa-play-circle fa-3x" aria-hidden="true"></i>
+            </div>
+            <!-- <div class="card-title">{{ officialList.name }}</div> -->
           </div>
+          <ul class="display-list mleft-30">
+            <li
+              v-for="(songObj, songIndex) in officialList.tracks"
+              :key="songObj.id"
+              class="pd-5 default"
+              :style="{
+                'background-color': songIndex % 2 == 0 ? '#f9f9f9' : '#ffffff',
+              }"
+              @click="getSong(index, songIndex)">
+              <span
+                class="mleft-10"
+                :style="{ color: songIndex < 3 ? 'red' : 'black' }"
+                >{{ songIndex + 1 }}</span
+              ><span class="mleft-10">{{ songObj.name }}</span
+              ><span class="song-author mright-10">{{
+                useSingersFormate(songObj)
+              }}</span>
+            </li>
+            <div
+              class="mleft-15 mtop-10 pointer"
+              @click="transferPlayList(officialList.id)">
+              查看全部
+              <span class="iconfont icon-you"></span>
+            </div>
+          </ul>
         </div>
       </div>
-      <div>
-        <h3>其他榜</h3>
-        <div class="Toplists-wrapper">
-          <playlistCard
-            v-for="Toplist in Toplists"
-            :key="Toplist.id"
-            :imgsrc="Toplist.coverImgUrl"
-            :title="Toplist.name"
-            :playCount="useCountFormate(Toplist.playCount)" />
-        </div>
+    </div>
+    <div>
+      <h3>其他榜</h3>
+      <div class="Toplists-wrapper">
+        <playlistCard
+          v-for="Toplist in Toplists"
+          :key="Toplist.id"
+          :imgsrc="Toplist.coverImgUrl"
+          :title="Toplist.name"
+          :playCount="useCountFormate(Toplist.playCount)" />
       </div>
     </div>
   </div>
@@ -77,6 +74,7 @@
   onMounted(() => {
     GetToplist()
   })
+  const isLoading = ref(true)
   const router = useRouter()
   const store = useStore()
   // 其他榜
@@ -91,32 +89,47 @@
     s: 8,
   })
   const GetToplist = async () => {
+    // isLoading.value = true
     const res = await getToplist()
     // console.log(res)
     res.list.slice(0, 4).forEach((item) => {
       officialListsId.value.push(item.id)
     })
     Toplists.value = res.list.slice(4)
-    officialListsId.value.forEach((item) => {
-      queryPlayList.id = item
-      // console.log(item.id)
-      GetPlaylistDetail()
+    officialListsId.value.forEach((id, index) => {
+      queryPlayList.id = id
+      GetPlaylistDetail(index)
     })
+    // isLoading.value = false
   }
   // 查询音乐歌单详情
-  const GetPlaylistDetail = async () => {
+  const GetPlaylistDetail = async (index) => {
+    isLoading.value = true
     const res = await getPlaylistDetail(queryPlayList)
     // console.log(res.playlist.tracks.slice(0, 5))
     console.log(res)
     res.playlist.tracks = res.playlist.tracks.slice(0, 5)
     officialLists.value.push(res.playlist)
+    setTimeout(() => {
+      isLoading.value = false
+    }, 100)
+
+    // if(officialListsId.value.length==index+1){
+    //   console.log('最终')
+    //   isLoading.value=false
+
+    //   setTimeout(()=>{
+
+    //   },1000)
+    // }
   }
 
-  const getSong = (index,songIndex) => {
+  const getSong = (index, songIndex) => {
     store.commit('setPlaylists', officialLists.value[index].tracks)
     store.commit('setPlayingSongIndex', songIndex)
     // store.commit('setSongUrl', res.data[0].url)
     store.commit('setCurrentSongId')
+    store.commit('setPlayType', 'Normal')
     console.log(window.sessionStorage.getItem('isLogin'))
   }
 

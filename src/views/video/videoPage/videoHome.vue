@@ -4,8 +4,10 @@
     <div class="btn-wrapper mtop-20">
       <div style="position: relative">
         <button class="btn video-btn" @click="isHiddenSquare = !isHiddenSquare">
-          {{ tabName }}
-          <span class="iconfont icon-you"></span>
+          <span>
+            {{ tabName }}
+          </span>
+          <span class="iconfont icon-right1"></span>
         </button>
         <div
           class="hidden-square font-14"
@@ -37,7 +39,7 @@
         </div>
       </div>
       <!-- 右侧标签 -->
-      <div>
+      <div class="rigth-btn">
         <button
           class="btn"
           :class="{
@@ -59,10 +61,35 @@
         ">
         dianji
       </button> -->
-      <videoList
-        @loadMore="load"
-        :videoData="videoData"
-        :disabled="isLoading" />
+      <videoList @loadMore="load" :videoData="videoData" :disabled="isLoading">
+        <template #img="{ item }">
+          <el-image
+            style="
+              width: 100%;
+              height: 140px;
+              /* height: 160px; */
+              border-radius: 4px;
+            "
+            :src="item.data.coverUrl + '?param=290y140'">
+            <template #placeholder>
+              <div style="width: 100%">
+                <img src="@/assets/img/loading-2.gif" alt="" />
+              </div>
+            </template>
+          </el-image>
+        </template>
+        <template #playcount="{ item }">
+          {{ useCountFormate(item.data.playTime) }}
+        </template>
+        <template #title="{ item }">
+          {{ item.data.title }}
+        </template>
+        <template #nickname="{ item }">
+          <span v-if="item.data.creator">
+            by{{ item.data.creator.nickname }}
+          </span>
+        </template>
+      </videoList>
     </div>
   </div>
 </template>
@@ -76,7 +103,9 @@
     getVideoGroupById,
     getAllVideo,
   } from '@/Api/api_video.js'
+  import { useCountFormate } from '@/hooks/useFormate'
 
+  
   onMounted(() => {
     GetVideoCategoryList()
     GetVideoGroupList()
@@ -206,8 +235,15 @@
         }
       }
     }
+    .rigth-btn {
+      display: flex;
+      height: 35px;
+      overflow-x: auto;
+    }
   }
   .video-btn {
+    display: flex;
+    align-items: center;
     padding: 0 20px;
     background-color: white;
     border: 1px solid #d8d8d8;

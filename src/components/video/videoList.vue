@@ -5,40 +5,28 @@
       :infinite-scroll-disabled="disabled"
       infinite-scroll-distance="5">
       <li
-        v-for="(item, index) in videoData"
-        :key="item.data.vid"
-        @click="toVideoDetail(item.data.vid)">
+        v-for="item in videoData"
+        :key="item.data?item.data.vid:item.vid"
+        @click="toVideoDetail(item.data?item.data:item,item.type)">
         <div class="video-border">
           <!-- <img
             style="border-radius: 7px"
             v-lazy="`${item.data.coverUrl}?param=250y160`"
             alt="" /> -->
-          <el-image
-            style="
-              width: 100%;
-              height: 160px;
-              /* height: 160px; */
-              border-radius: 4px;
-            "
-            :src="item.data.coverUrl + '?param=250y160'">
-            <template #placeholder>
-              <div style="width: 100%">
-                <img src="@/assets/img/loading-2.gif" alt="" />
-              </div>
-            </template>
-          </el-image>
+          <slot name="img" :item="item"></slot>
           <span class="playcount font-12">
-            <i class="fa fa-play card-play" aria-hidden="true"></i>
-            {{ useCountFormate(item.data.playTime) }}
+            <span class="iconfont icon-play card-play"></span>
+            <slot name="playcount" :item="item"></slot>
           </span>
           <span class="playBtn pointer">
             <i class="fa fa-play-circle fa-3x" aria-hidden="true"></i>
           </span>
         </div>
-
-        <div class="text-hidden font-14">{{ item.data.title }}</div>
-        <div class="text-hidden font-12 creatorName" v-if="item.data.creator">
-          by{{ item.data.creator.nickname }}
+        <div class="text-hidden font-14">
+          <slot name="title" :item="item"></slot>
+        </div>
+        <div class="text-hidden font-12 creatorName" >
+          <slot name="nickname" :item="item"></slot>
         </div>
       </li>
     </ul>
@@ -46,7 +34,7 @@
 </template>
 
 <script setup>
-  import { reactive, toRefs, watch } from 'vue'
+  import {  watch } from 'vue'
   import { useCountFormate } from '@/hooks/useFormate'
   import { useRouter } from 'vue-router'
 
@@ -59,7 +47,7 @@
     },
     disabled: {
       type: Boolean,
-      require: true,
+      default: true,
     },
   })
 
@@ -78,8 +66,14 @@
     emits('loadMore', props.videoData.length)
   }
 
-  const toVideoDetail = (vid) => {
-    router.push({ name: 'videoDetial', params: { vid } })
+  const toVideoDetail = (item) => {
+    console.log(item.type)
+    if(item.type==0){
+      router.push({ name: 'videoDetial', params: { id: item.vid, type: 'mv' } })
+    }
+    if(item.type==1||item.type==undefined){
+      router.push({ name: 'videoDetial', params: { id: item.vid, type: 'video' } })
+    }
   }
 </script>
 <style scoped lang="less">
@@ -97,9 +91,9 @@
       flex-wrap: wrap;
       li {
         margin-bottom: 20px;
-        margin-left: 2%;
+        margin-left: 1%;
         margin-right: 2%;
-        width: 20%;
+        width: 22%;
         .video-border {
           position: relative;
 
@@ -112,6 +106,8 @@
             top: 10px;
             right: 6px;
             color: white;
+            display: flex;
+            align-items: center;
           }
           .playBtn {
             color: white;

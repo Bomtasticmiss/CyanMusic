@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div v-load="isLoading">
     <div class="top-display-wrapper">
       <img :src="topDisplay.coverImgUrl" alt="顶端背景" class="img-back" />
       <img
         :src="topDisplay.coverImgUrl"
         alt="顶端歌单图片"
-        class="imgDisplay pointer" 
-        @click="transferPlayList(topDisplay.id)"/>
+        class="imgDisplay pointer"
+        @click="transferPlayList(topDisplay.id)" />
       <div class="display-left">
         <button class="btn tastBtn" @click="transferPlayList(topDisplay.id)">
           <i class="fa fa-university" aria-hidden="true"></i>
@@ -55,7 +55,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div style="overflow-x: auto; height: 35px; display: flex">
         <button
           class="btn hot-btn"
           v-for="hotCat in hotCats"
@@ -91,12 +91,15 @@
   import { useCountFormate } from '@/hooks/useFormate'
   import { useRouter } from 'vue-router'
 
+  const isLoading=ref(true)
   const router = useRouter()
 
-  onMounted(() => {
-    GetCatlist()
-    GetPlayListByCatlist()
-    GetHotTags()
+  onMounted(async () => {
+    isLoading.value=true
+    await GetCatlist()
+    await GetPlayListByCatlist()
+    await  GetHotTags()
+    isLoading.value=false
   })
   // 所有分类标签
   const allCats = ref([])
@@ -155,7 +158,7 @@
     console.log(res)
     hotCats.value = res.tags
   }
-  
+
   const handleChangeHotCat = (hotCatNmae) => {
     CatListQueryInfo.cat = hotCatNmae
     GetPlayListByCatlist()
@@ -224,8 +227,8 @@
       padding: 0 20px;
       background-color: white;
       border: 1px solid #d8d8d8;
-    //   display: flex;
-    // align-items: center;
+      //   display: flex;
+      // align-items: center;
     }
     .cat-btn:hover {
       background-color: #e0e0e0;

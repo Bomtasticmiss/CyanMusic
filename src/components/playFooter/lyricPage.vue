@@ -1,111 +1,238 @@
 <template>
-  
-      <div class="lyric_wrapper">
-        <div class="lyric_name">{{ props.songName }}</div>
-        <div class="lyricAuto">
-          <div class="lyric" ref="lyric" @mousedown="sliding">
-            <div
-              v-for="(lyric, index) in lyrics"
-              :key="index"
-              class="lineLyric"
-              :class="{
-                active: index == lyric_row,
-                lyricName: index == 0,
-              }">
-              {{ lyric.content }}
-            </div>
-          </div>
-        </div>
-      </div>
- 
+  <div class="lyric_wrapper">
+    <div class="lyric_name" v-if="props.songName">{{ props.songName }}</div>
+    <div class="lyric font-14" ref="lyric" :style="{ 'text-align': _type }">
+      <p
+        v-for="(lyric, index) in lyricsObj.formate_lyric"
+        :key="index"
+        class="lineLyric text-hidden"
+        :class="{
+          active: index == lyricsObj.current,
+          lyricName: index == 0,
+        }">
+        {{ lyric.content }}
+      </p>
+    </div>
+  </div>
 </template>
 
 <script setup>
   import {
-    customRef,
     ref,
-    createVNode,
-    render,
     onMounted,
     computed,
     watch,
     nextTick,
+    onBeforeUnmount,
+    onBeforeMount,
   } from 'vue'
   import { getlyric } from '@/Api/api_song'
 
   import { useStore } from 'vuex'
-  const props = defineProps(['currentTime', 'songName', 'durationTime'])
-
+  import Lyric from '@/hooks/lyric'
+  const props = defineProps({
+    currentTime: {
+      type: Number,
+      require: true,
+    },
+    songName: {
+      type: String,
+      default: null,
+    },
+    durationTime: {
+      type: Number,
+      require: true,
+    },
+    _type: {
+      type: String,
+      default: 'center',
+    },
+  })
   const store = useStore()
 
-  onMounted(() => {
+  const lyric = ref(null)
+
+  // 是否正在滑动
+  const isSlide = ref(false)
+
+  onBeforeMount(async () => {
     // 初始化获取歌词
-    Getlyric()
+    /* 其他页面切换到Fm页面时，currenttime没有清零，
+    lyricsObj为空，将报错NaN，获取歌词时禁止监听函数执行*/
+    isSlide.value = true
+    await Getlyric()
+    isSlide.value = false
   })
-  const lyric = ref()
-  // 歌词滑动顶部距离
-  const lyric_top = ref(0)
-  // 正在播放的歌词
-  const lyric_row = ref(0)
+  onMounted(() => {
+    // 监听鼠轮滚动
+    if (lyric.value.addEventListener) {
+      lyric.value.addEventListener(
+        'DOMMouseScroll',
+        debounce(scrollFunc, 500),
+        false
+      ) //火狐
+    }
+    lyric.value.onmousewheel = debounce(scrollFunc, 500) //IE/Opera/Chrome
+  })
+
+  onBeforeUnmount(() => {
+    if (lyric.value.addEventListener) {
+      lyric.value.removeEventListener(
+        'DOMMouseScroll',
+        debounce(scrollFunc, 500)
+      )
+    }
+    lyric.value.onmousewheel = null
+  })
 
   // 歌词回弹防抖
-  const debounceRef = (value, time) => {
-    let timer = null
-    console.log(timer)
-    return customRef((track, trigger) => {
-      return {
-        get() {
-          track()
-          return value
-        },
-        set(newValue) {
-          console.log(newValue)
-          clearTimeout(timer)
-          timer = setTimeout(() => {
-            value = newValue
-            trigger()
-          }, time)
-        },
+  const debounce = (fn, delay) => {
+    let timer
+    return function () {
+      isSlide.value = true
+      if (timer) {
+        clearTimeout(timer)
       }
-    })
+      timer = setTimeout(() => {
+        fn()
+      }, delay)
+    }
   }
-  // 是否正在滑动
-  // const isSlide = debounceRef(false, 3000)
-  const isSlide = ref(false)
- 
+  const scrollFunc = () => {
+    console.log('滑动')
+    isSlide.value = false
+  }
+
+  // 正在播放的歌曲信息
+  const playingSongInfo = computed(() => {
+    return store.getters.playingSongInfo
+  })
+
+  // 监听获取歌词
+  watch(playingSongInfo, async () => {
+    // 赋值isSlide为true防止切换歌词对象时与传进lyric组件的props.currentTime发生冲突报错
+    isSlide.value = true
+    await Getlyric()
+    isSlide.value = false
+  })
+
+  // 歌词实例对象
+  const lyricsObj = ref({})
+  // 播放歌曲 获取歌词
+  const Getlyric = async () => {
+    const res = await getlyric(playingSongInfo.value.id)
+    let strLyric = res.lrc.lyric
+    lyricsObj.value = new Lyric(strLyric)
+  }
+
   watch(
     () => props.currentTime,
     (newCurrentTime) => {
-      if (lyrics.value) {
-        // parseInt(lyrics.value[key].t) == parseInt(props.currentTime)&&
-        for (let key in lyrics.value) {
-          // let lyric_row=1;
-          // console.log(key)
-          if (
-            parseFloat(lyrics.value[key].time) <= parseFloat(newCurrentTime)
-          ) {
-            // console.log(1)
-            lyric_row.value = key
-            if (!isSlide.value) {
-              if (lyric_row.value > 3) {
-                lyric_top.value = 0 - 41 * (lyric_row.value - 3)
-                lyric.value.style.transform = `translateY(${lyric_top.value}px)`
-                // lyric_translateY.value=lyric_translateY.value-40 * (key - 6);
-                // lyric_top.value=lyric_top.value-40 * (key - 6);
-              } else {
-                lyric.value.style.transform = `translateY(${0}px)`
-              }
-            }
-            // break
-          }
-        }
-        // }
-      }
-      // i++;
-      // console.log(props.currentTime)
-      // console.log(row.value)
+      if (isSlide.value) return
+      handleCurrentTime(newCurrentTime)
+      // console.log(lyricsObj.value.current)
     }
   )
+  // 歌词滚动
+  const handleCurrentTime = (time) => {
+    // console.log(lyricsObj.value, time)
+    if (
+      lyricsObj.value.current !== lyricsObj.value.total - 1 &&
+      time + 0.1 >
+        lyricsObj.value.formate_lyric[lyricsObj.value.current + 1].time
+    ) {
+      /* 正常播放或往前拉进度条 */
+      lyricsObj.value.current++
+      /* 在拉进度的时候，time只改变了一次，但需要定位到歌词进度对应的行 */
+      if (
+        lyricsObj.value.current !== lyricsObj.value.total - 1 &&
+        time + 0.1 >
+          lyricsObj.value.formate_lyric[lyricsObj.value.current + 1].time
+      ) {
+        handleCurrentTime(time)
+      }
+      lyricHanlder(lyricsObj.value.current)
+    } else if (
+      lyricsObj.value.current !== 0 &&
+      time - 0.1 <
+        lyricsObj.value.formate_lyric[lyricsObj.value.current - 1].time
+    ) {
+      /* 往回拉进度条 */
+      lyricsObj.value.current--
+      /* 在拉进度的时候，time只改变了一次，但需要定位到歌词进度对应的行 */
+      if (
+        lyricsObj.value.current !== 0 &&
+        time - 0.1 <
+          lyricsObj.value.formate_lyric[lyricsObj.value.current - 1].time
+      ) {
+        handleCurrentTime(time)
+      }
+      lyricHanlder(lyricsObj.value.current)
+    }
+  }
+
+  const lyricHanlder = (activeLine) => {
+    if (activeLine < 3)
+      nextTick(() => {
+        lyric.value.scrollTop = 0
+      })
+    else {
+      scrollAnimation(activeLine - 3)
+    }
+  }
+
+  const lyricScrollTop = ref(0)
+
+  watch(
+    lyric,
+    (newvlaue) => {
+      console.log('回弹', newvlaue.scrollTop)
+
+      // if (lyricScrollTop.value !== newvlaue.value.scrollTop && isSlide.value == false) {
+      //   setTimeout(() => {
+      //     nextTick(() => {
+      //       lyric.value.scrollTop = lyricScrollTop
+      //     })
+      //   }, 500)
+      // }
+    },
+    { deep: true }
+  )
+  const scrollAnimation = (num) => {
+    let count = 0
+
+    let animationTop = (timestamp) => {
+      // console.log(lyric.value.scrollTop)
+      count++
+      nextTick(() => {
+        lyric.value.scrollTop = (num - 1) * 40 + count + 1
+      })
+      // console.log(timestamp)
+      if (count < 40) {
+        window.requestAnimationFrame(animationTop)
+      }
+    }
+    // let start
+    // const animationTop = (timestamp) => {
+    //   if (start === undefined) start = timestamp
+    //   const elapsed = timestamp - start
+    //   console.log(elapsed)
+    //   nextTick(() => {
+    //     lyric.value.scrollTop = Math.min(
+    //       0.16 * elapsed + (num - 1) * 40,
+    //       num * 40
+    //     )
+    //   })
+    //   if (elapsed < 250) {
+    //     // 在.25秒后停止动画
+    //     window.requestAnimationFrame(animationTop)
+    //   }
+    // }
+
+    // console.log(lyric.value.scrollTop)
+    window.requestAnimationFrame(animationTop)
+    lyricScrollTop.value = num * 40
+  }
   // 取消歌词页面
   const cnacel = () => {
     isShowLyricPage.value = false
@@ -119,67 +246,6 @@
       store.commit('changeLyricShow')
     },
   })
-  // 正在播放的歌曲信息
-  const playingSongInfo = computed(() => {
-    return store.getters.playingSongInfo
-  })
-  // 监听获取歌词
-  watch(playingSongInfo, () => {
-    Getlyric()
-    // 歌曲回弹
-    lyric_row.value = 0
-  })
-
-  // 歌词
-  const lyrics = ref(null)
-  // 播放歌曲 获取歌词
-  const Getlyric = async () => {
-    let fin_Array = []
-    const res = await getlyric(playingSongInfo.value.id)
-    let strLyric = res.lrc.lyric
-    // let pattern=/\[\d{2}:\d{2}\.\d{2}\]/g
-    let pattern = /.*\n/g
-    let arrLyric = strLyric.split('\n')
-    arrLyric.pop()
-    let Time = []
-    for (let i in arrLyric) {
-      // arrLyric[i].replace(/[\\n]/g,'')
-      // console.log(arrLyric[i])
-      // let timePattern=/\[.*\]/g
-      //  Time[i] = arrLyric[i].split(/\]/)
-      //  Time[i][0]=Time[i][0].replace(/[\[\]]/g,"")
-      //  Time[i][0]=Number((Time[i][0].split(":")[0]*60+parseFloat(Time[i][0].split(":")[1])).toFixed(3))
-
-      let t = arrLyric[i].substring(
-        arrLyric[i].indexOf('[') + 1,
-        arrLyric[i].indexOf(']')
-      )
-      fin_Array.push({
-        time: (t.split(':')[0] * 60 + parseFloat(t.split(':')[1])).toFixed(3),
-        content: arrLyric[i].substring(
-          arrLyric[i].indexOf(']') + 1,
-          arrLyric[i].length
-        ),
-      })
-    }
-    // medisArray.splice(0, 0, { content: props.songName, time: '0.000' })
-    fin_Array.forEach((item, i) => {
-      if (i == fin_Array.length - 1) {
-        item.next = null
-      } else {
-        item.next = fin_Array[i + 1].time
-      }
-      item.active = ''
-      // 去除空句
-      if(item.content==''){
-        fin_Array.splice(i,1)
-      }
-    })
-    console.log(props.durationTime)
-    console.log(arrLyric)
-    console.log(fin_Array)
-    lyrics.value = fin_Array
-  }
 
   // 歌词拖拽
   const sliding = (e) => {
@@ -215,16 +281,12 @@
       }
       // console.log(e.pageY)
     }
-    requestAnimationFrame(slide);
+    requestAnimationFrame(slide)
 
     // 鼠标弹起
     const Mouseup = () => {
       console.log(1)
-      // a.value++;
-      // isSlide.value = false
-      // debounce(() => {
-        isSlide.value = false
-      // }, 3000)
+      isSlide.value = false
       document.removeEventListener('mousemove', slide)
     }
     document.addEventListener('mousemove', slide)
@@ -237,67 +299,48 @@
       { once: true }
     )
   }
-
-  function debounce(fn, delay) {
-    // if(isSlide.value)
-    let timer
-    return function () {
-      if (timer) {
-        clearTimeout(timer)
-      }
-      timer = setTimeout(() => {
-        fn()
-      }, delay)
-    }
-  }
 </script>
 <style lang="less">
   .active {
     color: #ec4141;
-    font-size: 20px;
+    // font-size: 18px;
+    font-weight: bold;
   }
- 
-    .lyric_wrapper {
-      margin: auto;
-      margin-left: 100px;
-      .lyric_name {
-        margin: 20px;
-        text-align: center;
-        font-size: 26px;
-        padding: 10px;
-      }
-    }
-    .lyricAuto {
-      width: 600px;
-      // flex-basis: 60%;
-      height: 300px;
-      overflow: hidden;
-      // overflow: scroll;
-    }
 
-    .lyricBack:hover {
-      transform: rotate(-90deg);
-    }
-    .lyric {
-      // margin: 100px auto;
-      width: 100%;
+  .lyric_wrapper {
+    margin: auto;
+    // margin-left: 100px;
+    .lyric_name {
+      margin: 20px;
       text-align: center;
-      overflow: hidden;
-      transition: all 0.5s;
-      position: relative;
-      // .lyricName {
-      //   font-size: 28px;
-      // }
-      .lineLyric {
-        padding: 10px 0;
-        transition: all 0.4s;
-        width: fit-content;
-        margin: 0 auto;
-      }
+      font-size: 26px;
+      padding: 10px;
     }
-    .lyric:hover {
-      // transform: scale(1.01);
-      cursor: grab;
+  }
+
+  .lyricBack:hover {
+    transform: rotate(-90deg);
+  }
+  .lyric {
+    width: 400px;
+    height: 440px;
+    overflow-y: scroll;
+
+    transition: all 0.5s;
+    position: relative;
+    // .lyricName {
+    //   font-size: 28px;
+    // }
+    .lineLyric {
+      transition: all 0.4s;
+      // width: fit-content;
+      // margin: 0 auto;
+      box-sizing: border-box;
+      height: 40px;
     }
-  
+  }
+  .lyric:hover {
+    // transform: scale(1.01);
+    cursor: grab;
+  }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="user-wrapper">
+  <div class="user-wrapper" v-load="loading">
     <div class="userInfo-wrapper">
       <div class="avator">
         <img :src="userInfo.avatarUrl" alt="头像" />
@@ -37,7 +37,7 @@
     <div class="userSong-wrapper">
       <tabMenu
         :menuList="['创建的歌单', '收藏的歌单', '创建的音乐专栏']"
-        @getMenuIndex="tabActive" />
+        v-model:mIndex="tabCurrent" />
     </div>
     <div class="list-wrapper">
       <playlistCard
@@ -67,13 +67,20 @@
   import router from '@/router'
   const store = useStore()
   const route = useRoute()
+
+
+  const loading = ref(true)
   const userInfo = ref({})
 
-  onMounted(() => {
+  onMounted(async () => {
     // GetSubcount()
-    GetUserDetail()
-    GetUserPlaylistl()
+    loading.value = true
+    await GetUserDetail()
+    await GetUserPlaylistl()
+    loading.value = false
   })
+
+  const tabCurrent = ref(0)
 
   const GetSubcount = async () => {
     const res = await getSubcount()
@@ -111,13 +118,6 @@
   const userCollectLists = computed(() => {
     return userLists.value.filter((item) => item.userId != userQuery.uid)
   })
-
-  const tabCurrent = ref(0)
-
-  const tabActive = (index) => {
-    tabCurrent.value = index
-    console.log(tabCurrent.value)
-  }
 
   const userFollowedsQuery = reactive({
     uid: route.params.id,

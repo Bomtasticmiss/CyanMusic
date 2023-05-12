@@ -11,11 +11,15 @@ const state = {
   currentSongId: 0,
   // 播放音乐的URL
   playSongUrl: '',
-  // 正在播放的音乐总时长
-  // playDurationTime: 0,
-  // SingersFormate: ''
   // 暂停状态(false暂停||true播放)
   paused: false,
+  // 正在播放歌曲的信息
+  currenMusicInfo: {
+    totalTime: 0,
+    currenTime: 0
+  },
+  // 播放歌曲的类型(Normal/Fm)
+  playType:'Normal',
   // 歌词页面
   isShowLyricPage: false,
   // 登录态

@@ -1,7 +1,6 @@
 {
-    "bracketSameLine":true,
-    "vueIndentScriptAndStyle":true,
-    "semi": false,
-    "singleQuote": true
-  }
-  
+  "bracketSameLine": true,
+  "vueIndentScriptAndStyle": true,
+  "semi": false,
+  "singleQuote": true
+}

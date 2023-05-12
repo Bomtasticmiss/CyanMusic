@@ -1,5 +1,6 @@
 // 格式化播放量
 const useCountFormate = (count) => {
+    // console.log(count)
     return count > 10000
         ? count > 100000000 ? Math.floor(count / 100000000) + '亿' : Math.floor(count / 10000) + '万'
         : count

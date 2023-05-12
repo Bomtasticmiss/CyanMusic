@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3930816 */
-  src: url('//at.alicdn.com/t/c/font_3930816_wjrt7vuoym.woff2?t=1678895235630') format('woff2'),
-       url('//at.alicdn.com/t/c/font_3930816_wjrt7vuoym.woff?t=1678895235630') format('woff'),
-       url('//at.alicdn.com/t/c/font_3930816_wjrt7vuoym.ttf?t=1678895235630') format('truetype');
+  src: url('//at.alicdn.com/t/c/font_3930816_idu3pv00m5k.woff2?t=1681966771603') format('woff2'),
+       url('//at.alicdn.com/t/c/font_3930816_idu3pv00m5k.woff?t=1681966771603') format('woff'),
+       url('//at.alicdn.com/t/c/font_3930816_idu3pv00m5k.ttf?t=1681966771603') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,130 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-pinglun:before {
+  content: "\e604";
+}
+
+.icon-31dianzan:before {
+  content: "\e603";
+}
+
+.icon-fenxiang:before {
+  content: "\e606";
+}
+
+.icon-pifu1:before {
+  content: "\e62b";
+}
+
+.icon-fm:before {
+  content: "\e695";
+}
+
+.icon-xiangshang:before {
+  content: "\e6a7";
+}
+
+.icon-play3:before {
+  content: "\e865";
+}
+
+.icon-24gf-next:before {
+  content: "\ea7f";
+}
+
+.icon-24gf-previous:before {
+  content: "\ea88";
+}
+
+.icon-zanting:before {
+  content: "\e62a";
+}
+
+.icon-xihuan3:before {
+  content: "\e619";
+}
+
+.icon-more:before {
+  content: "\e637";
+}
+
+.icon-iov-next:before {
+  content: "\e652";
+}
+
+.icon-play2:before {
+  content: "\e726";
+}
+
+.icon-xinjianwenjianjia:before {
+  content: "\e61a";
+}
+
+.icon-user1:before {
+  content: "\e680";
+}
+
+.icon-play1:before {
+  content: "\e602";
+}
+
+.icon-user:before {
+  content: "\e682";
+}
+
+.icon-quxiao:before {
+  content: "\e605";
+}
+
+.icon-xiazai:before {
+  content: "\e60e";
+}
+
+.icon-delete:before {
+  content: "\ea16";
+}
+
+.icon-cancel:before {
+  content: "\e61f";
+}
+
+.icon-rili:before {
+  content: "\e65f";
+}
+
+.icon-shoucangwenjianjia:before {
+  content: "\e819";
+}
+
+.icon-loading:before {
+  content: "\e601";
+}
+
+.icon-Share:before {
+  content: "\e62d";
+}
+
+.icon-star2:before {
+  content: "\e6a9";
+}
+
+.icon-star3:before {
+  content: "\e614";
+}
+
+.icon-play:before {
+  content: "\e61e";
+}
+
+.icon-quxiao-xian:before {
+  content: "\e8e3";
+}
+
+.icon-menu:before {
+  content: "\e86b";
 }
 
 .icon-xihuan2:before {

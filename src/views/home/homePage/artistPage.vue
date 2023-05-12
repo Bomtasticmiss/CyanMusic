@@ -3,7 +3,7 @@
     <div class="filter-wrapper font-14">
       <div class="filter-btn-wrapper">
         <span>语种</span>
-        <div>
+        <div class="phone-btn">
           <button
             v-for="area in artistData.area"
             :key="area.id"
@@ -16,7 +16,7 @@
       </div>
       <div class="filter-btn-wrapper">
         <span>分类</span>
-        <div>
+        <div class="phone-btn">
           <button
             v-for="_type in artistData.type"
             :key="_type.id"
@@ -29,7 +29,7 @@
       </div>
       <div class="filter-btn-wrapper">
         <span>筛选</span>
-        <div style="width: 80%">
+        <div style="width: 80%" class="phone-btn">
           <button
             v-for="initial in artistData.initial"
             :key="initial.id"
@@ -39,18 +39,12 @@
             }"
             @click="handleInitialBtn(initial.id)">
             {{ initial.value }}
-          </button> 
+          </button>
         </div>
       </div>
     </div>
-    <div class="artistList-wrapper">
-      <div class="artistList-border" v-for="artist in artists" :key="artist.id">
-        <div style="display: flex; flex-direction: column">
-          <img v-lazy="`${artist.img1v1Url}?param=200y200`" alt="歌手图片" />
-          <div class="artistList-name text-hidden">{{ artist.name }}</div>
-        </div>
-      </div>
-    </div>
+
+    <artistList :artists="artists"/>
   </div>
 </template>
 
@@ -58,6 +52,7 @@
   import { reactive, toRefs, ref, onMounted, watch } from 'vue'
   import playlistCard from '@/components/card/playlistCard.vue'
   import { getTopArtists } from '@/Api/api_artist'
+  import artistList from '@/components/artist/artistList.vue';
   const artistData = require('@/assets/json/artistData.json')
 
   onMounted(() => {
@@ -111,32 +106,19 @@
       padding: 0;
     }
   }
-  .artistList-wrapper {
-    display: flex;
-    flex-wrap: wrap; 
-    margin-top: 20px;
-    .artistList-border {
-      margin-bottom: 30px;
-      margin-right: 2%;
-      width: 14%;
-      overflow: hidden;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: 0.3s;
-      img {
-        border-radius: 4px;
-      }
-      .artistList-name {
-        height: 20px;
-        /* width: 150px; */
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        transform: translate3d(0, 0, 0);
+  @media screen and(max-width:500px) {
+  
+    .filter-btn-wrapper {
+      justify-content: space-between;
+      .filter-btn {
+        padding: 5px 5px;
       }
     }
-    .artistList-border:hover {
-      transform: scale(1.1);
+    .phone-btn {
+      display: flex;
+      overflow-x: auto;
+      width: 80%;
     }
   }
+
 </style>

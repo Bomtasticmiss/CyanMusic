@@ -5,7 +5,7 @@
       <template #template>
         <el-skeleton-item
           variant="image"
-          style="width: 150px; height: 150px; margin-left: 20px" />
+          style="width: 180px; height: 180px; margin-left: 20px" />
         <div style="padding: 14px">
           <el-skeleton-item variant="text" style="width: 40%" />
           <el-skeleton-item
@@ -31,7 +31,9 @@
                 <span>{{ playlist.name }}</span>
               </div>
               <div class="creator">
-                <div class="creator-avatar pointer">
+                <div
+                  class="creator-avatar pointer"
+                  @click="enterUserDetail(playlist.creator.userId)">
                   <img
                     v-if="playlist.creator"
                     :src="playlist.creator.avatarUrl + '?param=200y200'"
@@ -41,6 +43,7 @@
                   <span
                     class="creator-name mleft-12 font-12 pointer"
                     v-if="playlist.creator"
+                    @click="enterUserDetail(playlist.creator.userId)"
                     >{{ playlist.creator.nickname }}</span
                   >
                   <span class="mleft-12 font-12">{{ playlistCreateTime }}</span>
@@ -54,16 +57,35 @@
                 </button>
                 <button
                   class="btn mleft-12 btn-white"
-                  @click="handleUserCollect">
-                  <i class="fa fa-star-o" aria-hidden="true"></i>
-                  <span class="btn-text">收藏({{ subscribedCount }})</span>
+                  @click="handleUserCollect"
+                  :style="{
+                    cursor:
+                      isUserCreateLists == true ? 'not-allowed' : 'pointer',
+                  }"
+                  :class="{ 'author-color': isUserCreateLists == true }">
+                  <!-- <i class="fa fa-star-o" aria-hidden="true"></i> -->
+                  <a v-if="!isSubscribe">
+                    <span class="iconfont icon-star2"></span>
+                    <span class="btn-text">收藏({{ subscribedCount }})</span>
+                  </a>
+                  <a v-else>
+                    <span
+                      class="iconfont icon-star3"
+                      style="color: #d81e06"></span>
+                    <span class="btn-text">已收藏({{ subscribedCount }})</span>
+                  </a>
                 </button>
                 <button class="btn mleft-12 btn-white">
-                  <i class="fa fa-share-square-o" aria-hidden="true"></i>
+                  <!-- <i class="fa fa-share-square-o" aria-hidden="true"></i> -->
+                  <span class="iconfont icon-Share"></span>
                   <span class="btn-text">分享({{ shareCount }})</span>
                 </button>
-                <button class="btn mleft-12 btn-red">
-                  <i class="fa fa-spinner" aria-hidden="true"></i>
+                <button
+                  class="btn mleft-12 btn-red"
+                  @click="GetPlaylistAll"
+                  v-if="!isPlaylistAll">
+                  <!-- <i class="fa fa-spinner" aria-hidden="true"></i> -->
+                  <span class="iconfont icon-loading"></span>
                   <span class="btn-text">加载完整歌单</span>
                 </button>
               </div>
@@ -116,7 +138,7 @@
             </ul>
             <!-- <tabMenu :menuList="headerTabs" @getMenuIndex="tabActive" /> -->
             <div class="song-search" v-show="tabCurrent === 0">
-              <el-input placeholder="搜索音乐">
+              <el-input placeholder="搜索音乐" v-model="songSearchValue">
                 <template #suffix>
                   <i class="fa fa-search" aria-hidden="true"></i>
                 </template>
@@ -124,62 +146,17 @@
             </div>
           </div>
           <!-- 音乐区 -->
-          <div class="content-wrapper" v-if="tabCurrent == 0">
-            <el-table
-              :data="tracks"
-              stripe
-              style="width: 100%"
-              size="small"
-              @row-dblclick="GetSong"
-              :row-class-name="RowClassName"
-              empty-text="当前暂无音乐">
-              <el-table-column type="index" width="50px" class-name="default">
-                <template #default="scope">
-                  <span
-                    v-if="showPlaying(scope.row.index)"
-                    class="iconfont icon-shengyin-kai"
-                    style="color: red"></span>
-                </template>
-              </el-table-column>
-              <el-table-column width="35px" class-name="pointer">
-                <template #default="scope">
-                  <span
-                    class="iconfont icon-xihuan"
-                    @click="SetLike(scope.row)"
-                    v-if="!isLike(scope.row)"></span>
-
-                  <span
-                    class="iconfont icon-xihuan2"
-                    style="color: red"
-                    @click="CancelLike(scope.row)"
-                    v-if="isLike(scope.row)"></span>
-                  <!-- <i
-                    class="fa fa-heart-o"
-                    aria-hidden="true"
-                    ></i> -->
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="name"
-                label="音乐"
-                class-name="default"
-                show-overflow-tooltip />
-              <el-table-column
-                label="歌手"
-                :formatter="SingersFormate"
-                show-overflow-tooltip
-                class-name="pointer" />
-              <el-table-column
-                prop="al.name"
-                label="专辑名"
-                class-name="pointer"
-                show-overflow-tooltip />
-              <el-table-column
-                label="时长"
-                width="100px"
-                :formatter="timeFormate"
-                class-name="default" />
-            </el-table>
+          <div v-if="tabCurrent == 0">
+            <songList :tracks="list" />
+            <div
+              style="text-align: center"
+              class="font-12 author-color pointer"
+              @click="GetPlaylistAll"
+              v-if="!isPlaylistAll">
+              ~~点击
+              <span class="iconfont icon-loading"></span>
+              加载更多音乐~~
+            </div>
           </div>
           <!-- 评论区 -->
           <div class="comment-wrapper" v-if="tabCurrent == 1">
@@ -201,29 +178,47 @@
   import subscribersWrappper from '@/components/star/subscribersWrapper.vue'
   import Comment from '@/components/comment/Comment.vue'
   import tabMenu from '@/components/menus/tabMenu.vue'
-  import { reactive, ref, toRefs, onMounted, computed, nextTick } from 'vue'
-  import { getPlaylistDetail } from '@/Api/api_playList'
-  import { getSong, setLike } from '@/Api/api_song'
+  import songList from '@/components/songList/songList.vue'
+  import {
+    reactive,
+    ref,
+    toRefs,
+    onMounted,
+    computed,
+    nextTick,
+    watch,
+  } from 'vue'
+  import {
+    getPlaylistDetail,
+    setSubscribe,
+    getPlaylistAll,
+  } from '@/Api/api_playList'
   import { useStore } from 'vuex'
   import { useRouter, useRoute } from 'vue-router'
   import useGetSong from '@/hooks/useGetSong'
-  import {
-    useCountFormate,
-    useSingersFormate,
-    useTimeFormate,
-  } from '@/hooks/useFormate'
+  import { useCountFormate, useDateFormate } from '@/hooks/useFormate'
+  import jConfirm from '../custom/confirm'
+  const store = useStore()
+  const router = useRouter()
+  const route = useRoute()
+
   const loading = ref(true)
 
   onMounted(() => {
     GetPlaylistDetail()
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
   })
 
-  const store = useStore()
-  const router = useRouter()
-  const route = useRoute()
+  
+  // 监听路由数据重载
+  watch(
+    () => route.params.id,
+    () => {
+      console.log(route.params.id)
+      if (route.name != 'playlistDetail') return
+      GetPlaylistDetail()
+      tabCurrent.value = 0
+    }
+  )
 
   const data = reactive({
     // 歌单详情
@@ -235,10 +230,10 @@
     // 按钮文本
     headerTabs: [{ title: '歌曲列表' }, { title: '评论' }, { title: '收藏者' }],
   })
+
   // 歌单创建时时间
   const playlistCreateTime = computed(() => {
-    const date = new Date(playlist.value.createTime)
-    return date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate()
+    return useDateFormate(playlist.value.createTime)
   })
   // 收藏
   const subscribedCount = computed(() => {
@@ -253,13 +248,17 @@
     return useCountFormate(playlist.value.playCount)
   })
 
+  const playlistId = computed(() => {
+    return route.params.id
+  })
   const playlistQuery = reactive({
-    id: route.params.id,
+    id: playlistId.value,
     s: 20,
   })
   // 获取歌单详情页
   const GetPlaylistDetail = async () => {
-    const res = await getPlaylistDetail(playlistQuery)
+    loading.value = true
+    const res = await getPlaylistDetail({ id: playlistId.value, s: 20 })
     console.log(res)
     if (res.code !== 200)
       return ElMessage({ message: '歌单详情获取失败', type: 'error' })
@@ -268,34 +267,9 @@
     headerTabs.value[1].title = '评论' + '(' + playlist.value.commentCount + ')'
     // console.log(playlist.value)
     console.log(tracks.value)
-  }
-  // 添加索引
-  const RowClassName = ({ row, rowIndex }) => {
-    row.index = rowIndex
+    loading.value = false
   }
 
-  const { getSongUrl } = useGetSong()
-  // 获取音乐数据
-  const GetSong = async (row) => {
-    // const songUrl = await getSongUrl(row.id)
-    // const res=await getSong(row.id)
-    // if(res.code!==200)return
-    // if(!res.data[0].url) return ElMessage({ message: '音乐资源不存在', type: 'error' })
-    // console.log(songUrl)
-    store.commit('setPlaylists', playlist.value.tracks)
-    store.commit('setPlayingSongIndex', row.index)
-    // store.commit('setSongUrl', res.data[0].url)
-    store.commit('setCurrentSongId')
-  }
-
-  // 正在播放图标
-  const showPlaying = (index) => {
-    // console.log(index)
-    return playingIndex.value == index
-  }
-  const playingIndex = computed(() => {
-    return store.state.playingSongIndex
-  })
   /*歌单详情内容DOM*/
   const descontnent = ref()
   const caretdown = ref()
@@ -318,45 +292,79 @@
   }
   // 播放全部
   const playAllPlayList = () => {
-    store.commit('setPlaylists', playlist.value.tracks)
+    store.commit('setPlaylists', tracks.value)
     store.commit('setPlayingSongIndex', 0)
     // store.commit('setSongUrl', res.data[0].url)
     store.commit('setCurrentSongId')
+    store.commit('setPlayType','Normal')
+
   }
 
-  const isLike = (row) => {
-    return store.state.likeIdList.indexOf(row.id) != -1
-  }
+  // 是否收藏
+  const isSubscribe = computed(() => {
+    return store.state.UserPlaylist.some(
+      (item) => item.id === playlist.value.id
+    )
+  })
+  //  是否为用户创建
+  const isUserCreateLists = computed(() => {
+    return store.getters.userCreateLists.some(
+      (item) => item.id === playlist.value.id
+    )
+  })
+
   // 收藏
-  const handleUserCollect = () => {
+  const handleUserCollect = async () => {
     if (!store.state.isLogin)
       return ElMessage({ message: '请先登录', type: 'wran' })
+    if (isUserCreateLists.value) return
+
+    // 收藏
+    if (!isSubscribe.value) {
+      await setSubscribe(playlist.value.id, 1)
+      store.dispatch('GetUserPlaylist')
+      console.log('收藏')
+    } else {
+      jConfirm({ text: '确定取消收藏吗?' })
+        .then(async () => {
+          //取消收藏
+          if (isSubscribe.value) {
+            await setSubscribe(playlist.value.id, 2)
+            store.dispatch('GetUserPlaylist')
+            console.log('取消收藏')
+          }
+        })
+        .catch(() => {
+          return ElMessage({ message: '已取消' })
+        })
+    }
   }
-  // 喜欢歌曲
-  const SetLike = async (row) => {
+  const isPlaylistAll = ref(false)
+  // 获取歌单所有音乐
+  const GetPlaylistAll = async () => {
     if (!store.state.isLogin)
       return ElMessage({ message: '请先登录', type: 'wran' })
-    store.dispatch('SetLike', { type: 'unshift', id: row.id })
+    let trackIds = playlist.value.trackIds.map((item) => item.id).join(',')
+    // console.log(trackIds)
+    const res = await getPlaylistAll(trackIds)
+    if (res.code !== 200) return
+    console.log(res)
+    tracks.value = Object.freeze(res.songs)
+    store.commit('setPlaylists', tracks.value)
+    isPlaylistAll.value = true
   }
-  // 取消喜欢歌曲
-  const CancelLike = async (row) => {
-    if (!store.state.isLogin)
-      return ElMessage({ message: '请先登录', type: 'wran' })
-    store.dispatch('SetLike', { type: 'delete', id: row.id })
-  }
+
   // 活动添加样式按钮
   const tabActive = (index) => {
     tabCurrent.value = index
   }
-  // 格式化音乐演唱歌手
-  const SingersFormate = (row) => {
-    // console.log(row)
-    return useSingersFormate(row)
-  }
-  // 格式化时间
-  const timeFormate = (row) => {
-    return useTimeFormate(row.dt / 1000)
-  }
+// 歌曲匹配搜索
+  const songSearchValue=ref('')
+  const list=computed(()=>{
+    let reg=new RegExp(songSearchValue.value.trim(),'ig')
+    return tracks.value.filter((item)=>item.name.match(reg))
+  })
+
   // 跳转用户页面
   const enterUserDetail = (id) => {
     router.push({ name: 'userDetail', params: { id } })
@@ -370,8 +378,8 @@
   }
 
   .detail-img {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
     border-radius: 5px;
     overflow: hidden;
 

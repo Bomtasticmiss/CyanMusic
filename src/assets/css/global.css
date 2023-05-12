@@ -7,6 +7,44 @@ body,
     /* background-color: rgb(219, 219, 219); */
 }
 
+
+
+img,
+embed,
+object,
+audio,
+video {
+    height: auto;
+    max-width: 100%;
+}
+
+html,
+body,
+p,
+ol,
+ul,
+li,
+dl,
+dt,
+dd,
+blockquote,
+figure,
+fieldset,
+legend,
+textarea,
+pre,
+iframe,
+hr,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+}
+
 #app {
     display: flex;
     flex-direction: column;
@@ -15,9 +53,9 @@ body,
 
 ::-webkit-scrollbar {
     /*滚动条整体样式*/
-    width: 5px;
+    width: 4px;
     /*高宽分别对应横竖滚动条的尺寸*/
-    height: 5px;
+    height: 1px;
     scrollbar-arrow-color: red;
 }
 
@@ -36,15 +74,20 @@ body,
     background: rgba(221, 197, 197, 0);
 }
 
-
-p,
-ul,
-li,
-textarea {
-    margin: 0;
-    padding: 0;
+/*背景色 */
+:root {
+    --theme_input_color:#e13e3e;
+    --theme_bg_color: #ec4141;
+    --theme_font_color: #ffffff;
+    --theme_btn_color:#ffffff;
+    --theme_btn_border_color:#d8d8d8;
+    --theme_bg_color_red: #ec4141;
+    --theme_bg_color_white: #ffffff;
+    --theme_bg_color_brown: #c07505;
+    --theme_bg_color_silver: #aeaeae9c;
+    --theme_bg_color_blueGreen: #23ad8ff5;
+    --box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, .04), 0px 8px 20px rgba(0, 0, 0, .08);
 }
-
 
 
 .pointer {
@@ -77,8 +120,17 @@ textarea {
     margin-top: 20px;
 }
 
+.mtop-30 {
+    margin-top: 30px;
+}
+
+
 .mbtm-10 {
     margin-bottom: 10px;
+}
+
+.mbtm-20 {
+    margin-bottom: 20px;
 }
 
 .mleft-5 {
@@ -127,29 +179,36 @@ textarea {
     margin-right: 30px;
 }
 
+.font-10 {
+    font-size: 10px !important;
+}
 
 .font-12 {
-    font-size: 12px;
+    font-size: 12px !important;
 }
 
 .font-14 {
-    font-size: 14px;
+    font-size: 14px !important;
 }
 
 .font-16 {
-    font-size: 16px;
+    font-size: 16px !important;
 }
 
 .font-18 {
-    font-size: 18px;
+    font-size: 18px !important;
 }
 
 .font-20 {
-    font-size: 20px;
+    font-size: 20px !important;
+}
+
+.font-22 {
+    font-size: 22px !important;
 }
 
 .font-24 {
-    font-size: 24px;
+    font-size: 24px !important;
 }
 
 
@@ -189,15 +248,17 @@ textarea {
     border-radius: 15px;
     cursor: pointer;
     background-color: white;
+    white-space: nowrap;
 }
 
 .btn-red {
-    background-color: #ec4141;
-    color: #fff;
+    border: 1px solid var(--theme_btn_border_color);
+    background-color: var(--theme_bg_color);
+    color: var(--theme_btn_color);
 }
 
 .btn-red:hover {
-    background-color: rgb(193, 56, 56);
+    background-color: var(--theme_bg_color);
 }
 
 .btn-white {
@@ -226,4 +287,27 @@ textarea {
 
 .author-color {
     color: #b1b1b1;
+}
+
+.min-color {
+    color: #8f8f8f;
+}
+
+.white-color {
+    color: white;
+}
+
+.black-color {
+    color: black;
+}
+
+.playview-color {
+    color: #5d86b5;
+}
+
+.text-desc {
+    text-indent: 2em;
+    line-height: 2;
+    width: 100%;
+    color: #676767;
 }
