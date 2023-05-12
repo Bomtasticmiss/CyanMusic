@@ -34,11 +34,12 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 // loading插件
 app.directive('load', {
     mounted(el, binding) {
-        function _setAttributes(element, attributes) {
+        function _setStyles(element, attributes) {
             Object.keys(attributes).forEach((attr) => {
                 element.style[attr] = attributes[attr]
             })
         }
+        let loading = require('@/assets/img/loading-4.gif')
         const img_style = {
             // margin: 'auto',
             position: 'absolute',
@@ -57,16 +58,17 @@ app.directive('load', {
             backgroundColor: 'rgb(255 255 255 / 100%)',
             transition: 'opacity .3s',
         }
-        let loading = require('@/assets/img/loading-4.gif')
+
 
         if (binding.value) {
             console.log('正在加载')
             let img = document.createElement('img')
+            img.className = 'loading-img'
             img.src = loading
-            _setAttributes(img, img_style)
+            _setStyles(img, img_style)
             let wrapper = document.createElement('div')
             wrapper.className = 'loading-wrapper'
-            _setAttributes(wrapper, wrapper_style)
+            _setStyles(wrapper, wrapper_style)
             wrapper.appendChild(img)
             el.style.position = 'relative'
             el.appendChild(wrapper)
@@ -74,12 +76,18 @@ app.directive('load', {
     },
     updated(el, binding) {
         let wrapper = document.querySelector('.loading-wrapper')
+        let img = document.querySelector('.loading-img')
         if (binding.value && wrapper) {
+            console.log('更新')
+            img.style.opacity = '1'
             wrapper.style.display = 'block'
+            console.log(wrapper)
         }
         if (!binding.value) {
             console.log('结束')
+            img.style.opacity = '0.1'
             wrapper.style.display = 'none'
+            console.log(wrapper)
         }
     }
 })

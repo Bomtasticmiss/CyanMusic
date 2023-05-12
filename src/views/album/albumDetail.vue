@@ -94,7 +94,7 @@
   import { getAlbumDetail, getAlbumDynamic, setAlbumSub } from '@/Api/api_album'
   import { useRoute } from 'vue-router'
   import { useStore } from 'vuex'
-  import songList from '@/components/songList/songList'
+  import songList from '@/components/songList/songList.vue'
   import Comment from '@/components/comment/Comment.vue'
   import { useDateFormate } from '@/hooks/useFormate'
   import jConfirm from '@/components/custom/confirm'

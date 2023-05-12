@@ -87,6 +87,7 @@
   }
   // 初始化推荐歌单页面
   onMounted(async () => {
+    console.log('个性推荐初始化----')
     isLoading.value=true
     await getMusicRmd()
     isLoading.value=false

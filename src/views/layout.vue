@@ -33,9 +33,11 @@
       </div>
       <div class="center-main" ref="centerMain">
         <div style="width: 90%; margin: auto">
-          <transition name="el-fade-in">
-            <router-view></router-view>
-          </transition>
+          <router-view v-slot="{ Component }">
+            <transition name="el-fade-in">
+              <component :is="Component" />
+            </transition>
+          </router-view>
         </div>
       </div>
     </div>
@@ -158,7 +160,7 @@
     .aside {
       position: absolute !important;
       left: -210px;
-      z-index: 2000;
+      z-index: 2001;
       height: 100%;
     }
   }
@@ -167,7 +169,7 @@
     .aside {
       position: absolute !important;
       left: -210px;
-      z-index: 2000;
+      z-index: 2001;
       height: 100%;
     }
   }

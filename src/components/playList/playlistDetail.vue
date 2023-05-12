@@ -178,7 +178,7 @@
   import subscribersWrappper from '@/components/star/subscribersWrapper.vue'
   import Comment from '@/components/comment/Comment.vue'
   import tabMenu from '@/components/menus/tabMenu.vue'
-  import songList from '@/components/songList/songList'
+  import songList from '@/components/songList/songList.vue'
   import {
     reactive,
     ref,

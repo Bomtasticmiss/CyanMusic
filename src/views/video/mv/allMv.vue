@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mtop-20">
     <div>
       <h3>全部MV</h3>
     </div>

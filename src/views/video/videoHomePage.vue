@@ -3,9 +3,11 @@
     <div>
       <tabMenu pattern="router" :menuList="topMenus" />
     </div>
-    <transition name="el-fade-in">
-      <router-view></router-view>
-    </transition>
+    <router-view v-slot="{ Component }">
+      <transition name="el-fade-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
